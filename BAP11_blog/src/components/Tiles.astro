@@ -1,0 +1,154 @@
+---
+// A cluster of slanted tiles, after the country tiles in the ARCHITECT@WORK identity.
+// Every tile is a link; they float slowly and shift a little with the cursor.
+
+export interface Tile {
+	label: string;
+	sub?: string;
+	href: string;
+	color: string;
+	/** Position in % of the cluster. */
+	x: number;
+	y: number;
+	/** Slant direction: up to the right, or down to the right. */
+	slant: 'up' | 'down';
+	/** How strongly it follows the cursor. */
+	depth?: number;
+}
+
+interface Props {
+	tiles: Tile[];
+	label: string;
+}
+
+const { tiles, label } = Astro.props;
+---
+
+<nav class="cluster" aria-label={label} data-cluster>
+	{
+		tiles.map((t, i) => (
+			<a
+				href={t.href}
+				class:list={['tile', t.slant]}
+				style={`--x: ${t.x}%; --y: ${t.y}%; --c: ${t.color}; --d: ${t.depth ?? 1}; --i: ${i}`}
+			>
+				<span class="face">
+					<span class="name">{t.label}</span>
+					{t.sub && <span class="sub">{t.sub}</span>}
+				</span>
+			</a>
+		))
+	}
+</nav>
+
+<script>
+	document.addEventListener('astro:page-load', () => {
+		const cluster = document.querySelector<HTMLElement>('[data-cluster]');
+		if (!cluster || !matchMedia('(hover: hover) and (prefers-reduced-motion: no-preference)').matches) return;
+		cluster.addEventListener('pointermove', (e) => {
+			const box = cluster.getBoundingClientRect();
+			cluster.style.setProperty('--mx', String(((e.clientX - box.left) / box.width - 0.5) * 2));
+			cluster.style.setProperty('--my', String(((e.clientY - box.top) / box.height - 0.5) * 2));
+		});
+		cluster.addEventListener('pointerleave', () => {
+			cluster.style.setProperty('--mx', '0');
+			cluster.style.setProperty('--my', '0');
+		});
+	});
+</script>
+
+<style>
+	.cluster {
+		--mx: 0;
+		--my: 0;
+		position: relative;
+		width: 100%;
+		max-width: 460px;
+		aspect-ratio: 4 / 5.4;
+		margin-inline: auto;
+	}
+
+	.tile {
+		position: absolute;
+		left: var(--x);
+		top: var(--y);
+		width: 40%;
+		aspect-ratio: 16 / 9;
+		color: var(--ink);
+		text-decoration: none;
+		transform: translate(calc(var(--mx) * var(--d) * -14px), calc(var(--my) * var(--d) * -10px));
+		transition: transform 0.6s var(--ease);
+		animation: tile-in 0.9s calc(0.1s + var(--i) * 0.08s) var(--ease) both;
+	}
+
+	.face {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		padding: 10px 12px;
+		background: var(--c);
+		animation: float 7s calc(var(--i) * -1.3s) ease-in-out infinite;
+		transition:
+			filter 0.3s,
+			translate 0.4s var(--ease);
+	}
+
+	.up .face {
+		transform: skewY(-26.57deg);
+	}
+
+	.down .face {
+		transform: skewY(26.57deg);
+	}
+
+	.name {
+		font-size: clamp(14px, 1.6vw, 18px);
+		font-weight: 700;
+		line-height: 1.1;
+		text-transform: uppercase;
+	}
+
+	.sub {
+		margin-top: 2px;
+		font-size: 12px;
+		font-weight: 700;
+		opacity: 0.7;
+	}
+
+	.tile:hover,
+	.tile:focus-visible {
+		z-index: 2;
+	}
+
+	.tile:hover .face,
+	.tile:focus-visible .face {
+		translate: 0 -10px;
+		filter: brightness(1.08);
+		box-shadow: 0 18px 30px rgba(0, 0, 0, 0.45);
+	}
+
+	.tile:focus-visible {
+		outline: none;
+	}
+
+	.tile:focus-visible .face {
+		outline: 2px solid var(--fg);
+		outline-offset: 3px;
+	}
+
+	@keyframes float {
+		50% {
+			margin-top: -8px;
+			margin-bottom: 8px;
+		}
+	}
+
+	@keyframes tile-in {
+		from {
+			opacity: 0;
+			translate: 0 40px;
+		}
+	}
+</style>

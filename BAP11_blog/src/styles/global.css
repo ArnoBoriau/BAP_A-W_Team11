@@ -1,0 +1,595 @@
+/*
+  Global styles, after the ARCHITECT@WORK identity: a warm near-black, off-white Helvetica, square shapes,
+  uppercase headings and labels, thin rules, and one warm accent for what needs attention.
+  The pillar colours come from A@W's country palette.
+*/
+
+:root {
+	color-scheme: dark;
+
+	--bg: #0b0b0a;
+	--surface: #141413;
+	--surface-2: #1d1d1b;
+	--surface-3: #2a2a27;
+	--fg: #f2f0eb;
+	--fg-soft: #c9c6bf;
+	--muted: #8f8c86;
+	--line: rgba(242, 240, 235, 0.1);
+	--line-strong: rgba(242, 240, 235, 0.24);
+
+	--accent: #ff5b2e;
+	--ink: #0b0b0a;
+	--deadline: #ff7a5c;
+
+	--p-ux: #2bb7b4;
+	--p-design: #e87702;
+	--p-dev: #a6c20d;
+	--p-general: #a8a49c;
+
+	--font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	--ease: cubic-bezier(0.16, 1, 0.3, 1);
+	--max: 1200px;
+	--gutter: clamp(16px, 4vw, 40px);
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	background: var(--bg);
+	color: var(--fg);
+	font-family: var(--font);
+	font-size: 16px;
+	line-height: 1.55;
+	-webkit-font-smoothing: antialiased;
+}
+
+a {
+	color: inherit;
+}
+
+img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+h1,
+h2,
+h3 {
+	margin: 0;
+	font-weight: 400;
+	line-height: 1.15;
+}
+
+p {
+	margin: 0;
+}
+
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+
+::selection {
+	background: var(--fg);
+	color: var(--ink);
+}
+
+/* ---------- layout ---------- */
+
+.wrap {
+	width: 100%;
+	max-width: var(--max);
+	margin-inline: auto;
+	padding-inline: var(--gutter);
+}
+
+.page-head {
+	padding-block: 48px 32px;
+}
+
+.page-head h1 {
+	margin-top: 16px;
+	font-size: clamp(48px, 9vw, 120px);
+	line-height: 0.92;
+	letter-spacing: -0.02em;
+	text-transform: uppercase;
+	animation: title-in 0.9s var(--ease) both;
+}
+
+.page-head .lead {
+	animation: fade-up 0.9s 0.15s var(--ease) both;
+}
+
+.page-head .lead {
+	margin-top: 24px;
+	max-width: 60ch;
+	font-size: 19px;
+	font-weight: 300;
+	line-height: 1.5;
+	color: var(--fg-soft);
+}
+
+.section {
+	padding-block: 56px;
+}
+
+/* A divider aligned with the content, not with the page edge. */
+.section + .section {
+	background: linear-gradient(var(--line), var(--line)) top center / calc(100% - 2 * var(--gutter)) 1px no-repeat;
+}
+
+/* Section heading: uppercase title, optional link on the right. */
+.sec-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 12px 24px;
+	margin-bottom: 24px;
+}
+
+.sec-head h2 {
+	font-size: 24px;
+	text-transform: uppercase;
+}
+
+.sub {
+	font-size: 24px;
+	font-weight: 300;
+	line-height: 1.3;
+}
+
+.muted {
+	color: var(--muted);
+}
+
+/* Small uppercase label, used for meta information and table headers. */
+.label {
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.sr-only {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(1px, 1px, 1px, 1px);
+	white-space: nowrap;
+}
+
+/* ---------- links & buttons ---------- */
+
+.link {
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 3px;
+}
+
+.link:hover {
+	color: var(--accent);
+	text-decoration-color: var(--accent);
+}
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 44px;
+	padding: 10px 16px;
+	border: 2px solid var(--fg);
+	background: transparent;
+	color: var(--fg);
+	font: inherit;
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.btn:hover {
+	background: var(--fg);
+	color: var(--bg);
+}
+
+.btn--primary {
+	background: var(--fg);
+	border-color: var(--fg);
+	color: var(--ink);
+}
+
+.btn--primary:hover {
+	background: var(--accent);
+	border-color: var(--accent);
+	color: var(--ink);
+}
+
+/* Tab bar, like the sub navigation on the A@W event pages. */
+.tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.tab {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 44px;
+	padding: 10px 14px;
+	border: 0;
+	background: var(--surface-2);
+	color: var(--fg);
+	font: inherit;
+	font-size: 14px;
+	font-weight: 700;
+	text-transform: uppercase;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.tab:hover {
+	background: var(--surface-3);
+}
+
+.tab[aria-pressed='true'],
+.tab[aria-current='page'] {
+	background: var(--fg);
+	color: var(--ink);
+}
+
+.tab .count {
+	font-weight: 400;
+	opacity: 0.7;
+}
+
+/* ---------- badges ---------- */
+
+/* Solid badge, like A@W's country label. The pillar colour sits behind dark text. */
+.pillar {
+	display: inline-block;
+	padding: 3px 12px;
+	clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
+	background: var(--c);
+	color: var(--ink);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	line-height: 1.4;
+	text-transform: uppercase;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.tag {
+	display: inline-block;
+	padding: 2px 7px;
+	border: 1px solid var(--line-strong);
+	color: var(--fg-soft);
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	line-height: 1.4;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+/* ---------- data tables ---------- */
+
+.table-scroll {
+	overflow-x: auto;
+}
+
+table.data {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 15px;
+}
+
+table.data th {
+	padding: 0 16px 10px 0;
+	border-bottom: 1px solid var(--line-strong);
+	text-align: left;
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--muted);
+	white-space: nowrap;
+}
+
+table.data td {
+	padding: 12px 16px 12px 0;
+	border-bottom: 1px solid var(--line);
+	text-align: left;
+	vertical-align: top;
+}
+
+table.data td.num,
+table.data th.num {
+	text-align: right;
+	padding-right: 0;
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+/* ---------- long-form text (logbook posts) ---------- */
+
+.prose {
+	max-width: 70ch;
+	font-size: 17px;
+	line-height: 1.7;
+	color: var(--fg-soft);
+}
+
+.prose > * + * {
+	margin-top: 1.1em;
+}
+
+.prose h2 {
+	margin-top: 2em;
+	font-size: 22px;
+	text-transform: uppercase;
+	color: var(--fg);
+}
+
+.prose h3 {
+	margin-top: 1.6em;
+	font-size: 19px;
+	font-weight: 700;
+	color: var(--fg);
+}
+
+.prose h2 + *,
+.prose h3 + * {
+	margin-top: 0.6em;
+}
+
+.prose strong {
+	color: var(--fg);
+}
+
+.prose a {
+	color: var(--fg);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.prose a:hover {
+	color: var(--accent);
+}
+
+.prose ul,
+.prose ol {
+	padding-left: 1.25em;
+}
+
+.prose li + li {
+	margin-top: 0.35em;
+}
+
+.prose blockquote {
+	margin: 0;
+	padding: 4px 0 4px 18px;
+	border-left: 3px solid var(--accent);
+	color: var(--fg);
+}
+
+.prose blockquote > * + * {
+	margin-top: 0.8em;
+}
+
+.prose img {
+	width: 100%;
+}
+
+.prose figure {
+	margin: 0;
+}
+
+.prose figcaption {
+	margin-top: 8px;
+	font-size: 14px;
+	color: var(--muted);
+}
+
+.prose hr {
+	border: 0;
+	border-top: 1px solid var(--line);
+}
+
+.prose code {
+	padding: 1px 5px;
+	background: var(--surface-2);
+	font-size: 0.88em;
+	color: var(--fg);
+}
+
+.prose pre {
+	padding: 16px;
+	background: var(--surface) !important;
+	border: 1px solid var(--line);
+	overflow-x: auto;
+	font-size: 14px;
+}
+
+.prose pre code {
+	padding: 0;
+	background: none;
+}
+
+.prose table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 15px;
+	line-height: 1.5;
+	display: block;
+	overflow-x: auto;
+}
+
+.prose th,
+.prose td {
+	padding: 10px 16px 10px 0;
+	border-bottom: 1px solid var(--line);
+	text-align: left;
+	vertical-align: top;
+}
+
+.prose th {
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--muted);
+	border-bottom-color: var(--line-strong);
+}
+
+/* Tables pasted from Notion often have an empty header row. */
+.prose thead tr:has(th:empty) {
+	display: none;
+}
+
+.prose td:first-child {
+	color: var(--fg);
+}
+
+/* Notion callouts, toggles and to-do lists */
+.prose .callout {
+	display: flex;
+	gap: 12px;
+	padding: 16px 18px;
+	background: var(--surface);
+	border-left: 3px solid var(--accent);
+}
+
+.prose .callout > div > * + * {
+	margin-top: 0.8em;
+}
+
+.prose details {
+	padding: 12px 0;
+	border-top: 1px solid var(--line);
+	border-bottom: 1px solid var(--line);
+}
+
+.prose summary {
+	cursor: pointer;
+	color: var(--fg);
+	font-weight: 700;
+}
+
+.prose details[open] summary {
+	margin-bottom: 0.8em;
+}
+
+.prose details > * + * {
+	margin-top: 0.8em;
+}
+
+.prose ul.todo {
+	list-style: none;
+	padding-left: 0;
+}
+
+.prose ul.todo input {
+	accent-color: var(--accent);
+	margin-right: 8px;
+}
+
+/* ---------- motion ---------- */
+
+@keyframes title-in {
+	from {
+		clip-path: inset(0 0 100% 0);
+		transform: translateY(0.25em);
+	}
+	to {
+		clip-path: inset(0 0 -10% 0);
+		transform: none;
+	}
+}
+
+@keyframes fade-up {
+	from {
+		opacity: 0;
+		transform: translateY(16px);
+	}
+}
+
+/* Elements fade up as they scroll into view; children of [data-stagger] follow one after another. */
+[data-reveal] {
+	opacity: 0;
+	transform: translateY(24px);
+	transition:
+		opacity 0.8s var(--ease),
+		transform 0.8s var(--ease);
+}
+
+[data-stagger] > * {
+	transition-delay: calc(min(var(--i, 0), 10) * 60ms);
+}
+
+[data-reveal].is-in {
+	opacity: 1;
+	transform: none;
+}
+
+/* Page transitions: the old page slides away, the new one comes in from below. */
+::view-transition-old(root) {
+	animation: 0.25s var(--ease) both vt-out;
+}
+
+::view-transition-new(root) {
+	animation: 0.5s var(--ease) both vt-in;
+}
+
+@keyframes vt-out {
+	to {
+		opacity: 0;
+		transform: translateY(-12px);
+	}
+}
+
+@keyframes vt-in {
+	from {
+		opacity: 0;
+		transform: translateY(24px);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after,
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation: none !important;
+		transition: none !important;
+	}
+
+	[data-reveal] {
+		opacity: 1;
+		transform: none;
+	}
+}

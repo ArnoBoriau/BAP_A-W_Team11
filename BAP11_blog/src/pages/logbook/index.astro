@@ -1,0 +1,164 @@
+---
+import PostList from '../../components/PostList.astro';
+import { PILLARS } from '../../consts';
+import Layout from '../../layouts/Layout.astro';
+import { getEntries } from '../../lib/data';
+
+const entries = await getEntries();
+type Entry = (typeof entries)[number];
+
+// Same views as our Notion logbook (the pillars), plus the topics teachers look for.
+const views = [
+	{ id: '', label: 'All posts', match: () => true },
+	{ id: 'ux', label: PILLARS.ux.label, match: (e: Entry) => e.data.pillar === 'ux' },
+	{ id: 'design', label: PILLARS.design.label, match: (e: Entry) => e.data.pillar === 'design' },
+	{ id: 'dev', label: PILLARS.dev.label, match: (e: Entry) => e.data.pillar === 'dev' },
+];
+const topics = [
+	{ id: 'process', label: 'Process', match: (e: Entry) => e.data.tags.includes('process') },
+	{ id: 'research', label: 'Research', match: (e: Entry) => e.data.tags.includes('research') },
+	{
+		id: 'feedback',
+		label: 'Feedback & experts',
+		match: (e: Entry) => e.data.tags.includes('feedback-client') || e.data.tags.includes('expert-talk'),
+	},
+	{ id: 'ai', label: 'AI', match: (e: Entry) => e.data.tags.includes('ai') },
+];
+const filters = [...views, ...topics];
+
+const keys = (e: Entry) =>
+	filters.filter((f) => f.id && f.match(e)).map((f) => f.id).join(' ');
+---
+
+<Layout title="Logbook" description="Research, process, feedback and AI use, newest first.">
+	<section class="wrap page-head">
+		<p class="label">{entries.length} posts</p>
+		<h1>Logbook</h1>
+		<p class="lead">What we researched, how the concept grew, the feedback we got and how we used AI. Newest first.</p>
+	</section>
+
+	<section class="wrap">
+		<div class="filters" role="group" aria-label="Show posts">
+			<div class="tabs">
+				{
+					views.map((f) => (
+						<button type="button" class="tab" data-filter={f.id} aria-pressed={f.id === '' ? 'true' : 'false'}>
+							{f.label} <span class="count">{entries.filter(f.match).length}</span>
+						</button>
+					))
+				}
+			</div>
+			<div class="topics">
+				<span class="label">Topic</span>
+				{
+					topics.map((f) => (
+						<button type="button" class="topic" data-filter={f.id} aria-pressed="false">
+							{f.label} <span class="count">{entries.filter(f.match).length}</span>
+						</button>
+					))
+				}
+			</div>
+		</div>
+
+		<div data-list>
+			<PostList entries={entries} filterable />
+		</div>
+
+		<p class="empty" data-empty hidden>
+			No posts here yet. <button type="button" class="btn" data-filter="">Show all posts</button>
+		</p>
+
+		<script is:inline type="application/json" id="post-keys" set:html={JSON.stringify(entries.map(keys))}></script>
+	</section>
+</Layout>
+
+<script>
+	document.addEventListener('astro:page-load', () => {
+		const list = document.querySelector('[data-list]');
+		if (!list) return;
+		const buttons = [...document.querySelectorAll<HTMLButtonElement>('.filters [data-filter]')];
+		const resets = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+		const rows = [...document.querySelectorAll<HTMLLIElement>('[data-list] li')];
+		const keys: string[] = JSON.parse(document.getElementById('post-keys')!.textContent!);
+		const empty = document.querySelector<HTMLElement>('[data-empty]')!;
+
+		function apply(id: string, push = true) {
+			let shown = 0;
+			rows.forEach((row, i) => {
+				const visible = !id || keys[i].split(' ').includes(id);
+				row.hidden = !visible;
+				if (visible) shown++;
+			});
+			buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === id)));
+			empty.hidden = shown > 0;
+			if (push) {
+				const url = new URL(location.href);
+				if (id) url.searchParams.set('f', id);
+				else url.searchParams.delete('f');
+				history.replaceState(null, '', url);
+			}
+		}
+
+		resets.forEach((b) => b.addEventListener('click', () => apply(b.dataset.filter ?? '')));
+		apply(new URL(location.href).searchParams.get('f') ?? '', false);
+	});
+</script>
+
+<style>
+	.filters {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		margin-bottom: 24px;
+	}
+
+	.topics {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 6px;
+	}
+
+	.topics .label {
+		margin-right: 6px;
+	}
+
+	.topic {
+		min-height: 36px;
+		padding: 6px 12px;
+		border: 1px solid var(--line-strong);
+		background: none;
+		color: var(--fg-soft);
+		font: inherit;
+		font-size: 14px;
+		cursor: pointer;
+	}
+
+	.topic:hover {
+		border-color: var(--fg);
+		color: var(--fg);
+	}
+
+	.topic[aria-pressed='true'] {
+		background: var(--fg);
+		border-color: var(--fg);
+		color: var(--bg);
+	}
+
+	.topic .count {
+		opacity: 0.6;
+	}
+
+	.empty {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 16px;
+		padding: 40px 0;
+		color: var(--muted);
+	}
+
+	.empty[hidden] {
+		display: none;
+	}
+</style>

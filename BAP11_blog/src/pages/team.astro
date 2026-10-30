@@ -1,0 +1,193 @@
+---
+import { Image } from 'astro:assets';
+import Pillar from '../components/Pillar.astro';
+import { PILLAR_IDS, PILLARS, PROJECT } from '../consts';
+import Layout from '../layouts/Layout.astro';
+import { formatHours, getEntries, getTeam, getTimeLog, sum } from '../lib/data';
+
+const [team, sessions, entries] = await Promise.all([getTeam(), getTimeLog(), getEntries()]);
+const hours = (id: string) => sum(sessions.filter((s) => s.data.member.id === id).map((s) => s.data.hours));
+const posts = (id: string) => entries.filter((e) => e.data.authors.some((a) => a.id === id)).length;
+const initials = (name: string) =>
+	name
+		.split(/\s+/)
+		.map((part) => part[0])
+		.join('')
+		.slice(0, 2)
+		.toUpperCase();
+const chronotype = { morning: 'In the morning', evening: 'In the evening' } as const;
+---
+
+<Layout title="Team" description="Who we are and who does what.">
+	<section class="wrap page-head">
+		<p class="label">{team.length} students</p>
+		<h1>Team</h1>
+		<p class="lead">
+			Three students from {PROJECT.programme}, coached by {PROJECT.coach}. Each of us leads one pillar, and we work on
+			the rest together.
+		</p>
+	</section>
+
+	<section class="wrap">
+		<ul class="members" data-stagger>
+			{
+				team.map((m) => (
+					<li>
+						<div class="who">
+							{m.data.avatar ? (
+								<Image src={m.data.avatar} alt="" width={128} class="avatar" />
+							) : (
+								<span class="avatar" style={`background: ${m.color}`} aria-hidden="true">
+									{initials(m.data.name)}
+								</span>
+							)}
+							<div>
+								<h2>{m.data.name}</h2>
+								<p class="muted">{m.data.role}</p>
+							</div>
+						</div>
+
+						<p class="lead-of">
+							<span class="label">Leads</span>
+							<Pillar id={m.data.pillar} href={`/logbook/?f=${m.data.pillar}`} />
+						</p>
+
+						<ul class="resp">
+							{m.data.responsibilities.map((r) => (
+								<li>{r}</li>
+							))}
+						</ul>
+
+						<dl class="facts">
+							<div>
+								<dt class="label">Hours</dt>
+								<dd>
+									<a class="link" href="/time/">
+										{formatHours(hours(m.id))}
+									</a>
+								</dd>
+							</div>
+							<div>
+								<dt class="label">Posts</dt>
+								<dd>{posts(m.id)}</dd>
+							</div>
+							<div>
+								<dt class="label">Works best</dt>
+								<dd>{m.data.chronotype ? chronotype[m.data.chronotype] : 'Any time'}</dd>
+							</div>
+						</dl>
+
+						{m.data.email && (
+							<a class="link email" href={`mailto:${m.data.email}`}>
+								{m.data.email}
+							</a>
+						)}
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	<section class="wrap section">
+		<div class="sec-head">
+			<h2>Who does what</h2>
+		</div>
+		<div class="table-scroll">
+			<table class="data">
+				<thead>
+					<tr><th>Pillar</th><th>Lead</th><th>Responsible for</th></tr>
+				</thead>
+				<tbody>
+					{
+						PILLAR_IDS.map((id) => {
+							const leads = team.filter((m) => m.data.pillar === id);
+							return (
+								<tr>
+									<td><span class="pillar" style={`--c: ${PILLARS[id].color}`}>{PILLARS[id].label}</span></td>
+									<td>{leads.length ? leads.map((m) => m.data.name.split(' ')[0]).join(', ') : 'Together'}</td>
+									<td class="muted">{leads.flatMap((m) => m.data.responsibilities).join(', ') || 'Planning, meetings and the logbook'}</td>
+								</tr>
+							);
+						})
+					}
+				</tbody>
+			</table>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.members {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.members > li {
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+		padding: 24px;
+		background: var(--surface);
+		border: 1px solid var(--line);
+	}
+
+	.who {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	.avatar {
+		display: grid;
+		place-items: center;
+		width: 56px;
+		height: 56px;
+		flex: none;
+		object-fit: cover;
+		color: var(--ink);
+		font-size: 18px;
+		font-weight: 700;
+	}
+
+	h2 {
+		font-size: 22px;
+	}
+
+	.lead-of {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.resp {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		border-top: 1px solid var(--line);
+	}
+
+	.resp li {
+		padding: 8px 0;
+		border-bottom: 1px solid var(--line);
+		font-size: 15px;
+	}
+
+	.facts {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 12px 28px;
+		margin: auto 0 0;
+	}
+
+	.facts dd {
+		margin: 4px 0 0;
+	}
+
+	.email {
+		font-size: 15px;
+	}
+</style>

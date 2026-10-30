@@ -1,0 +1,185 @@
+---
+import { Image } from 'astro:assets';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Pillar from '../../components/Pillar.astro';
+import { TAGS } from '../../consts';
+import Layout from '../../layouts/Layout.astro';
+import { getPost, getTeam, readingTime } from '../../lib/data';
+
+const found = await getPost(Astro.params.slug ?? '');
+if (!found) return Astro.rewrite('/404');
+if ('moved' in found) return Astro.redirect(`/logbook/${found.moved}/`, 301);
+
+const { post, newer, older, text } = found;
+const { title, description, date, pillar, tags, cover } = post.data;
+const team = await getTeam();
+const authors = post.data.authors.flatMap((a) => team.filter((m) => m.id === a.id));
+---
+
+<Layout {title} {description} image={cover}>
+	<article>
+		<header class="wrap head">
+			<a href="/logbook/" class="link back">Back to the logbook</a>
+			<p class="badges">
+				<Pillar id={pillar} href={`/logbook/?f=${pillar}`} />
+				{tags.map((tag) => <span class="tag">{TAGS[tag]}</span>)}
+			</p>
+			<h1 transition:name={`post-${post.id}`}>{title}</h1>
+			{description && <p class="lead">{description}</p>}
+
+			<dl class="meta">
+				<div>
+					<dt class="label">Date</dt>
+					<dd><FormattedDate date={date} style="long" /></dd>
+				</div>
+				<div>
+					<dt class="label">Written by</dt>
+					<dd>{authors.length ? authors.map((a) => a.data.name.split(' ')[0]).join(', ') : '—'}</dd>
+				</div>
+				<div>
+					<dt class="label">Reading time</dt>
+					<dd>{readingTime(text)} min</dd>
+				</div>
+			</dl>
+		</header>
+
+		{
+			cover && (
+				<div class="wrap">
+					{typeof cover === 'string' ? (
+						<img src={cover} alt="" class="cover" loading="lazy" />
+					) : (
+						<Image src={cover} alt="" class="cover" widths={[720, 1200]} sizes="(min-width: 1200px) 1120px, 100vw" />
+					)}
+				</div>
+			)
+		}
+
+		<div class="wrap">
+			<div class="prose">
+				{'Content' in found ? <found.Content /> : <Fragment set:html={found.html} />}
+			</div>
+		</div>
+
+		<nav class="wrap pager" aria-label="More posts">
+			{
+				older ? (
+					<a href={`/logbook/${older.id}/`}>
+						<span class="label">Older post</span>
+						<span class="t">{older.data.title}</span>
+					</a>
+				) : (
+					<span />
+				)
+			}
+			{
+				newer && (
+					<a href={`/logbook/${newer.id}/`} class="next">
+						<span class="label">Newer post</span>
+						<span class="t">{newer.data.title}</span>
+					</a>
+				)
+			}
+		</nav>
+	</article>
+</Layout>
+
+<style>
+	.head {
+		padding-block: 32px;
+	}
+
+	.back {
+		display: inline-block;
+		margin-bottom: 32px;
+		font-size: 15px;
+	}
+
+	.back::before {
+		content: '← ';
+	}
+
+	h1 {
+		margin-top: 20px;
+		max-width: 20ch;
+		font-size: clamp(36px, 5.5vw, 68px);
+		line-height: 1.02;
+		letter-spacing: -0.015em;
+	}
+
+	.lead,
+	.meta,
+	.badges {
+		animation: fade-up 0.8s 0.15s var(--ease) both;
+	}
+
+	.lead {
+		margin-top: 16px;
+		max-width: 60ch;
+		font-size: 19px;
+		font-weight: 300;
+		line-height: 1.5;
+		color: var(--fg-soft);
+	}
+
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 16px 40px;
+		margin: 28px 0 0;
+		padding-top: 16px;
+		border-top: 1px solid var(--line);
+	}
+
+	.meta dd {
+		margin: 4px 0 0;
+	}
+
+	.cover {
+		width: 100%;
+		max-height: 560px;
+		object-fit: cover;
+		margin-bottom: 32px;
+	}
+
+	.pager {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 6px;
+		margin-top: 64px;
+	}
+
+	.pager a {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		padding: 18px 20px;
+		background: var(--surface-2);
+		text-decoration: none;
+	}
+
+	.pager a:hover {
+		background: var(--surface-3);
+	}
+
+	.pager .next {
+		grid-column: 2;
+		text-align: right;
+	}
+
+	.pager .t {
+		font-size: 17px;
+		line-height: 1.3;
+	}
+
+	@media (max-width: 600px) {
+		.pager {
+			grid-template-columns: 1fr;
+		}
+
+		.pager .next {
+			grid-column: 1;
+			text-align: left;
+		}
+	}
+</style>

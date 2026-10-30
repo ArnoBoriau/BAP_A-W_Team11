@@ -1,0 +1,153 @@
+---
+const links = [
+	{ href: '/', label: 'Overview' },
+	{ href: '/logbook/', label: 'Logbook' },
+	{ href: '/planning/', label: 'Planning' },
+	{ href: '/time/', label: 'Time tracking' },
+	{ href: '/team/', label: 'Team' },
+];
+
+const path = Astro.url.pathname.replace(/\/?$/, '/');
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<header class="header">
+	<div class="wrap bar">
+		<a href="/" class="brand" aria-label="BAP Team 11, overview">
+			<span>Next-level</span>
+			<span>arrival</span>
+			<span>experience</span>
+		</a>
+
+		<button class="menu-btn" aria-expanded="false" aria-controls="nav" data-menu>Menu</button>
+
+		<nav id="nav" class="nav" aria-label="Main">
+			<ul>
+				{
+					links.map((link) => (
+						<li>
+							<a href={link.href} aria-current={isActive(link.href) ? 'page' : undefined}>
+								{link.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+	</div>
+</header>
+
+<script>
+	document.addEventListener('astro:page-load', () => {
+		const button = document.querySelector<HTMLButtonElement>('[data-menu]');
+		button?.addEventListener('click', () => {
+			const open = button.getAttribute('aria-expanded') !== 'true';
+			button.setAttribute('aria-expanded', String(open));
+			button.textContent = open ? 'Close' : 'Menu';
+		});
+	});
+</script>
+
+<style>
+	.header {
+		border-bottom: 1px solid var(--line);
+	}
+
+	.bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 24px;
+		min-height: 88px;
+	}
+
+	.brand {
+		display: flex;
+		flex-direction: column;
+		font-size: 17px;
+		line-height: 1.05;
+		text-transform: uppercase;
+		text-decoration: none;
+	}
+
+	ul {
+		display: flex;
+		gap: 4px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.nav a {
+		display: block;
+		padding: 10px 12px;
+		border-bottom: 3px solid transparent;
+		font-size: 14px;
+		font-weight: 700;
+		text-transform: uppercase;
+		text-decoration: none;
+		color: var(--fg-soft);
+	}
+
+	.nav a:hover {
+		color: var(--fg);
+	}
+
+	.nav a[aria-current='page'] {
+		color: var(--fg);
+		border-bottom-color: var(--accent);
+	}
+
+	.menu-btn {
+		display: none;
+		min-height: 44px;
+		padding: 8px 14px;
+		border: 2px solid var(--fg);
+		background: none;
+		color: var(--fg);
+		font: inherit;
+		font-size: 14px;
+		font-weight: 700;
+		text-transform: uppercase;
+		cursor: pointer;
+	}
+
+	@media (max-width: 860px) {
+		.bar {
+			flex-wrap: wrap;
+			min-height: 72px;
+			padding-block: 14px;
+		}
+
+		.menu-btn {
+			display: block;
+		}
+
+		.nav {
+			display: none;
+			width: 100%;
+		}
+
+		.menu-btn[aria-expanded='true'] + .nav {
+			display: block;
+		}
+
+		ul {
+			flex-direction: column;
+			gap: 0;
+			border-top: 1px solid var(--line);
+		}
+
+		.nav a {
+			padding: 14px 0;
+			border-bottom: 1px solid var(--line);
+			font-size: 16px;
+		}
+
+		.nav a[aria-current='page'] {
+			border-bottom-color: var(--line);
+			box-shadow: inset 3px 0 0 var(--accent);
+			padding-left: 12px;
+		}
+	}
+</style>

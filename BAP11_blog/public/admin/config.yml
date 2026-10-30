@@ -1,0 +1,220 @@
+# Content editor (Sveltia CMS — https://github.com/sveltia/sveltia-cms)
+#
+# Who can edit? Only people with write access to the GitHub repository below.
+# Everyone else can read the site, but cannot sign in here or save anything.
+# Every save is a commit on `main`, so the full history stays in git.
+# Keep the option lists below in sync with src/consts.ts.
+
+backend:
+  name: github
+  repo: ArnoBoriau/BAP_A-W_Team11
+  branch: main
+  commit_messages:
+    create: 'content: add {{collection}} “{{slug}}”'
+    update: 'content: update {{collection}} “{{slug}}”'
+    delete: 'content: remove {{collection}} “{{slug}}”'
+    uploadMedia: 'content: upload “{{path}}”'
+    deleteMedia: 'content: delete “{{path}}”'
+
+media_folder: BAP11_blog/public/uploads
+public_folder: /uploads
+
+logo_url: /favicon.svg
+
+collections:
+  - name: logbook
+    label: Logbook
+    label_singular: Post
+    description: Research, process, feedback reports and AI use.
+    folder: BAP11_blog/src/content/logbook
+    extension: md
+    format: frontmatter
+    create: true
+    delete: true
+    slug: '{{year}}-{{month}}-{{day}}-{{slug}}'
+    # Images live next to the code so Astro can optimise them.
+    media_folder: ../../assets/logbook
+    public_folder: ../../assets/logbook
+    summary: '{{date}} — {{title}}'
+    sortable_fields: [date, title, pillar]
+    view_filters:
+      - { label: UX, field: pillar, pattern: ux }
+      - { label: Design, field: pillar, pattern: design }
+      - { label: Dev, field: pillar, pattern: dev }
+      - { label: General, field: pillar, pattern: general }
+      - { label: Drafts, field: draft, pattern: true }
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: description, label: Summary, widget: text, hint: 'One or two sentences, shown in the overview.' }
+      - { name: date, label: Date, widget: datetime, time_format: false, format: YYYY-MM-DD }
+      - name: pillar
+        label: Pillar
+        widget: select
+        default: general
+        options:
+          - { label: UX, value: ux }
+          - { label: Design, value: design }
+          - { label: Dev, value: dev }
+          - { label: General, value: general }
+      - name: tags
+        label: Tags
+        widget: select
+        multiple: true
+        required: false
+        default: []
+        options:
+          - { label: Process, value: process }
+          - { label: Research, value: research }
+          - { label: Planning, value: planning }
+          - { label: Feedback client, value: feedback-client }
+          - { label: Expert talk, value: expert-talk }
+          - { label: AI, value: ai }
+          - { label: Decision, value: decision }
+          - { label: Result, value: result }
+      - name: authors
+        label: Author
+        widget: relation
+        collection: team
+        value_field: '{{slug}}'
+        search_fields: [name]
+        display_fields: [name]
+        multiple: true
+        required: false
+      - { name: cover, label: Cover image, widget: image, required: false }
+      - { name: draft, label: Draft (hidden on the site), widget: boolean, default: false, required: false }
+      - { name: body, label: Content, widget: markdown }
+
+  - name: team
+    label: Team
+    label_singular: Team member
+    folder: BAP11_blog/src/content/team
+    extension: md
+    format: frontmatter
+    create: true
+    delete: true
+    identifier_field: name
+    slug: '{{name}}'
+    media_folder: ../../assets/team
+    public_folder: ../../assets/team
+    summary: '{{name}} — {{role}}'
+    sortable_fields: [order, name]
+    fields:
+      - { name: name, label: Name, widget: string }
+      - { name: order, label: Order, widget: number, value_type: int, default: 1 }
+      - name: pillar
+        label: Main pillar
+        widget: select
+        options:
+          - { label: UX, value: ux }
+          - { label: Design, value: design }
+          - { label: Dev, value: dev }
+          - { label: General, value: general }
+      - { name: role, label: Role, widget: string }
+      - { name: responsibilities, label: Responsibilities, widget: list, required: false, default: [] }
+      - name: chronotype
+        label: Kind of person
+        widget: select
+        required: false
+        options:
+          - { label: Morning person, value: morning }
+          - { label: Evening person, value: evening }
+      - { name: avatar, label: Portrait, widget: image, required: false }
+      - { name: email, label: Email, widget: string, required: false }
+      - { name: website, label: Portfolio URL, widget: string, required: false }
+
+  - name: time
+    label: Time tracking
+    files:
+      - name: log
+        label: Sessions
+        file: BAP11_blog/src/data/time.json
+        format: json
+        fields:
+          - name: sessions
+            label: Sessions
+            label_singular: Session
+            widget: list
+            add_to_top: true
+            summary: '{{date}} · {{member}} · {{hours}}h — {{task}}'
+            fields:
+              - { name: date, label: Logged on, widget: datetime, time_format: false, format: YYYY-MM-DD }
+              - name: member
+                label: Person
+                widget: relation
+                collection: team
+                value_field: '{{slug}}'
+                search_fields: [name]
+                display_fields: [name]
+              - { name: task, label: What did you do, widget: string }
+              - { name: hours, label: Hours, widget: number, value_type: float, step: 0.5, min: 0.5 }
+              - name: pillar
+                label: Pillar
+                widget: select
+                options:
+                  - { label: UX, value: ux }
+                  - { label: Design, value: design }
+                  - { label: Dev, value: dev }
+                  - { label: General, value: general }
+
+  - name: planning
+    label: Planning
+    files:
+      - name: planning
+        label: Weeks, dates & tasks
+        file: BAP11_blog/src/data/planning.json
+        format: json
+        fields:
+          - name: weeks
+            label: Weeks
+            label_singular: Week
+            widget: list
+            summary: '{{label}} — {{focus}}'
+            fields:
+              - { name: label, label: Label, widget: string, hint: 'For example "Week 3" or "Vacation".' }
+              - { name: start, label: Monday, widget: datetime, time_format: false, format: YYYY-MM-DD }
+              - { name: end, label: Friday, widget: datetime, time_format: false, format: YYYY-MM-DD }
+              - { name: focus, label: Milestone, widget: string }
+          - name: milestones
+            label: Dates
+            label_singular: Date
+            widget: list
+            summary: '{{date}} — {{title}}'
+            fields:
+              - { name: title, label: Title, widget: string }
+              - { name: date, label: Date, widget: datetime, time_format: false, format: YYYY-MM-DD }
+              - { name: time, label: Time, widget: string, required: false, hint: 'For example 22:00 or 13:30–17:30.' }
+              - name: type
+                label: Type
+                widget: select
+                default: deadline
+                options:
+                  - { label: Deadline, value: deadline }
+                  - { label: Event, value: event }
+                  - { label: Jury, value: jury }
+          - name: tasks
+            label: Tasks
+            label_singular: Task
+            widget: list
+            add_to_top: true
+            summary: '{{status}} · {{title}}'
+            fields:
+              - { name: title, label: Task, widget: string }
+              - name: status
+                label: Status
+                widget: select
+                default: todo
+                options:
+                  - { label: Not started, value: todo }
+                  - { label: In progress, value: doing }
+                  - { label: Done, value: done }
+              - { name: week, label: Week, widget: string, hint: 'For example "Week 2", "Vacation" or "Ongoing".' }
+              - { name: notes, label: Notes, widget: text, required: false }
+              - name: owners
+                label: Who
+                widget: relation
+                collection: team
+                value_field: '{{slug}}'
+                search_fields: [name]
+                display_fields: [name]
+                multiple: true
+                required: false

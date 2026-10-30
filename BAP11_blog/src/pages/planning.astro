@@ -1,0 +1,369 @@
+---
+import FormattedDate from '../components/FormattedDate.astro';
+import { TASK_STATUS_LABELS, TASK_STATUSES } from '../consts';
+import Layout from '../layouts/Layout.astro';
+import { DAY, getPlanning, getTeam, today } from '../lib/data';
+
+const [{ weeks, milestones, tasks }, team] = await Promise.all([getPlanning(), getTeam()]);
+const now = today();
+
+// A week runs until the Sunday after its last working day.
+const weekEnd = (end: Date) => new Date(end.valueOf() + 2 * DAY);
+const inWeek = (date: Date, w: (typeof weeks)[number]) => date >= w.data.start && date <= weekEnd(w.data.end);
+const isCurrent = (w: (typeof weeks)[number]) => inWeek(now, w);
+
+const member = (id: string) => team.find((m) => m.id === id);
+const progress = (w: (typeof weeks)[number]) =>
+	Math.min(1, Math.max(0, (now.valueOf() - w.data.start.valueOf()) / (weekEnd(w.data.end).valueOf() + DAY - w.data.start.valueOf())));
+const typeLabel = { deadline: 'Deadline', event: 'Event', jury: 'Jury' } as const;
+const done = tasks.filter((t) => t.data.status === 'done').length;
+---
+
+<Layout title="Planning" description="Our seven weeks, every deadline and the task board.">
+	<section class="wrap page-head">
+		<p class="label">{weeks.length} weeks · {milestones.length} dates · {tasks.length} tasks</p>
+		<h1>Planning</h1>
+		<p class="lead">
+			Seven weeks from 27 October to the jury on 17 December, with the autumn break in between. Deadlines are at
+			22:00 unless stated otherwise.
+		</p>
+	</section>
+
+	<section class="wrap">
+		<h2 class="sr-only">Weeks</h2>
+		<ol class="weeks" data-stagger>
+			{
+				weeks.map((w) => {
+					const items = milestones.filter((m) => inWeek(m.data.date, w));
+					return (
+						<li class:list={{ current: isCurrent(w), past: weekEnd(w.data.end) < now }} aria-current={isCurrent(w) ? 'date' : undefined}>
+							<p class="wlabel">
+								{w.data.label}
+								{isCurrent(w) && <span class="now">This week</span>}
+							</p>
+							<p class="wdates">
+								<FormattedDate date={w.data.start} /> – <FormattedDate date={w.data.end} />
+							</p>
+							<p class="wfocus">{w.data.focus}</p>
+							{isCurrent(w) && (
+								<span class="progress" style={`--p: ${progress(w)}`} role="img" aria-label={`${Math.round(progress(w) * 100)}% of this week done`} />
+							)}
+							{items.length > 0 && (
+								<ul class="wmiles">
+									{items.map((m) => (
+										<li class={m.data.type}>
+											<span class="d">
+												<FormattedDate date={m.data.date} style="day" />
+											</span>
+											{m.data.title}
+										</li>
+									))}
+								</ul>
+							)}
+						</li>
+					);
+				})
+			}
+		</ol>
+	</section>
+
+	<section class="wrap section">
+		<div class="sec-head">
+			<h2>All dates</h2>
+		</div>
+		<div class="table-scroll">
+			<table class="data">
+				<thead>
+					<tr><th>Date</th><th>What</th><th>Time</th><th>Type</th></tr>
+				</thead>
+				<tbody>
+					{
+						milestones.map((m) => (
+							<tr class:list={[m.data.type, { past: m.data.date < now }]}>
+								<td class="date"><FormattedDate date={m.data.date} style="day" /></td>
+								<td class="what">{m.data.title}</td>
+								<td class="muted">{m.data.time ?? ''}</td>
+								<td><span class="type">{typeLabel[m.data.type]}</span></td>
+							</tr>
+						))
+					}
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+	<section class="wrap section">
+		<div class="sec-head">
+			<h2>Task board</h2>
+			<span class="label">{done} of {tasks.length} done</span>
+		</div>
+
+		<div class="board" data-stagger>
+			{
+				TASK_STATUSES.map((status) => {
+					const list = tasks.filter((t) => t.data.status === status);
+					return (
+						<div class:list={['col', status]}>
+							<h3>
+								{TASK_STATUS_LABELS[status]} <span class="count">{list.length}</span>
+							</h3>
+							<ul>
+								{list.map((t) => (
+									<li>
+										<span class="ttitle">{t.data.title}</span>
+										{t.data.notes && <span class="tnotes">{t.data.notes}</span>}
+										<span class="tmeta">
+											<span class="owners" aria-hidden="true">
+												{t.data.owners.map((o) => (
+													<span class="swatch" style={`background: ${member(o.id)?.color ?? 'var(--muted)'}`} />
+												))}
+											</span>
+											{t.data.owners.length === team.length
+												? 'Everyone'
+												: t.data.owners.map((o) => member(o.id)?.data.name.split(' ')[0] ?? o.id).join(', ')}
+											{' · '}
+											{t.data.week}
+										</span>
+									</li>
+								))}
+							</ul>
+						</div>
+					);
+				})
+			}
+		</div>
+	</section>
+</Layout>
+
+<style>
+	/* Week overview */
+	.weeks {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 6px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.weeks > li {
+		padding: 16px 18px 20px;
+		background: var(--surface);
+		border-top: 4px solid var(--surface-2);
+	}
+
+	.weeks > li.past {
+		color: var(--muted);
+	}
+
+	.weeks > li.current {
+		background: var(--surface-2);
+		border-top-color: var(--accent);
+	}
+
+	.wlabel {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 4px 8px;
+		font-size: 13px;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.now {
+		color: var(--accent);
+	}
+
+	/* How far we are into the current week. */
+	.progress {
+		display: block;
+		height: 4px;
+		margin-top: 14px;
+		background: var(--line);
+	}
+
+	.progress::after {
+		content: '';
+		display: block;
+		height: 100%;
+		width: calc(var(--p) * 100%);
+		background: var(--accent);
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 1.2s 0.4s var(--ease);
+	}
+
+	.is-in .progress::after {
+		transform: none;
+	}
+
+	.wdates {
+		margin-top: 2px;
+		font-size: 14px;
+		color: var(--muted);
+	}
+
+	.wfocus {
+		margin-top: 12px;
+		font-size: 18px;
+		line-height: 1.3;
+	}
+
+	.wmiles {
+		margin: 14px 0 0;
+		padding: 12px 0 0;
+		list-style: none;
+		border-top: 1px solid var(--line);
+		font-size: 14px;
+		line-height: 1.4;
+	}
+
+	.wmiles li + li {
+		margin-top: 8px;
+	}
+
+	.wmiles .d {
+		display: block;
+		font-weight: 700;
+		color: var(--muted);
+	}
+
+	.wmiles .deadline .d {
+		color: var(--deadline);
+	}
+
+	.wmiles .jury {
+		font-weight: 700;
+	}
+
+	/* All dates */
+	td.date {
+		white-space: nowrap;
+		font-weight: 700;
+	}
+
+	tr.past td {
+		color: var(--muted);
+	}
+
+	.type {
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		color: var(--muted);
+	}
+
+	tr.deadline .type,
+	tr.deadline td.date {
+		color: var(--deadline);
+	}
+
+	tr.jury .type,
+	tr.jury .what {
+		color: var(--fg);
+		font-weight: 700;
+	}
+
+	tr.past.deadline td.date,
+	tr.past.deadline .type {
+		color: var(--muted);
+	}
+
+	/* Task board */
+	.board {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 6px;
+		align-items: start;
+	}
+
+	.col {
+		padding: 18px 20px;
+		background: var(--surface);
+	}
+
+	.col h3 {
+		display: flex;
+		justify-content: space-between;
+		padding-bottom: 12px;
+		border-bottom: 2px solid var(--line-strong);
+		font-size: 14px;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+
+	.doing h3 {
+		border-bottom-color: var(--accent);
+	}
+
+	.count {
+		color: var(--muted);
+	}
+
+	.col ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.col li {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		padding: 12px 0;
+		border-bottom: 1px solid var(--line);
+	}
+
+	.col li:last-child {
+		border-bottom: 0;
+	}
+
+	.ttitle {
+		font-size: 16px;
+	}
+
+	.done .ttitle {
+		color: var(--muted);
+	}
+
+	.tnotes {
+		font-size: 14px;
+		color: var(--muted);
+	}
+
+	.tmeta {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		color: var(--muted);
+	}
+
+	.owners {
+		display: flex;
+		gap: 3px;
+	}
+
+	.swatch {
+		width: 8px;
+		height: 8px;
+	}
+
+	@media (max-width: 900px) {
+		.weeks {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.board {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 520px) {
+		.weeks {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

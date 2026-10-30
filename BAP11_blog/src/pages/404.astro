@@ -1,0 +1,26 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+Astro.response.status = 404;
+---
+
+<Layout title="Not found" description="This page doesn't exist (anymore).">
+	<section class="wrap page-head">
+		<p class="label">Error 404</p>
+		<h1>Page not found</h1>
+		<p class="lead">This page doesn't exist, or it was renamed or removed in Notion.</p>
+		<p class="actions">
+			<a href="/" class="btn btn--primary">Overview</a>
+			<a href="/logbook/" class="btn">Logbook</a>
+		</p>
+	</section>
+</Layout>
+
+<style>
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 28px;
+	}
+</style>

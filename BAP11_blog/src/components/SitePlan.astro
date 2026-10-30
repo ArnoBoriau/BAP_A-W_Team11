@@ -1,0 +1,136 @@
+---
+// Schematic plan of the arrival zone at Kortrijk Xpo: two walls in separate halls, about 90 m apart.
+// Not to scale. The walls are the only thing in colour.
+---
+
+<figure class="plan">
+	<svg viewBox="0 0 640 360" role="img" aria-labelledby="plan-title plan-desc">
+		<title id="plan-title">Plan of the arrival zone</title>
+		<desc id="plan-desc">
+			Visitors enter through the entrance tent and turn left or right into one of two halls. Each hall
+			has a wall; the two walls face each other about 90 metres apart.
+		</desc>
+
+		<defs>
+			<pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+				<line x1="0" y1="0" x2="0" y2="6" stroke="rgba(242,240,235,0.25)" stroke-width="1"></line>
+			</pattern>
+			<marker id="tick" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="10" markerHeight="10" orient="auto">
+				<line x1="2" y1="8" x2="8" y2="2" stroke="currentColor" stroke-width="1.4"></line>
+			</marker>
+			<marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+				<path d="M1 1 L8 5 L1 9" fill="none" stroke="currentColor" stroke-width="1.4"></path>
+			</marker>
+		</defs>
+
+		<!-- Halls -->
+		<g class="outline">
+			<rect x="20" y="40" width="220" height="210"></rect>
+			<rect x="400" y="40" width="220" height="210"></rect>
+		</g>
+		<!-- Corridor between the halls -->
+		<rect x="240" y="150" width="160" height="70" fill="url(#hatch)" opacity="0.6"></rect>
+		<g class="outline thin">
+			<line x1="240" y1="150" x2="400" y2="150"></line>
+			<line x1="240" y1="220" x2="400" y2="220"></line>
+		</g>
+		<!-- Entrance tent -->
+		<path class="outline" d="M270 220 L370 220 L370 300 L320 330 L270 300 Z"></path>
+
+		<!-- Walls -->
+		<rect class="wall" x="226" y="70" width="8" height="120"></rect>
+		<rect class="wall" x="406" y="70" width="8" height="120"></rect>
+
+		<!-- Dimension line -->
+		<g class="dim">
+			<line x1="234" y1="58" x2="406" y2="58" marker-start="url(#tick)" marker-end="url(#tick)"></line>
+			<line x1="234" y1="50" x2="234" y2="70"></line>
+			<line x1="406" y1="50" x2="406" y2="70"></line>
+		</g>
+		<text class="dim-label" x="320" y="48" text-anchor="middle">± 90 m</text>
+
+		<!-- Visitor flow -->
+		<g class="flow">
+			<path d="M320 312 L320 240 Q320 200 280 200 L250 200" marker-end="url(#arrow)"></path>
+			<path d="M320 240 Q320 200 360 200 L390 200" marker-end="url(#arrow)"></path>
+		</g>
+
+		<!-- Labels -->
+		<g class="label">
+			<text x="36" y="66">Hall</text>
+			<text x="604" y="66" text-anchor="end">Hall</text>
+			<text x="214" y="134" text-anchor="end">Wall 1</text>
+			<text x="426" y="134">Wall 2</text>
+			<text x="320" y="352" text-anchor="middle">Entrance tent</text>
+		</g>
+	</svg>
+	<figcaption>
+		The canvas: two walls in separate halls, facing each other across the arrival zone. Schematic, not to scale.
+	</figcaption>
+</figure>
+
+<style>
+	.plan {
+		margin: 0;
+		padding: 24px;
+		border: 1px solid var(--line);
+		background: var(--surface);
+	}
+
+	svg {
+		display: block;
+		width: 100%;
+		height: auto;
+		color: var(--fg);
+	}
+
+	.outline {
+		fill: none;
+		stroke: var(--fg-soft);
+		stroke-width: 1.5;
+	}
+
+	.outline.thin {
+		stroke-width: 1;
+	}
+
+	.wall {
+		fill: var(--accent);
+	}
+
+	.dim {
+		color: var(--accent);
+		stroke: var(--accent);
+		stroke-width: 1;
+	}
+
+	.dim-label {
+		fill: var(--accent);
+		font-size: 13px;
+		font-weight: 700;
+	}
+
+	.flow {
+		color: var(--muted);
+		fill: none;
+		stroke: var(--muted);
+		stroke-width: 1.25;
+		stroke-dasharray: 4 4;
+	}
+
+	.label {
+		fill: var(--muted);
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+
+	figcaption {
+		margin-top: 16px;
+		padding-top: 12px;
+		border-top: 1px solid var(--line);
+		color: var(--muted);
+		font-size: 14px;
+	}
+</style>

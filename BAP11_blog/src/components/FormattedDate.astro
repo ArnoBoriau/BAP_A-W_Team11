@@ -1,0 +1,12 @@
+---
+import { formatDate } from '../lib/data';
+
+interface Props {
+	date: Date;
+	style?: 'short' | 'long' | 'day';
+}
+
+const { date, style = 'short' } = Astro.props;
+---
+
+<time datetime={date.toISOString().slice(0, 10)}>{formatDate(date, style)}</time>

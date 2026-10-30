@@ -1,0 +1,13 @@
+---
+import { PILLARS, type PillarId } from '../consts';
+
+interface Props {
+	id: PillarId;
+	href?: string;
+}
+
+const { id, href } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag class="pillar" href={href} style={`--c: ${PILLARS[id].color}`}>{PILLARS[id].label}</Tag>

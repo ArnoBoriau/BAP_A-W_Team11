@@ -1,0 +1,480 @@
+---
+import FormattedDate from '../components/FormattedDate.astro';
+import Pillar from '../components/Pillar.astro';
+import { PILLAR_IDS, PILLARS } from '../consts';
+import Layout from '../layouts/Layout.astro';
+import { formatDate, formatHours, getTeam, getTimeLog, sum } from '../lib/data';
+
+const [sessions, team] = await Promise.all([getTimeLog(), getTeam()]);
+
+const total = sum(sessions.map((s) => s.data.hours));
+const hoursOf = (filter: (s: (typeof sessions)[number]) => boolean) => sum(sessions.filter(filter).map((s) => s.data.hours));
+
+const people = team.map((m) => ({ member: m, hours: hoursOf((s) => s.data.member.id === m.id) }));
+const maxPerson = Math.max(...people.map((p) => p.hours), 1);
+
+const pillars = PILLAR_IDS.map((id) => ({ id, hours: hoursOf((s) => s.data.pillar === id) })).filter((p) => p.hours > 0);
+const maxPillar = Math.max(...pillars.map((p) => p.hours), 1);
+
+// One group of bars per day, oldest first.
+const days = [...new Set(sessions.map((s) => s.data.date.toISOString().slice(0, 10)))].sort();
+const perDay = days.map((day) => ({
+	date: new Date(day),
+	values: team.map((m) =>
+		hoursOf((s) => s.data.date.toISOString().slice(0, 10) === day && s.data.member.id === m.id),
+	),
+}));
+const maxDay = Math.max(...perDay.flatMap((d) => d.values), 1);
+const scaleMax = Math.ceil(maxDay / 3) * 3;
+const ticks = Array.from({ length: scaleMax / 3 + 1 }, (_, i) => i * 3);
+
+const member = (id: string) => team.find((m) => m.id === id);
+---
+
+<Layout title="Time tracking" description="Every session we logged, per person, per day and per pillar.">
+	<section class="wrap page-head">
+		<p class="label">{sessions.length} sessions</p>
+		<h1>Time tracking</h1>
+		<p class="lead">Every work session we log, with who did it and for which pillar.</p>
+	</section>
+
+	<section class="wrap">
+		<dl class="kpis" data-stagger>
+			<div>
+				<dt class="label">Total</dt>
+				<dd>{formatHours(total)}</dd>
+			</div>
+			<div>
+				<dt class="label">Per working day</dt>
+				<dd>{formatHours(days.length ? total / days.length : 0)}</dd>
+			</div>
+			<div>
+				<dt class="label">Per person</dt>
+				<dd>{formatHours(team.length ? total / team.length : 0)}</dd>
+			</div>
+			<div>
+				<dt class="label">Sessions</dt>
+				<dd>{sessions.length}</dd>
+			</div>
+		</dl>
+	</section>
+
+	<section class="wrap section split" data-reveal>
+		<div>
+			<div class="sec-head"><h2>Per person</h2></div>
+			<ul class="bars">
+				{
+					people.map((p) => (
+						<li>
+							<span class="name">{p.member.data.name.split(' ')[0]}</span>
+							<span class="track">
+								<span
+									class="fill"
+									style={`width: ${(p.hours / maxPerson) * 100}%; background: ${p.member.color}`}
+									data-tip={`Total|${p.member.data.name}|${formatHours(p.hours)}`}
+								/>
+							</span>
+							<span class="val">
+								{formatHours(p.hours)} <span class="muted">{total ? Math.round((p.hours / total) * 100) : 0}%</span>
+							</span>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+
+		<div>
+			<div class="sec-head"><h2>Per pillar</h2></div>
+			<ul class="bars">
+				{
+					pillars.map((p) => (
+						<li>
+							<span class="name">{PILLARS[p.id].label}</span>
+							<span class="track">
+								<span
+									class="fill"
+									style={`width: ${(p.hours / maxPillar) * 100}%; background: ${PILLARS[p.id].color}`}
+									data-tip={`Pillar|${PILLARS[p.id].label}|${formatHours(p.hours)}`}
+								/>
+							</span>
+							<span class="val">
+								{formatHours(p.hours)} <span class="muted">{Math.round((p.hours / total) * 100)}%</span>
+							</span>
+						</li>
+					))
+				}
+			</ul>
+		</div>
+	</section>
+
+	<section class="wrap section">
+		<div class="sec-head">
+			<h2>Per day</h2>
+			<ul class="legend" aria-label="Legend">
+				{
+					team.map((m) => (
+						<li>
+							<span class="key" style={`background: ${m.color}`} />
+							{m.data.name.split(' ')[0]}
+						</li>
+					))
+				}
+			</ul>
+		</div>
+
+		<div
+			data-reveal
+			class="chart"
+			role="img"
+			aria-label={`Hours per person per day over ${days.length} days. All sessions are listed in the table below.`}
+		>
+			<div class="grid" aria-hidden="true">
+				{
+					ticks.map((t) => (
+						<div class="tick" style={`bottom: ${(t / scaleMax) * 100}%`}>
+							<span>{t} h</span>
+						</div>
+					))
+				}
+			</div>
+			<div class="cols">
+				{
+					perDay.map((d, di) => (
+						<div class="day" style={`--d: ${di}`}>
+							<div class="group">
+								{d.values.map((v, i) => (
+									<span
+										class="bar"
+										style={`height: ${(v / scaleMax) * 100}%; background: ${team[i].color}`}
+										data-tip={v > 0 ? `${formatDate(d.date, 'day')}|${team[i].data.name}|${formatHours(v)}` : undefined}
+									/>
+								))}
+							</div>
+							<span class="wk">
+								<FormattedDate date={d.date} style="day" />
+							</span>
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</section>
+
+	<section class="wrap section">
+		<div class="sec-head">
+			<h2>All sessions</h2>
+		</div>
+		<div class="table-scroll">
+			<table class="data">
+				<thead>
+					<tr><th>Date</th><th>Who</th><th>What</th><th class="opt">Pillar</th><th class="num">Hours</th></tr>
+				</thead>
+				<tbody>
+					{
+						sessions.map((s) => (
+							<tr>
+								<td class="nowrap muted">
+									<FormattedDate date={s.data.date} style="day" />
+								</td>
+								<td class="nowrap">
+									<span class="key" style={`background: ${member(s.data.member.id)?.color ?? 'var(--muted)'}`} />
+									{member(s.data.member.id)?.data.name.split(' ')[0] ?? s.data.member.id}
+								</td>
+								<td>{s.data.task}</td>
+								<td class="opt"><Pillar id={s.data.pillar} /></td>
+								<td class="num">{formatHours(s.data.hours)}</td>
+							</tr>
+						))
+					}
+				</tbody>
+				<tfoot>
+					<tr><td colspan="3">Total</td><td class="opt"></td><td class="num">{formatHours(total)}</td></tr>
+				</tfoot>
+			</table>
+		</div>
+	</section>
+
+	<div class="tip" data-tip-box hidden></div>
+</Layout>
+
+<script>
+	// Tooltip for every mark that carries data-tip="eyebrow|name|value".
+	document.addEventListener('astro:page-load', () => {
+		const tip = document.querySelector<HTMLElement>('[data-tip-box]');
+		if (!tip) return;
+		document.querySelectorAll<HTMLElement>('[data-tip]').forEach((mark) => {
+			mark.addEventListener('pointerenter', () => {
+				const [eyebrow, name, value] = mark.dataset.tip!.split('|');
+				tip.innerHTML = `<span class="eyebrow">${eyebrow}</span><strong>${name}</strong><span>${value}</span>`;
+				tip.hidden = false;
+				mark.classList.add('hover');
+			});
+			mark.addEventListener('pointermove', (e) => {
+				const x = Math.min(e.clientX + 16, innerWidth - tip.offsetWidth - 8);
+				tip.style.transform = `translate(${x}px, ${e.clientY + 16}px)`;
+			});
+			mark.addEventListener('pointerleave', () => {
+				tip.hidden = true;
+				mark.classList.remove('hover');
+			});
+		});
+	});
+</script>
+
+<style>
+	.kpis {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		margin: 0;
+		border-top: 1px solid var(--line-strong);
+		border-bottom: 1px solid var(--line);
+	}
+
+	.kpis > div {
+		padding: 20px 24px 24px 0;
+	}
+
+	.kpis > div + div {
+		padding-left: 24px;
+		border-left: 1px solid var(--line);
+	}
+
+	.kpis dd {
+		margin: 10px 0 0;
+		font-size: 36px;
+		line-height: 1.1;
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* Horizontal bars */
+	.split {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 48px;
+	}
+
+	.bars {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.bars li {
+		display: grid;
+		grid-template-columns: 88px minmax(0, 1fr) 96px;
+		gap: 14px;
+		align-items: center;
+		font-size: 15px;
+	}
+
+	.track {
+		height: 14px;
+		background: var(--surface);
+	}
+
+	.fill {
+		display: block;
+		height: 100%;
+		min-width: 2px;
+		transform: scaleX(0);
+		transform-origin: left;
+		transition:
+			transform 1s 0.2s var(--ease),
+			opacity 0.15s;
+	}
+
+	.is-in .fill {
+		transform: none;
+	}
+
+	.bars:has(.fill.hover) .fill:not(.hover) {
+		opacity: 0.4;
+	}
+
+	.val {
+		text-align: right;
+		font-size: 14px;
+		font-variant-numeric: tabular-nums;
+	}
+
+	/* Grouped columns per day */
+	.legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px 20px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		font-size: 14px;
+		color: var(--fg-soft);
+	}
+
+	.legend li {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.key {
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		margin-right: 8px;
+		flex: none;
+	}
+
+	.legend .key {
+		margin-right: 0;
+	}
+
+	.chart {
+		position: relative;
+		height: 300px;
+		margin: 8px 0 40px 40px;
+	}
+
+	.grid {
+		position: absolute;
+		inset: 0;
+	}
+
+	.tick {
+		position: absolute;
+		left: 0;
+		right: 0;
+		border-top: 1px solid var(--line);
+	}
+
+	.tick span {
+		position: absolute;
+		right: calc(100% + 8px);
+		top: -9px;
+		font-size: 12px;
+		color: var(--muted);
+		white-space: nowrap;
+	}
+
+	.cols {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		gap: clamp(8px, 2vw, 32px);
+	}
+
+	.day {
+		position: relative;
+		flex: 1;
+		display: flex;
+		justify-content: center;
+	}
+
+	.group {
+		width: min(100%, 112px);
+		display: flex;
+		align-items: flex-end;
+		gap: 2px;
+	}
+
+	.bar {
+		flex: 1;
+		transform: scaleY(0);
+		transform-origin: bottom;
+		transition:
+			transform 0.9s calc(0.1s + var(--d, 0) * 80ms) var(--ease),
+			opacity 0.15s;
+	}
+
+	.chart.is-in .bar {
+		transform: none;
+	}
+
+	.cols:has(.bar.hover) .bar:not(.hover) {
+		opacity: 0.4;
+	}
+
+	.wk {
+		position: absolute;
+		top: calc(100% + 8px);
+		font-size: 13px;
+		color: var(--muted);
+		white-space: nowrap;
+	}
+
+	/* Table */
+	.nowrap {
+		white-space: nowrap;
+	}
+
+	table.data tfoot td {
+		border-bottom: 0;
+		border-top: 1px solid var(--line-strong);
+		font-weight: 700;
+	}
+
+	.tip {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 60;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		padding: 10px 12px;
+		background: var(--fg);
+		color: var(--bg);
+		font-size: 14px;
+		pointer-events: none;
+	}
+
+	.tip :global(.eyebrow) {
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		opacity: 0.6;
+	}
+
+	.tip[hidden] {
+		display: none;
+	}
+
+	@media (max-width: 860px) {
+		.split {
+			grid-template-columns: 1fr;
+		}
+
+		.kpis {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.kpis > div + div:nth-child(3) {
+			padding-left: 0;
+			border-left: 0;
+		}
+
+		.kpis > div:nth-child(n + 3) {
+			border-top: 1px solid var(--line);
+		}
+	}
+
+	@media (max-width: 640px) {
+		.bars li {
+			grid-template-columns: 72px minmax(0, 1fr) 84px;
+			gap: 10px;
+		}
+
+		.chart {
+			height: 220px;
+		}
+
+		.wk {
+			font-size: 11px;
+		}
+
+		.opt {
+			display: none;
+		}
+	}
+</style>

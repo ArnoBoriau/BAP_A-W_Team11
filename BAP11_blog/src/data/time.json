@@ -1,0 +1,15 @@
+{
+	"sessions": [
+		{ "date": "2026-10-30", "member": "amber", "hours": 7.5, "pillar": "ux", "task": "Pitch, research, rework concept" },
+		{ "date": "2026-10-30", "member": "arno", "hours": 4, "pillar": "ux", "task": "P2P pitch + processing feedback" },
+		{ "date": "2026-10-30", "member": "emelie", "hours": 4, "pillar": "design", "task": "Feedback pitch and concept" },
+		{ "date": "2026-10-29", "member": "amber", "hours": 8, "pillar": "ux", "task": "Brainstorm + meeting with group" },
+		{ "date": "2026-10-29", "member": "emelie", "hours": 4.5, "pillar": "ux", "task": "Making pitch and concept" },
+		{ "date": "2026-10-29", "member": "arno", "hours": 4.5, "pillar": "ux", "task": "UX" },
+		{ "date": "2026-10-28", "member": "emelie", "hours": 3, "pillar": "ux", "task": "Briefing + brainstorm" },
+		{ "date": "2026-10-28", "member": "amber", "hours": 8.5, "pillar": "ux", "task": "Briefing client, research client" },
+		{ "date": "2026-10-28", "member": "arno", "hours": 2, "pillar": "ux", "task": "Brainstorm" },
+		{ "date": "2026-10-28", "member": "arno", "hours": 1, "pillar": "general", "task": "Intro BAP" },
+		{ "date": "2026-10-27", "member": "amber", "hours": 2.5, "pillar": "general", "task": "Made blog, made to-do list" }
+	]
+}

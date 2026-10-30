@@ -1,0 +1,105 @@
+---
+import { MEMBER_COLORS, PILLARS, PROJECT } from '../consts';
+import { live } from '../lib/data';
+
+// A strip of slanted blocks in the A@W country colours, as a sign-off.
+const strip = [PILLARS.ux.color, '#d2a6b5', PILLARS.design.color, MEMBER_COLORS[3], PILLARS.dev.color, 'var(--fg)'];
+---
+
+<footer class="footer">
+	<div class="strip" aria-hidden="true">
+		{strip.map((c, i) => <span style={`--c: ${c}; --i: ${i}`} />)}
+	</div>
+	<p class="wrap wordmark" aria-hidden="true">{PROJECT.title}</p>
+	<div class="wrap grid">
+		<div>
+			<p class="label">Project</p>
+			<p>{PROJECT.title}</p>
+			<p class="muted">Bachelor project for {PROJECT.client}, {PROJECT.programme}</p>
+		</div>
+		<div>
+			<p class="label">Team</p>
+			<p>{PROJECT.members}</p>
+			<p class="muted">Coach: {PROJECT.coach}</p>
+		</div>
+		<div>
+			<p class="label">For the team</p>
+			<ul>
+				<li><a class="link" href="/admin/">Edit content</a></li>
+				<li><a class="link" href={PROJECT.repo}>GitHub</a></li>
+				<li><a class="link" href="/rss.xml">RSS feed</a></li>
+			</ul>
+		</div>
+	</div>
+	{live && <p class="wrap source muted">Content is read live from our Notion workspace.</p>}
+</footer>
+
+<style>
+	.footer {
+		margin-top: 96px;
+		padding-bottom: 32px;
+		background: var(--surface);
+		font-size: 15px;
+		overflow: hidden;
+	}
+
+	.strip {
+		display: flex;
+		height: 14px;
+		margin-inline: -12px;
+	}
+
+	.strip span {
+		flex: 1;
+		margin-right: -6px;
+		background: var(--c);
+		clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+		transition: flex-grow 0.6s var(--ease);
+	}
+
+	.strip:hover span:hover {
+		flex-grow: 3;
+	}
+
+	.wordmark {
+		padding-block: 40px 32px;
+		font-size: clamp(36px, 7vw, 96px);
+		line-height: 0.95;
+		letter-spacing: -0.02em;
+		text-transform: uppercase;
+		color: var(--surface-2);
+		-webkit-text-stroke: 1px var(--line-strong);
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 32px;
+	}
+
+	.label {
+		margin-bottom: 8px;
+	}
+
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	li + li {
+		margin-top: 4px;
+	}
+
+	.source {
+		margin-top: 32px;
+		font-size: 14px;
+	}
+
+	@media (max-width: 720px) {
+		.grid {
+			grid-template-columns: 1fr;
+			gap: 24px;
+		}
+	}
+</style>
