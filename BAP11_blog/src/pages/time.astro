@@ -139,7 +139,7 @@ const member = (id: string) => team.find((m) => m.id === id);
 		<div class="sec-head">
 			<div class="day-head">
 				<h2>Per day</h2>
-				<label class="week-pick">
+				<label class="picker">
 					<span class="label">Week</span>
 					<span data-week-name>{shownLabel}</span>
 					<select data-week-select data-default={shownWeek}>
@@ -435,59 +435,6 @@ const member = (id: string) => team.find((m) => m.id === id);
 		flex-wrap: wrap;
 		align-items: center;
 		gap: 12px 20px;
-	}
-
-	/* Week picker: an outlined control with a native select laid invisibly over it. */
-	.week-pick {
-		position: relative;
-		display: inline-flex;
-		align-items: center;
-		gap: 10px;
-		min-height: 36px;
-		padding: 6px 38px 6px 12px;
-		border: 1px solid var(--line-strong);
-		color: var(--fg);
-		font-size: 14px;
-		font-weight: 700;
-		text-transform: uppercase;
-		transition: border-color 0.2s;
-	}
-
-	.week-pick::after {
-		content: '';
-		position: absolute;
-		top: 50%;
-		right: 15px;
-		width: 6px;
-		height: 6px;
-		border-right: 1.5px solid currentColor;
-		border-bottom: 1.5px solid currentColor;
-		transform: translateY(-70%) rotate(45deg);
-		pointer-events: none;
-	}
-
-	.week-pick:hover {
-		border-color: var(--fg);
-	}
-
-	.week-pick:has(select:focus-visible) {
-		outline: 2px solid var(--accent);
-		outline-offset: 2px;
-	}
-
-	.week-pick select {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		opacity: 0;
-		font-size: 16px;
-		cursor: pointer;
-	}
-
-	.week-pick option {
-		background: var(--surface-2);
-		color: var(--fg);
-		text-transform: none;
 	}
 
 	.empty {

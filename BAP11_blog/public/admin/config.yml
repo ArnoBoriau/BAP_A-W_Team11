@@ -208,6 +208,7 @@ collections:
                   - { label: In progress, value: doing }
                   - { label: Done, value: done }
               - { name: week, label: Week, widget: string, hint: 'For example "Week 2", "Vacation" or "Ongoing".' }
+              - { name: due, label: Due, widget: datetime, time_format: false, format: YYYY-MM-DD, required: false, hint: 'Leave empty to use the end of the week.' }
               - { name: notes, label: Notes, widget: text, required: false }
               - name: owners
                 label: Who

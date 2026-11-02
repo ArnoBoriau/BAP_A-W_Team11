@@ -2,7 +2,7 @@
 import FormattedDate from '../components/FormattedDate.astro';
 import { PILLAR_IDS, PILLARS, TASK_STATUS_LABELS, TASK_STATUSES } from '../consts';
 import Layout from '../layouts/Layout.astro';
-import { DAY, getPlanning, getTeam, inWeek, today, weekEnd } from '../lib/data';
+import { DAY, formatDate, getPlanning, getTeam, inWeek, today, weekEnd } from '../lib/data';
 
 const [{ weeks, milestones, tasks }, team] = await Promise.all([getPlanning(), getTeam()]);
 const now = today();
@@ -50,6 +50,34 @@ const filterGroups = [
 		options: team.map((m) => ({ id: m.id, label: m.data.name.split(' ')[0] })),
 	},
 ];
+// When a task is due: its own Due date, or else the Friday of the last week it names. "Ongoing" has no deadline.
+type Task = (typeof tasks)[number];
+const weekById = new Map(weeks.map((w) => [slug(w.data.label), w]));
+const deadline = (t: Task) => {
+	if (t.data.due) return { date: t.data.due, estimated: false };
+	const last = weeksOf(t.data.week).map((id) => weekById.get(id)).filter(Boolean).at(-1);
+	return last ? { date: last.data.end, estimated: true } : undefined;
+};
+const urgency = (t: Task) => {
+	const d = deadline(t);
+	if (!d || t.data.status === 'done') return '';
+	const days = Math.round((d.date.valueOf() - now.valueOf()) / DAY);
+	return days < 0 ? 'overdue' : days === 0 ? 'today' : days === 1 ? 'tomorrow' : '';
+};
+const dueText = (t: Task) => {
+	const d = deadline(t)!;
+	const date = `${formatDate(d.date, 'day')}${d.estimated ? ' (end of week)' : ''}`;
+	return { overdue: `Overdue · ${date}`, today: 'Due today', tomorrow: 'Due tomorrow', '': `Due ${date}` }[urgency(t)];
+};
+// Open tasks: the first one due on top. Done tasks: the most recent on top. Tasks without a deadline go last.
+const byDeadline = (status: string) => (a: Task, b: Task) => {
+	const da = deadline(a)?.date.valueOf() ?? Infinity;
+	const db = deadline(b)?.date.valueOf() ?? Infinity;
+	if (da === db) return a.data.title.localeCompare(b.data.title);
+	if (da === Infinity || db === Infinity) return da === Infinity ? 1 : -1;
+	return status === 'done' ? db - da : da - db;
+};
+
 const tasksFor = (key: string, id: string) =>
 	tasks.filter((t) =>
 		key === 'week' ? weeksOf(t.data.week).includes(id) : key === 'pillar' ? t.data.pillar === id : t.data.owners.some((o) => o.id === id),
@@ -132,21 +160,19 @@ const tasksFor = (key: string, id: string) =>
 	<section class="wrap section">
 		<div class="sec-head">
 			<h2>Task board</h2>
-			<div class="sec-meta">
-				<button type="button" class="clear label" data-reset hidden>Clear filters</button>
-				<span class="label" data-done>{done} of {tasks.length} done</span>
-			</div>
+			<span class="label" data-done>{done} of {tasks.length} done</span>
 		</div>
 
 		<div class="filters" data-filters>
 			{
 				filterGroups.map((g) => (
-					<label class="filter">
+					<label class="picker">
 						<span class="label">{g.label}</span>
+						<span data-name>All</span>
 						<select data-key={g.key}>
-							<option value="">All</option>
+							<option value="" data-name="All">All ({tasks.length})</option>
 							{g.options.map((o) => (
-								<option value={o.id}>
+								<option value={o.id} data-name={o.label}>
 									{o.label}
 									{'current' in o && o.current ? ' · this week' : ''} ({tasksFor(g.key, o.id)})
 								</option>
@@ -155,12 +181,13 @@ const tasksFor = (key: string, id: string) =>
 					</label>
 				))
 			}
+			<button type="button" class="clear label" data-reset hidden>Clear filters</button>
 		</div>
 
 		<div class="board" data-stagger data-board>
 			{
 				TASK_STATUSES.map((status) => {
-					const list = tasks.filter((t) => t.data.status === status);
+					const list = tasks.filter((t) => t.data.status === status).sort(byDeadline(status));
 					return (
 						<div class:list={['col', status]}>
 							<h3>
@@ -176,6 +203,7 @@ const tasksFor = (key: string, id: string) =>
 										<span class="ttitle">{t.data.title}</span>
 										{t.data.notes && <span class="tnotes">{t.data.notes}</span>}
 										<span class="tmeta">
+											{deadline(t) && <span class:list={['due', urgency(t)]}>{dueText(t)}</span>}
 											<span class="owners" aria-hidden="true">
 												{t.data.owners.map((o) => (
 													<span class="swatch" style={`background: ${member(o.id)?.color ?? 'var(--muted)'}`} />
@@ -220,7 +248,9 @@ const tasksFor = (key: string, id: string) =>
 			selects.forEach((s) => {
 				s.value = state[s.dataset.key!];
 				state[s.dataset.key!] = s.value;
-				s.closest('.filter')!.classList.toggle('active', s.value !== '');
+				const picker = s.closest('.picker')!;
+				picker.classList.toggle('active', s.value !== '');
+				picker.querySelector('[data-name]')!.textContent = s.selectedOptions[0].dataset.name ?? '';
 			});
 			let shown = 0;
 			let done = 0;
@@ -397,14 +427,17 @@ const tasksFor = (key: string, id: string) =>
 		color: var(--muted);
 	}
 
-	/* Task board filters */
-	.sec-meta {
+	/* Task board filters: a row of pickers with breathing room above the column titles. */
+	.filters {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
-		gap: 20px;
+		gap: 8px 12px;
+		margin-bottom: 28px;
 	}
 
 	.clear {
+		margin-left: 8px;
 		padding: 0;
 		border: 0;
 		background: none;
@@ -419,14 +452,6 @@ const tasksFor = (key: string, id: string) =>
 
 	.clear[hidden] {
 		display: none;
-	}
-
-	/* A strip of filter blocks that lines up with the three board columns. */
-	.filters {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 6px;
-		margin-bottom: 6px;
 	}
 
 	.col li[hidden] {
@@ -495,6 +520,20 @@ const tasksFor = (key: string, id: string) =>
 		border-bottom: 0;
 	}
 
+	/* When it's due leads the meta line, under the title. Only overdue, today and tomorrow speak up. */
+	.due::after {
+		content: '·';
+		margin-left: 8px;
+		color: var(--muted);
+	}
+
+	.due.overdue,
+	.due.today,
+	.due.tomorrow {
+		color: var(--accent);
+		font-weight: 700;
+	}
+
 	.ttitle {
 		font-size: 16px;
 	}
@@ -510,8 +549,9 @@ const tasksFor = (key: string, id: string) =>
 
 	.tmeta {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
-		gap: 8px;
+		gap: 2px 8px;
 		font-size: 13px;
 		color: var(--muted);
 	}
@@ -537,8 +577,7 @@ const tasksFor = (key: string, id: string) =>
 	}
 
 	@media (max-width: 520px) {
-		.weeks,
-		.filters {
+		.weeks {
 			grid-template-columns: 1fr;
 		}
 	}

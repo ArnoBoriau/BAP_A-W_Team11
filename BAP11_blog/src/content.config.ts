@@ -81,6 +81,7 @@ const tasks = defineCollection({
 		title: z.string(),
 		status: z.enum(TASK_STATUSES).default('todo'),
 		week: z.string(),
+		due: z.coerce.date().optional(),
 		owners: z.array(reference('team')).default([]),
 		notes: z.string().optional(),
 		pillar: z.enum(PILLAR_IDS).optional(),

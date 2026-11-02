@@ -164,6 +164,7 @@ export function planning(database: string, team: Team) {
 						title,
 						status: (status(group) ?? 'todo') as Data<'tasks'>['status'],
 						week: p.text(P.phase) || 'Ongoing',
+						due: day(p.date(P.date)?.start),
 						owners: refs(p.names(P.owners).map(person)),
 						notes: p.text(P.notes) || undefined,
 						pillar: firstPillar(p.names(P.pillar)),

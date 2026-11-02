@@ -52,7 +52,7 @@ Each database switches to Notion as soon as it is set in `.env` (locally) or in 
 | `NOTION_PLANNING_DB` | Planning | *Task*, *Due*, *Group*, *Owner*, *Phase*, *Notes*, *Pillar* |
 | `NOTION_TEAM_DB` | Team | *Name*, *Role*, *Main pillar*, *Responsibilities* (comma separated), *Kind of person* |
 
-- **Planning is split by Group.** Rows in *Deadlines* become deadlines and rows in *Meetings* become events on the Planning page (a time on *Due* shows as the hour). A row with the 🏆 icon or "jury" in its name is the jury. Every other row is a task: *Not started* → not started, *In progress* and *To review* → in progress, *Done* → done.
+- **Planning is split by Group.** Rows in *Deadlines* become deadlines and rows in *Meetings* become events on the Planning page (a time on *Due* shows as the hour). A row with the 🏆 icon or "jury" in its name is the jury. Every other row is a task: *Not started* → not started, *In progress* and *To review* → in progress, *Done* → done. Tasks are sorted by *Due*, the first one due on top; a task without *Due* uses the Friday of its *Phase* week, and *Ongoing* tasks go last.
 - **Inline databases** inside a logbook page, like *AI uses* on the AI log, appear as a table in the post. Linked views of a database elsewhere can't be read through the API and show a short note instead.
 - **Post links** end with a piece of the Notion page id, so a post keeps working after it's renamed; the old link redirects to the new one.
 - **People** are matched to team members by full or first name (Arno Boriau → `arno`).
