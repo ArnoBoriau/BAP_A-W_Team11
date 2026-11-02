@@ -258,6 +258,77 @@ p {
 	opacity: 0.7;
 }
 
+/* Filter block: a small label over the chosen value. The select fills the block, so the whole block opens the list. */
+.filter {
+	position: relative;
+	display: block;
+	/* One shade lighter than the surfaces around it, so it reads as a control. */
+	background: var(--surface-2);
+	box-shadow: inset 0 -2px 0 var(--line-strong);
+	transition: background 0.2s;
+}
+
+.filter:hover {
+	background: var(--surface-3);
+}
+
+.filter.active {
+	box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.filter .label {
+	position: absolute;
+	top: 14px;
+	left: 20px;
+	pointer-events: none;
+}
+
+/* Chevron */
+.filter::after {
+	content: '';
+	position: absolute;
+	right: 22px;
+	bottom: 22px;
+	width: 7px;
+	height: 7px;
+	border-right: 2px solid var(--muted);
+	border-bottom: 2px solid var(--muted);
+	transform: rotate(45deg);
+	pointer-events: none;
+}
+
+.filter:hover::after,
+.filter.active::after {
+	border-color: var(--fg);
+}
+
+/* The select fills the whole block, so the block itself opens the list. */
+.filter select {
+	width: 100%;
+	padding: 36px 48px 14px 20px;
+	border: 0;
+	border-radius: 0;
+	background: none;
+	color: var(--fg-soft);
+	font: inherit;
+	font-size: 14px;
+	font-weight: 700;
+	text-transform: uppercase;
+	text-overflow: ellipsis;
+	appearance: none;
+	cursor: pointer;
+}
+
+.filter.active select {
+	color: var(--fg);
+}
+
+.filter option {
+	background: var(--surface-3);
+	color: var(--fg);
+	text-transform: none;
+}
+
 /* ---------- badges ---------- */
 
 /* Solid badge, like A@W's country label. The pillar colour sits behind dark text. */

@@ -48,7 +48,7 @@ Each database switches to Notion as soon as it is set in `.env` (locally) or in 
 | Setting | Notion database | Properties the site reads |
 | --- | --- | --- |
 | `NOTION_LOGBOOK_DB` | Logbook, one page per post | *Title*, *Author*, *Cover*, *Date* (start of a range), *Pillar*, *Summary*, *Tags*, and the page content |
-| `NOTION_TIME_DB` | Time log, one row per session | *What did you do*, *Hours*, *Logged on*, *Person*, *Pillar* |
+| `NOTION_TIME_DB` | Time log, one row per session | *What did you do*, *Hours*, *Date* (falls back to *Logged on*), *Person*, *Pillar* |
 | `NOTION_PLANNING_DB` | Planning | *Task*, *Due*, *Group*, *Owner*, *Phase*, *Notes*, *Pillar* |
 | `NOTION_TEAM_DB` | Team | *Name*, *Role*, *Main pillar*, *Responsibilities* (comma separated), *Kind of person* |
 

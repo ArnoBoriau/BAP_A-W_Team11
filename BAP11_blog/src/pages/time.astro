@@ -3,9 +3,9 @@ import FormattedDate from '../components/FormattedDate.astro';
 import Pillar from '../components/Pillar.astro';
 import { PILLAR_IDS, PILLARS } from '../consts';
 import Layout from '../layouts/Layout.astro';
-import { formatDate, formatHours, getTeam, getTimeLog, sum } from '../lib/data';
+import { DAY, formatDate, formatHours, getTeam, getTimeLog, getWeeks, inWeek, sum, today } from '../lib/data';
 
-const [sessions, team] = await Promise.all([getTimeLog(), getTeam()]);
+const [sessions, team, weeks] = await Promise.all([getTimeLog(), getTeam(), getWeeks()]);
 
 const total = sum(sessions.map((s) => s.data.hours));
 const hoursOf = (filter: (s: (typeof sessions)[number]) => boolean) => sum(sessions.filter(filter).map((s) => s.data.hours));
@@ -16,10 +16,38 @@ const maxPerson = Math.max(...people.map((p) => p.hours), 1);
 const pillars = PILLAR_IDS.map((id) => ({ id, hours: hoursOf((s) => s.data.pillar === id) })).filter((p) => p.hours > 0);
 const maxPillar = Math.max(...pillars.map((p) => p.hours), 1);
 
-// One group of bars per day, oldest first.
-const days = [...new Set(sessions.map((s) => s.data.date.toISOString().slice(0, 10)))].sort();
-const perDay = days.map((day) => ({
+// The day chart and the session list show one week at a time: this week, or the last week with hours logged.
+const now = today();
+const slug = (s: string) => s.trim().toLowerCase().replace(/\s+/g, '-');
+const weekOf = (date: Date) => {
+	const w = weeks.find((w) => inWeek(date, w));
+	return w ? slug(w.data.label) : '';
+};
+const weekOptions = weeks.map((w) => ({
+	id: slug(w.data.label),
+	label: w.data.label,
+	current: inWeek(now, w),
+	hours: hoursOf((s) => inWeek(s.data.date, w)),
+}));
+const shownWeek =
+	weekOptions.find((o) => o.current && o.hours > 0)?.id ?? weekOptions.findLast((o) => o.hours > 0)?.id ?? 'all';
+const shown = (date: Date, logged = true) => (shownWeek === 'all' ? logged : weekOf(date) === shownWeek);
+const shownLabel = weekOptions.find((o) => o.id === shownWeek)?.label ?? 'All weeks';
+
+// One group of bars per day, oldest first. A single week shows every working day, also the empty ones,
+// so gaps stand out; "All weeks" only shows the days with hours logged.
+const iso = (date: Date) => date.toISOString().slice(0, 10);
+const days = [...new Set(sessions.map((s) => iso(s.data.date)))].sort();
+const workingDays = weeks.flatMap((w) =>
+	Array.from({ length: Math.round((w.data.end.valueOf() - w.data.start.valueOf()) / DAY) + 1 }, (_, i) =>
+		iso(new Date(w.data.start.valueOf() + i * DAY)),
+	),
+);
+const chartDays = [...new Set([...days, ...workingDays])].sort();
+const perDay = chartDays.map((day) => ({
 	date: new Date(day),
+	week: weekOf(new Date(day)),
+	logged: days.includes(day),
 	values: team.map((m) =>
 		hoursOf((s) => s.data.date.toISOString().slice(0, 10) === day && s.data.member.id === m.id),
 	),
@@ -109,7 +137,26 @@ const member = (id: string) => team.find((m) => m.id === id);
 
 	<section class="wrap section">
 		<div class="sec-head">
-			<h2>Per day</h2>
+			<div class="day-head">
+				<h2>Per day</h2>
+				<label class="week-pick">
+					<span class="label">Week</span>
+					<span data-week-name>{shownLabel}</span>
+					<select data-week-select data-default={shownWeek}>
+						<option value="all" data-name="All weeks" selected={shownWeek === 'all'}>
+							All weeks ({formatHours(total)})
+						</option>
+						{
+							weekOptions.map((o) => (
+								<option value={o.id} data-name={o.label} selected={o.id === shownWeek}>
+									{o.label}
+									{o.current ? ' · this week' : ''} ({formatHours(o.hours)})
+								</option>
+							))
+						}
+					</select>
+				</label>
+			</div>
 			<ul class="legend" aria-label="Legend">
 				{
 					team.map((m) => (
@@ -121,6 +168,8 @@ const member = (id: string) => team.find((m) => m.id === id);
 				}
 			</ul>
 		</div>
+
+		<p class="empty" data-empty hidden>No hours logged in this week yet.</p>
 
 		<div
 			data-reveal
@@ -140,7 +189,13 @@ const member = (id: string) => team.find((m) => m.id === id);
 			<div class="cols">
 				{
 					perDay.map((d, di) => (
-						<div class="day" style={`--d: ${di}`}>
+						<div
+							class:list={['day', { blank: !d.logged }]}
+							data-week={d.week}
+							data-logged={String(d.logged)}
+							hidden={!shown(d.date, d.logged)}
+							style={`--d: ${di}`}
+						>
 							<div class="group">
 								{d.values.map((v, i) => (
 									<span
@@ -162,7 +217,8 @@ const member = (id: string) => team.find((m) => m.id === id);
 
 	<section class="wrap section">
 		<div class="sec-head">
-			<h2>All sessions</h2>
+			<h2>Sessions</h2>
+			<span class="label" data-week-label>{shownLabel}</span>
 		</div>
 		<div class="table-scroll">
 			<table class="data">
@@ -172,7 +228,7 @@ const member = (id: string) => team.find((m) => m.id === id);
 				<tbody>
 					{
 						sessions.map((s) => (
-							<tr>
+							<tr data-week={weekOf(s.data.date)} data-hours={s.data.hours} hidden={!shown(s.data.date)}>
 								<td class="nowrap muted">
 									<FormattedDate date={s.data.date} style="day" />
 								</td>
@@ -188,7 +244,7 @@ const member = (id: string) => team.find((m) => m.id === id);
 					}
 				</tbody>
 				<tfoot>
-					<tr><td colspan="3">Total</td><td class="opt"></td><td class="num">{formatHours(total)}</td></tr>
+					<tr><td colspan="3">Total</td><td class="opt"></td><td class="num" data-week-total>{formatHours(hoursOf((s) => shown(s.data.date)))}</td></tr>
 				</tfoot>
 			</table>
 		</div>
@@ -198,6 +254,50 @@ const member = (id: string) => team.find((m) => m.id === id);
 </Layout>
 
 <script>
+	// Week filter for the day chart and the session list. The server already renders the default week.
+	document.addEventListener('astro:page-load', () => {
+		const select = document.querySelector<HTMLSelectElement>('[data-week-select]');
+		if (!select) return;
+		const chart = document.querySelector<HTMLElement>('.chart')!;
+		const days = [...chart.querySelectorAll<HTMLElement>('.day')];
+		const rows = [...document.querySelectorAll<HTMLTableRowElement>('tr[data-week]')];
+		const empty = document.querySelector<HTMLElement>('[data-empty]')!;
+		const total = document.querySelector<HTMLElement>('[data-week-total]')!;
+		const labels = [...document.querySelectorAll<HTMLElement>('[data-week-label], [data-week-name]')];
+		const hours = (h: number) => `${Number.isInteger(h) ? h : h.toFixed(1)} h`;
+
+		const apply = (push = true) => {
+			const id = select.value;
+			const show = (el: HTMLElement) => (id === 'all' ? el.dataset.logged !== 'false' : el.dataset.week === id);
+			let shownDays = 0;
+			days.forEach((d) => {
+				d.hidden = !show(d);
+				if (!d.hidden) d.style.setProperty('--d', String(shownDays++));
+			});
+			let sum = 0;
+			rows.forEach((r) => {
+				r.hidden = !show(r);
+				if (!r.hidden) sum += Number(r.dataset.hours);
+			});
+			chart.hidden = shownDays === 0;
+			empty.hidden = sum > 0;
+			total.textContent = hours(sum);
+			labels.forEach((l) => (l.textContent = select.selectedOptions[0].dataset.name ?? ''));
+			if (push) {
+				const url = new URL(location.href);
+				if (id === select.dataset.default) url.searchParams.delete('week');
+				else url.searchParams.set('week', id);
+				history.replaceState(null, '', url);
+			}
+		};
+
+		const fromUrl = new URL(location.href).searchParams.get('week');
+		if (fromUrl) select.value = fromUrl;
+		if (!select.value) select.value = select.dataset.default!;
+		select.addEventListener('change', () => apply());
+		apply(false);
+	});
+
 	// Tooltip for every mark that carries data-tip="eyebrow|name|value".
 	document.addEventListener('astro:page-load', () => {
 		const tip = document.querySelector<HTMLElement>('[data-tip-box]');
@@ -330,10 +430,81 @@ const member = (id: string) => team.find((m) => m.id === id);
 		margin-right: 0;
 	}
 
+	.day-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px 20px;
+	}
+
+	/* Week picker: an outlined control with a native select laid invisibly over it. */
+	.week-pick {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		min-height: 36px;
+		padding: 6px 38px 6px 12px;
+		border: 1px solid var(--line-strong);
+		color: var(--fg);
+		font-size: 14px;
+		font-weight: 700;
+		text-transform: uppercase;
+		transition: border-color 0.2s;
+	}
+
+	.week-pick::after {
+		content: '';
+		position: absolute;
+		top: 50%;
+		right: 15px;
+		width: 6px;
+		height: 6px;
+		border-right: 1.5px solid currentColor;
+		border-bottom: 1.5px solid currentColor;
+		transform: translateY(-70%) rotate(45deg);
+		pointer-events: none;
+	}
+
+	.week-pick:hover {
+		border-color: var(--fg);
+	}
+
+	.week-pick:has(select:focus-visible) {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+
+	.week-pick select {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		opacity: 0;
+		font-size: 16px;
+		cursor: pointer;
+	}
+
+	.week-pick option {
+		background: var(--surface-2);
+		color: var(--fg);
+		text-transform: none;
+	}
+
+	.empty {
+		margin-bottom: 16px;
+		color: var(--muted);
+	}
+
 	.chart {
 		position: relative;
 		height: 300px;
 		margin: 8px 0 40px 40px;
+	}
+
+	.chart[hidden],
+	.day[hidden],
+	.empty[hidden] {
+		display: none;
 	}
 
 	.grid {
@@ -401,6 +572,11 @@ const member = (id: string) => team.find((m) => m.id === id);
 		font-size: 13px;
 		color: var(--muted);
 		white-space: nowrap;
+	}
+
+	/* A working day without hours: the label stays, but steps back. */
+	.blank .wk {
+		opacity: 0.5;
 	}
 
 	/* Table */

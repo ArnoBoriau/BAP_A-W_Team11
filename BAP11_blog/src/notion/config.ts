@@ -19,7 +19,8 @@ export const PROPERTIES = {
 	},
 	time: {
 		task: ['What did you do', 'Task', 'Name'],
-		date: ['Logged on', 'Date'],
+		// The day the work was done. When it's left empty, the day the row was created ("Logged on") is used.
+		date: ['Date', 'Logged on'],
 		member: ['Person', 'Who'],
 		hours: ['Hours'],
 		pillar: ['Pillar'],

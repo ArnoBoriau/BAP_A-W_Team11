@@ -40,7 +40,8 @@ its own collection rendered on the AI log post. Check the table for extra column
 | --- | --- | --- |
 | What did you do | title | `task` |
 | Hours | number | `hours` |
-| Logged on | created time | `date` |
+| Date | date (the day the work was done) | `date` |
+| Logged on | created time | `date` when *Date* is empty |
 | Person | person | `member` |
 | Pillar | select: UX, Design, Dev, General | `pillar` |
 

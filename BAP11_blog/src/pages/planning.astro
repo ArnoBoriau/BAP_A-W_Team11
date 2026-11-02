@@ -1,15 +1,12 @@
 ---
 import FormattedDate from '../components/FormattedDate.astro';
-import { TASK_STATUS_LABELS, TASK_STATUSES } from '../consts';
+import { PILLAR_IDS, PILLARS, TASK_STATUS_LABELS, TASK_STATUSES } from '../consts';
 import Layout from '../layouts/Layout.astro';
-import { DAY, getPlanning, getTeam, today } from '../lib/data';
+import { DAY, getPlanning, getTeam, inWeek, today, weekEnd } from '../lib/data';
 
 const [{ weeks, milestones, tasks }, team] = await Promise.all([getPlanning(), getTeam()]);
 const now = today();
 
-// A week runs until the Sunday after its last working day.
-const weekEnd = (end: Date) => new Date(end.valueOf() + 2 * DAY);
-const inWeek = (date: Date, w: (typeof weeks)[number]) => date >= w.data.start && date <= weekEnd(w.data.end);
 const isCurrent = (w: (typeof weeks)[number]) => inWeek(now, w);
 
 const member = (id: string) => team.find((m) => m.id === id);
@@ -17,6 +14,46 @@ const progress = (w: (typeof weeks)[number]) =>
 	Math.min(1, Math.max(0, (now.valueOf() - w.data.start.valueOf()) / (weekEnd(w.data.end).valueOf() + DAY - w.data.start.valueOf())));
 const typeLabel = { deadline: 'Deadline', event: 'Event', jury: 'Jury' } as const;
 const done = tasks.filter((t) => t.data.status === 'done').length;
+
+// Board filters. A task's week is free text from Notion ("Week 1 · Pitch deck", "Weeks 2–3 · Concept", "Ongoing"),
+// so it is mapped onto the weeks of the overview. Anything that names no week, like "Ongoing", gets its own filter.
+const slug = (s: string) => s.trim().toLowerCase().replace(/\s+/g, '-');
+const weeksOf = (text: string) => {
+	const head = text.split('·')[0].trim().toLowerCase();
+	const range = head.match(/^weeks?\s+(\d+)(?:\s*[–-]\s*(\d+))?/);
+	if (range) {
+		const from = Number(range[1]);
+		const to = Number(range[2] ?? from);
+		return Array.from({ length: Math.max(1, to - from + 1) }, (_, i) => `week-${from + i}`);
+	}
+	return [slug(head)];
+};
+const weekIds = new Set(weeks.map((w) => slug(w.data.label)));
+const extraWeeks = [...new Set(tasks.flatMap((t) => weeksOf(t.data.week)).filter((id) => !weekIds.has(id)))];
+const filterGroups = [
+	{
+		key: 'week',
+		label: 'Week',
+		options: [
+			...extraWeeks.map((id) => ({ id, label: tasks.find((t) => weeksOf(t.data.week).includes(id))!.data.week.split('·')[0].trim() })),
+			...weeks.map((w) => ({ id: slug(w.data.label), label: w.data.label, current: isCurrent(w) })),
+		],
+	},
+	{
+		key: 'pillar',
+		label: 'Pillar',
+		options: PILLAR_IDS.map((id) => ({ id, label: PILLARS[id].label })),
+	},
+	{
+		key: 'who',
+		label: 'Who',
+		options: team.map((m) => ({ id: m.id, label: m.data.name.split(' ')[0] })),
+	},
+];
+const tasksFor = (key: string, id: string) =>
+	tasks.filter((t) =>
+		key === 'week' ? weeksOf(t.data.week).includes(id) : key === 'pillar' ? t.data.pillar === id : t.data.owners.some((o) => o.id === id),
+	).length;
 ---
 
 <Layout title="Planning" description="Our seven weeks, every deadline and the task board.">
@@ -95,21 +132,47 @@ const done = tasks.filter((t) => t.data.status === 'done').length;
 	<section class="wrap section">
 		<div class="sec-head">
 			<h2>Task board</h2>
-			<span class="label">{done} of {tasks.length} done</span>
+			<div class="sec-meta">
+				<button type="button" class="clear label" data-reset hidden>Clear filters</button>
+				<span class="label" data-done>{done} of {tasks.length} done</span>
+			</div>
 		</div>
 
-		<div class="board" data-stagger>
+		<div class="filters" data-filters>
+			{
+				filterGroups.map((g) => (
+					<label class="filter">
+						<span class="label">{g.label}</span>
+						<select data-key={g.key}>
+							<option value="">All</option>
+							{g.options.map((o) => (
+								<option value={o.id}>
+									{o.label}
+									{'current' in o && o.current ? ' · this week' : ''} ({tasksFor(g.key, o.id)})
+								</option>
+							))}
+						</select>
+					</label>
+				))
+			}
+		</div>
+
+		<div class="board" data-stagger data-board>
 			{
 				TASK_STATUSES.map((status) => {
 					const list = tasks.filter((t) => t.data.status === status);
 					return (
 						<div class:list={['col', status]}>
 							<h3>
-								{TASK_STATUS_LABELS[status]} <span class="count">{list.length}</span>
+								{TASK_STATUS_LABELS[status]} <span class="count" data-count>{list.length}</span>
 							</h3>
 							<ul>
 								{list.map((t) => (
-									<li>
+									<li
+										data-week={weeksOf(t.data.week).join(' ')}
+										data-pillar={t.data.pillar ?? ''}
+										data-who={t.data.owners.map((o) => o.id).join(' ')}
+									>
 										<span class="ttitle">{t.data.title}</span>
 										{t.data.notes && <span class="tnotes">{t.data.notes}</span>}
 										<span class="tmeta">
@@ -132,8 +195,71 @@ const done = tasks.filter((t) => t.data.status === 'done').length;
 				})
 			}
 		</div>
+
+		<p class="empty" data-empty hidden>
+			No tasks match these filters. <button type="button" class="btn" data-reset>Show all tasks</button>
+		</p>
 	</section>
 </Layout>
+
+<script>
+	document.addEventListener('astro:page-load', () => {
+		const board = document.querySelector('[data-board]');
+		if (!board) return;
+		const selects = [...document.querySelectorAll<HTMLSelectElement>('[data-filters] select')];
+		const clear = document.querySelector<HTMLElement>('.clear[data-reset]')!;
+		const cols = [...board.querySelectorAll<HTMLElement>('.col')];
+		const empty = document.querySelector<HTMLElement>('[data-empty]')!;
+		const doneLabel = document.querySelector<HTMLElement>('[data-done]')!;
+		const keys = ['week', 'pillar', 'who'];
+		const params = new URL(location.href).searchParams;
+		const state: Record<string, string> = Object.fromEntries(keys.map((k) => [k, params.get(k) ?? '']));
+
+		function apply(push = true) {
+			// Unknown values from the URL fall back to "All".
+			selects.forEach((s) => {
+				s.value = state[s.dataset.key!];
+				state[s.dataset.key!] = s.value;
+				s.closest('.filter')!.classList.toggle('active', s.value !== '');
+			});
+			let shown = 0;
+			let done = 0;
+			cols.forEach((col) => {
+				const rows = [...col.querySelectorAll<HTMLLIElement>('li')];
+				const visible = rows.filter((row) => {
+					const match = keys.every((k) => !state[k] || (row.dataset[k] ?? '').split(' ').includes(state[k]));
+					row.hidden = !match;
+					return match;
+				}).length;
+				col.querySelector('[data-count]')!.textContent = String(visible);
+				shown += visible;
+				if (col.classList.contains('done')) done = visible;
+			});
+			clear.hidden = keys.every((k) => !state[k]);
+			doneLabel.textContent = `${done} of ${shown} done`;
+			empty.hidden = shown > 0;
+			if (push) {
+				const url = new URL(location.href);
+				keys.forEach((k) => (state[k] ? url.searchParams.set(k, state[k]) : url.searchParams.delete(k)));
+				history.replaceState(null, '', url);
+			}
+		}
+
+		selects.forEach((s) =>
+			s.addEventListener('change', () => {
+				state[s.dataset.key!] = s.value;
+				apply();
+			}),
+		);
+		document.querySelectorAll('[data-reset]').forEach((b) =>
+			b.addEventListener('click', () => {
+				keys.forEach((k) => (state[k] = ''));
+				apply();
+			}),
+		);
+		apply(false);
+	});
+</script>
 
 <style>
 	/* Week overview */
@@ -271,6 +397,55 @@ const done = tasks.filter((t) => t.data.status === 'done').length;
 		color: var(--muted);
 	}
 
+	/* Task board filters */
+	.sec-meta {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+	}
+
+	.clear {
+		padding: 0;
+		border: 0;
+		background: none;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+		cursor: pointer;
+	}
+
+	.clear:hover {
+		color: var(--accent);
+	}
+
+	.clear[hidden] {
+		display: none;
+	}
+
+	/* A strip of filter blocks that lines up with the three board columns. */
+	.filters {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 6px;
+		margin-bottom: 6px;
+	}
+
+	.col li[hidden] {
+		display: none;
+	}
+
+	.empty {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 16px;
+		padding: 24px 0;
+		color: var(--muted);
+	}
+
+	.empty[hidden] {
+		display: none;
+	}
+
 	/* Task board */
 	.board {
 		display: grid;
@@ -362,7 +537,8 @@ const done = tasks.filter((t) => t.data.status === 'done').length;
 	}
 
 	@media (max-width: 520px) {
-		.weeks {
+		.weeks,
+		.filters {
 			grid-template-columns: 1fr;
 		}
 	}

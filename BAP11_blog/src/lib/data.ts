@@ -64,10 +64,14 @@ export async function getTimeLog() {
 	return sessions.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 }
 
+/** The weeks overview is a plain table in Notion, so it always comes from src/data/planning.json. */
+export async function getWeeks() {
+	return (await getCollection('weeks')).sort((a, b) => a.data.start.valueOf() - b.data.start.valueOf());
+}
+
 export async function getPlanning() {
 	const byDate = <T extends { data: { date: Date } }>(a: T, b: T) => a.data.date.valueOf() - b.data.date.valueOf();
-	// The weeks overview is a plain table in Notion, so it always comes from src/data/planning.json.
-	const weeks = (await getCollection('weeks')).sort((a, b) => a.data.start.valueOf() - b.data.start.valueOf());
+	const weeks = await getWeeks();
 	const { milestones, tasks } = notion.planning
 		? await fromNotion.planning(notion.planning, await names())
 		: { milestones: await getCollection('milestones'), tasks: await getCollection('tasks') };
@@ -83,6 +87,12 @@ export function today() {
 }
 
 export const DAY = 24 * 60 * 60 * 1000;
+
+type Week = { data: { start: Date; end: Date } };
+
+/** A planning week runs until the Sunday after its last working day. */
+export const weekEnd = (end: Date) => new Date(end.valueOf() + 2 * DAY);
+export const inWeek = (date: Date, w: Week) => date >= w.data.start && date <= weekEnd(w.data.end);
 
 export function formatDate(date: Date, style: 'short' | 'long' | 'day' = 'short') {
 	if (style === 'day') {
