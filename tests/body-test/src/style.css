@@ -1,0 +1,49 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  font: 15px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+canvas {
+  position: fixed;
+  inset: 0;
+  display: block;
+}
+
+/* camera stays hidden; press V for a small preview in the corner */
+#camera {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1;
+  width: 240px;
+  height: auto;
+  border-radius: 6px;
+  transform: scaleX(-1);
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.show-camera #camera {
+  opacity: 0.9;
+}
+
+#status {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 8vh;
+  z-index: 2;
+  margin: 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+#status[hidden] {
+  display: none;
+}

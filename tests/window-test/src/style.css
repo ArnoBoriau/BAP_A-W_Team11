@@ -1,0 +1,348 @@
+:root {
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ui-bg: rgba(20, 20, 22, 0.86);
+  --ui-text: #ececec;
+  --ui-muted: #9a9a9f;
+  --ui-line: rgba(255, 255, 255, 0.12);
+  font: 15px/1.45 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: #111;
+  overflow: hidden;
+}
+
+/* ---- per-side materials ------------------------------------------------ */
+
+/* Inside: plastered wall, white window frame */
+body[data-side='inside'] {
+  --wall:
+    radial-gradient(ellipse at 50% 30%, rgba(255, 255, 255, 0.35), transparent 70%),
+    linear-gradient(#e8e1d5, #d9d0c1);
+  --frame: #f4f2ee;
+  --frame-edge: #d6d2ca;
+  --reveal: #cfc6b7;
+  --sill: linear-gradient(#f7f5f1, #dcd8d0);
+}
+
+/* Outside: brick facade, anthracite frame */
+body[data-side='outside'] {
+  --wall:
+    repeating-linear-gradient(
+      0deg,
+      #6f6a64 0 2px,
+      transparent 2px 34px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      #6f6a64 0 2px,
+      transparent 2px 72px
+    ),
+    linear-gradient(#8b4a36, #74392a);
+  --frame: #3a3c3f;
+  --frame-edge: #222426;
+  --reveal: #5b5450;
+  --sill: linear-gradient(#9d9a95, #77736d);
+}
+
+/* ---- the wall + window ------------------------------------------------- */
+
+.wall {
+  position: fixed;
+  inset: 0;
+  background: var(--wall);
+}
+
+.window {
+  position: absolute;
+}
+
+.opening {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #0b0b0c;
+  /* frame + reveal (depth of the wall) */
+  border: clamp(10px, 1.6vmin, 22px) solid var(--frame);
+  outline: 1px solid var(--frame-edge);
+  box-shadow:
+    0 0 0 clamp(6px, 1vmin, 14px) var(--reveal),
+    0 18px 40px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px var(--frame-edge),
+    inset 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.feed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.feed.mirrored {
+  transform: scaleX(-1);
+}
+
+.status {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  text-align: center;
+  color: var(--ui-muted);
+  font-size: 1.1rem;
+}
+
+.status[hidden] {
+  display: none;
+}
+
+/* subtle reflection on the glass */
+.glass {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 28%, transparent 40%),
+    linear-gradient(115deg, transparent 62%, rgba(255, 255, 255, 0.05) 70%, transparent 78%);
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.25);
+}
+
+.mullions span {
+  position: absolute;
+  background: var(--frame);
+  box-shadow: 0 0 0 1px var(--frame-edge), 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.mullions .v {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: clamp(8px, 1.1vmin, 16px);
+  transform: translateX(-50%);
+}
+
+.mullions .h {
+  left: 0;
+  right: 0;
+  top: 38%;
+  height: clamp(8px, 1.1vmin, 16px);
+}
+
+.no-mullions .mullions {
+  display: none;
+}
+
+.sill {
+  position: absolute;
+  top: calc(100% + clamp(6px, 1vmin, 14px));
+  left: calc(-1 * clamp(16px, 2.6vmin, 36px));
+  right: calc(-1 * clamp(16px, 2.6vmin, 36px));
+  height: clamp(10px, 1.6vmin, 22px);
+  background: var(--sill);
+  border-radius: 2px;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.3);
+}
+
+/* ---- controls (quiet, out of the way) ---------------------------------- */
+
+.gear {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+
+.gear:hover {
+  opacity: 1;
+}
+
+body.idle {
+  cursor: none;
+}
+
+body.idle .gear {
+  opacity: 0;
+}
+
+.panel {
+  position: fixed;
+  right: 16px;
+  bottom: 64px;
+  width: min(340px, calc(100vw - 32px));
+  max-height: calc(100vh - 96px);
+  overflow: auto;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  backdrop-filter: blur(8px);
+  display: grid;
+  gap: 12px;
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+.panel header {
+  display: grid;
+}
+
+.panel header span,
+.panel small,
+.panel footer span,
+.panel legend {
+  color: var(--ui-muted);
+  font-size: 0.85em;
+}
+
+.panel label {
+  display: grid;
+  gap: 4px;
+}
+
+.panel label.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel fieldset {
+  margin: 0;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 1px solid var(--ui-line);
+  display: grid;
+  gap: 6px;
+}
+
+.panel fieldset label {
+  grid-template-columns: 56px 1fr;
+  align-items: center;
+}
+
+.panel select,
+.panel button {
+  font: inherit;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--ui-line);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.panel button {
+  cursor: pointer;
+}
+
+.preview {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #000;
+}
+
+.panel footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+kbd {
+  font: 0.8em ui-monospace, monospace;
+  padding: 1px 5px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  opacity: 0.8;
+}
+
+/* ---- launcher ---------------------------------------------------------- */
+
+body[data-side='launcher'] {
+  background: #f3f1ed;
+  color: #222;
+  overflow: auto;
+}
+
+.launcher {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 12vh 16px 48px;
+}
+
+.launcher h1 {
+  margin: 0 0 8px;
+  font-size: 2.2rem;
+}
+
+.launcher > p {
+  color: #555;
+}
+
+.sides {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 28px 0 16px;
+}
+
+.sides a {
+  display: grid;
+  gap: 2px;
+  padding: 18px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #ddd8cf;
+  color: inherit;
+  text-decoration: none;
+}
+
+.sides a:hover {
+  border-color: #999;
+}
+
+.sides span {
+  color: #777;
+  font-size: 0.9em;
+}
+
+#open-both {
+  font: inherit;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 0;
+  background: #222;
+  color: #fff;
+  cursor: pointer;
+}
+
+.note {
+  color: #777;
+  font-size: 0.9em;
+}
