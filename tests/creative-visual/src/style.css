@@ -1,0 +1,102 @@
+:root {
+  --bg: #04050a;
+  --hint: rgba(220, 225, 240, 0.42);
+  --hint-key: rgba(240, 242, 250, 0.72);
+  color-scheme: dark;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+
+body.idle,
+body.idle canvas {
+  cursor: none;
+}
+
+.picker {
+  position: fixed;
+  left: 16px;
+  bottom: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  max-width: calc(100vw - 32px);
+  opacity: 0.55;
+  transition: opacity 0.6s ease;
+}
+
+.picker:hover {
+  opacity: 1;
+}
+
+body.idle .picker {
+  opacity: 0;
+}
+
+.picker button {
+  font: 11px/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.04em;
+  color: var(--hint);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.picker button span {
+  opacity: 0.5;
+  margin-right: 6px;
+}
+
+.picker button:hover {
+  color: var(--hint-key);
+}
+
+.picker button.active {
+  color: var(--hint-key);
+  border-color: rgba(240, 242, 250, 0.22);
+}
+
+.picker .tour {
+  margin-left: 8px;
+}
+
+.hint {
+  position: fixed;
+  right: 20px;
+  bottom: 18px;
+  font: 11px/1.4 ui-monospace, 'SF Mono', Menlo, monospace;
+  letter-spacing: 0.04em;
+  color: var(--hint);
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hint span {
+  color: var(--hint-key);
+}
+
+.hint.visible {
+  opacity: 1;
+}
+
+.hint.error {
+  color: #f3c4c4;
+  font-size: 13px;
+}
