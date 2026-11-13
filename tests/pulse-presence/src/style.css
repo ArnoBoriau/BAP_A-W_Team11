@@ -1,0 +1,261 @@
+:root {
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ui-bg: rgba(20, 20, 22, 0.88);
+  --ui-text: #ececec;
+  --ui-muted: #9a9a9f;
+  --ui-line: rgba(255, 255, 255, 0.12);
+  --ok: #7ddc8f;
+
+  /* the pulse — tweak these to tune the feel */
+  --glow: rgba(255, 214, 170, 0.9);
+  --period: 2.4s; /* one breath */
+  --fade: 1.2s; /* how gently it starts / stops */
+
+  font: 15px/1.45 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: #0a0a0b;
+  color: var(--ui-text);
+  overflow: hidden;
+}
+
+body.idle {
+  cursor: none;
+}
+
+/* ---- the screen ---------------------------------------------------------- */
+
+.surface {
+  position: fixed;
+  inset: 0;
+  background: #0a0a0b;
+}
+
+/* Outer layer fades in/out; inner layer breathes. Splitting them means the
+   pulse never snaps on mid-breath. */
+.pulse {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--fade) ease;
+}
+
+.pulse::before {
+  content: '';
+  position: absolute;
+  inset: -25%;
+  background: radial-gradient(circle at 50% 50%, var(--glow) 0%, transparent 55%);
+  animation: breathe var(--period) ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+body.pulsing .pulse {
+  opacity: 1;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(0.7);
+    opacity: 0.25;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse::before {
+    animation-duration: calc(var(--period) * 2);
+  }
+}
+
+/* ---- debug panel --------------------------------------------------------- */
+
+.debug {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  width: min(340px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+  background: var(--ui-bg);
+  border: 1px solid var(--ui-line);
+  border-radius: 10px;
+  font-size: 13px;
+  backdrop-filter: blur(8px);
+  cursor: auto;
+}
+
+.debug[hidden] {
+  display: none;
+}
+
+.debug header {
+  display: grid;
+}
+
+.debug header span,
+.debug footer,
+.debug dt {
+  color: var(--ui-muted);
+}
+
+.debug label {
+  display: grid;
+  gap: 4px;
+  color: var(--ui-muted);
+}
+
+.debug select {
+  font: inherit;
+  color: var(--ui-text);
+  background: #1c1c1f;
+  border: 1px solid var(--ui-line);
+  border-radius: 6px;
+  padding: 4px 6px;
+}
+
+.cam {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #000;
+}
+
+.cam video,
+.cam canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* keypoints come back mirrored, so show the video mirrored too */
+.cam video {
+  transform: scaleX(-1);
+}
+
+.cam canvas {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+}
+
+.debug dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 12px;
+  margin: 0;
+}
+
+.debug dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.dwell {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ui-line);
+  overflow: hidden;
+}
+
+.dwell span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--ui-muted);
+}
+
+.debug.is-present .dwell span {
+  background: var(--ok);
+}
+
+.status {
+  margin: 0;
+  color: #e8a25b;
+}
+
+.status[hidden] {
+  display: none;
+}
+
+kbd {
+  font: 12px/1 ui-monospace, monospace;
+  padding: 2px 5px;
+  border: 1px solid var(--ui-line);
+  border-radius: 4px;
+}
+
+/* ---- launcher ------------------------------------------------------------ */
+
+body[data-side='launcher'] {
+  overflow: auto;
+}
+
+.launcher {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 48px 16px;
+}
+
+.launcher h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.launcher p {
+  color: var(--ui-muted);
+}
+
+.sides {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin: 24px 0;
+}
+
+.sides a {
+  display: grid;
+  gap: 2px;
+  padding: 14px;
+  color: var(--ui-text);
+  text-decoration: none;
+  border: 1px solid var(--ui-line);
+  border-radius: 8px;
+}
+
+.sides a:hover {
+  border-color: var(--ui-muted);
+}
+
+.sides span {
+  color: var(--ui-muted);
+  font-size: 13px;
+}
+
+#open-both {
+  font: inherit;
+  padding: 10px 16px;
+  color: #111;
+  background: var(--ui-text);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
