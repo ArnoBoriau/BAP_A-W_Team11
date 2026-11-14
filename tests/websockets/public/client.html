@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Client</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-content: center;
+        gap: 2rem;
+        text-align: center;
+        background: #111;
+        color: #eee;
+      }
+      h1 { margin: 0; font-size: 1.25rem; font-weight: 500; }
+      .status { font-size: 0.85rem; opacity: 0.6; }
+      .buttons { display: flex; gap: 0.5rem; justify-content: center; }
+      button {
+        font: inherit;
+        width: 3rem;
+        height: 3rem;
+        border: 1px solid #444;
+        border-radius: 6px;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+      }
+      button:hover { border-color: #888; }
+      .received { font-size: 8rem; font-weight: 700; line-height: 1; min-height: 8rem; }
+      .label { font-size: 0.85rem; opacity: 0.6; }
+    </style>
+  </head>
+  <body>
+    <h1 id="title">Client</h1>
+    <p class="status" id="status">connecting…</p>
+
+    <div>
+      <p class="label">Send</p>
+      <div class="buttons" id="buttons"></div>
+    </div>
+
+    <div>
+      <p class="label" id="from">Received</p>
+      <div class="received" id="received">–</div>
+    </div>
+
+    <script>
+      const me = location.pathname.slice(1).toUpperCase() || "?"; // "A" or "B"
+      document.title = `Client ${me}`;
+      document.getElementById("title").textContent = `Client ${me}`;
+
+      const statusEl = document.getElementById("status");
+      const receivedEl = document.getElementById("received");
+      const fromEl = document.getElementById("from");
+      const buttonsEl = document.getElementById("buttons");
+
+      let socket;
+
+      function connect() {
+        socket = new WebSocket(`ws://${location.host}`);
+
+        socket.addEventListener("open", () => {
+          statusEl.textContent = "connected";
+        });
+
+        socket.addEventListener("message", (event) => {
+          const { from, value } = JSON.parse(event.data);
+          fromEl.textContent = `Received from ${from}`;
+          receivedEl.textContent = value;
+        });
+
+        socket.addEventListener("close", () => {
+          statusEl.textContent = "disconnected — retrying…";
+          setTimeout(connect, 1000);
+        });
+      }
+
+      for (let n = 1; n <= 5; n++) {
+        const btn = document.createElement("button");
+        btn.textContent = n;
+        btn.addEventListener("click", () => {
+          if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ from: me, value: n }));
+          }
+        });
+        buttonsEl.append(btn);
+      }
+
+      // Keyboard 1–5 also works
+      window.addEventListener("keydown", (e) => {
+        const n = Number(e.key);
+        if (n >= 1 && n <= 5) buttonsEl.children[n - 1].click();
+      });
+
+      connect();
+    </script>
+  </body>
