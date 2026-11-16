@@ -1,0 +1,13 @@
+{
+  "name": "aw-arrival-concept",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A@W Kortrijk 2027 arrival concept walkthrough",
+  "scripts": {
+    "dev": "npx --yes http-server . -p 5173 -c-1 -o",
+    "start": "npx --yes http-server . -p 5173 -c-1 -o"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Concept Walkthrough</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+</head>
+<body>
+  <div id="app"></div>
+
+  <div id="start" class="overlay">
+    <div class="intro">
+      <p class="brand-name">Fenestra</p>
+      <h1>Concept <em>walkthrough</em></h1>
+      <ul class="keys">
+        <li><b>W A S D</b> or arrow keys to walk</li>
+        <li><b>Mouse</b> to look around (click the view first)</li>
+        <li><b>Shift</b> to run</li>
+        <li><b>E</b> to use the big screen when you stand close to it</li>
+        <li><b>1 · 2 · 3</b> to jump to Hall A, the entrance or Hall B</li>
+        <li><b>R</b> to restart the demo</li>
+        <li><b>Esc</b> to free your mouse or close a screen</li>
+      </ul>
+      <button id="enterBtn" class="primary">Enter</button>
+    </div>
+  </div>
+
+  <div id="hud" hidden>
+    <div id="cross"></div>
+    <div id="prompt"></div>
+  </div>
+
+  <div id="panelA" class="panel">
+    <div class="pn">
+      <div class="pn-head"><span>Hall A</span><button data-close>Close</button></div>
+      <div class="pn-body"></div>
+    </div>
+  </div>
+  <div id="panelB" class="panel">
+    <div class="pn">
+      <div class="pn-head"><span>Hall B</span><button data-close>Close</button></div>
+      <div class="pn-body"></div>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="560" viewBox="0 0 920 560" fill="none">
+<style>.p{font-family:Poppins}.m{font-family:Manrope}</style>
+<g font-family="Poppins">
+<text x="0" y="12" font-size="11" font-weight="600" fill="#0E1111" letter-spacing="1">BUTTONS</text>
+<rect x="0" y="28" width="130" height="44" rx="22" fill="#0072B6"/><text x="65" y="56" text-anchor="middle" font-size="15" font-weight="500" fill="#FFFFFF">Send</text>
+<rect x="146" y="28" width="130" height="44" rx="22" fill="#E4E4E4"/><text x="211" y="56" text-anchor="middle" font-size="15" font-weight="500" fill="#0E1111">Decline</text>
+<rect x="293" y="29" width="130" height="42" rx="21" stroke="#0E1111" stroke-width="1.5"/><text x="358" y="56" text-anchor="middle" font-size="15" font-weight="500" fill="#0E1111">Request</text>
+<rect x="440" y="28" width="130" height="44" rx="22" fill="#F0F1F3"/><text x="505" y="56" text-anchor="middle" font-size="15" font-weight="500" fill="#A9ADB2">Disabled</text>
+<circle cx="610" cy="50" r="22" fill="#0E1111"/><path d="M600 50h20M612 42l8 8-8 8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="664" cy="50" r="22" fill="#E4E4E4"/><path d="M656 42l16 16M672 42l-16 16" stroke="#0E1111" stroke-width="2" stroke-linecap="round"/>
+<text x="0" y="112" font-size="11" font-weight="600" fill="#0E1111" letter-spacing="1">SELECTION</text>
+<rect x="0" y="128" width="96" height="34" rx="17" fill="#0E1111"/><text x="48" y="150" text-anchor="middle" font-size="13" fill="#fff">Bathroom</text>
+<rect x="108" y="128" width="84" height="34" rx="17" fill="#F0F1F3"/><text x="150" y="150" text-anchor="middle" font-size="13" fill="#0E1111">Kitchen</text>
+<rect x="204" y="128" width="84" height="34" rx="17" fill="#F0F1F3"/><text x="246" y="150" text-anchor="middle" font-size="13" fill="#0E1111">Living</text>
+<rect x="300" y="128" width="90" height="34" rx="17" fill="#F0F1F3"/><text x="345" y="150" text-anchor="middle" font-size="13" fill="#0E1111">Bedroom</text>
+<rect x="420" y="132" width="52" height="28" rx="14" fill="#0072B6"/><circle cx="458" cy="146" r="11" fill="#fff"/>
+<rect x="484" y="132" width="52" height="28" rx="14" fill="#E4E4E4"/><circle cx="498" cy="146" r="11" fill="#fff"/>
+<rect x="560" y="124" width="64" height="64" rx="12" fill="#6F7378"/><rect x="559" y="123" width="66" height="66" rx="13" stroke="#0072B6" stroke-width="2.5"/>
+<rect x="636" y="124" width="64" height="64" rx="12" fill="#C9C2B8"/>
+<rect x="712" y="124" width="64" height="64" rx="12" fill="#0E1111"/>
+<text x="560" y="206" font-size="11" fill="#6F7378" font-family="Manrope">Material tile: selected / default</text>
+<text x="0" y="112" font-size="0"> </text>
+<text x="0" y="236" font-size="11" font-weight="600" fill="#0E1111" letter-spacing="1">TABS &amp; ACCORDION</text>
+<rect x="0" y="252" width="300" height="40" rx="20" fill="#F0F1F3"/><rect x="4" y="256" width="146" height="32" rx="16" fill="#fff"/>
+<text x="77" y="277" text-anchor="middle" font-size="13" font-weight="500" fill="#0E1111">Materials</text><text x="225" y="277" text-anchor="middle" font-size="13" fill="#6F7378">Rooms</text>
+<rect x="330" y="248" width="300" height="52" rx="14" fill="#fff" stroke="#E4E4E4" stroke-width="1.5"/><text x="348" y="280" font-size="14" font-weight="500" fill="#0E1111">Teak</text><path d="M600 270l6 6 6-6" stroke="#0E1111" stroke-width="2" stroke-linecap="round"/>
+<text x="0" y="334" font-size="11" font-weight="600" fill="#0E1111" letter-spacing="1">CARDS</text>
+</g>
+<g font-family="Manrope">
+<rect x="0" y="350" width="280" height="190" rx="18" fill="#F0F1F3"/>
+<text x="20" y="378" font-family="Poppins" font-size="11" font-weight="600" fill="#0072B6" letter-spacing="1">BRIEF</text>
+<text x="20" y="404" font-family="Poppins" font-size="18" font-weight="600" fill="#0E1111">Dress the bathroom</text>
+<text x="20" y="430" font-size="13" fill="#6F7378">Choose up to 3 materials for</text><text x="20" y="448" font-size="13" fill="#6F7378">floor, walls and counter.</text>
+<rect x="20" y="478" width="110" height="38" rx="19" fill="#0072B6"/><text x="75" y="502" text-anchor="middle" font-family="Poppins" font-size="13" font-weight="500" fill="#fff">Start</text>
+<rect x="300" y="350" width="280" height="86" rx="18" fill="#fff" stroke="#E4E4E4" stroke-width="1.5"/>
+<circle cx="326" cy="393" r="6" fill="#0072B6"/>
+<text x="344" y="388" font-family="Poppins" font-size="12" font-weight="600" fill="#0E1111">MESSAGE SENDING</text><text x="344" y="408" font-size="13" fill="#6F7378">Hall A is sending materials</text>
+<rect x="300" y="452" width="280" height="88" rx="18" fill="#fff" stroke="#E4E4E4" stroke-width="1.5"/>
+<text x="320" y="480" font-family="Poppins" font-size="11" font-weight="600" fill="#6F7378" letter-spacing="1">SCORE</text>
+<text x="320" y="520" font-family="Poppins" font-size="34" font-weight="600" fill="#0E1111">8.4</text>
+<rect x="400" y="500" width="160" height="8" rx="4" fill="#E4E4E4"/><rect x="400" y="500" width="134" height="8" rx="4" fill="#0072B6"/>
+<rect x="600" y="350" width="320" height="86" rx="18" fill="#fff" stroke="#E4E4E4" stroke-width="1.5"/>
+<text x="620" y="378" font-family="Poppins" font-size="11" font-weight="600" fill="#6F7378" letter-spacing="1">CONNECTION</text>
+<circle cx="632" cy="410" r="10" fill="#0E1111"/><text x="632" y="414" text-anchor="middle" font-family="Poppins" font-size="10" font-weight="600" fill="#fff">A</text>
+<line x1="646" y1="410" x2="874" y2="410" stroke="#0072B6" stroke-width="2" stroke-dasharray="2 6" stroke-linecap="round"/><circle cx="740" cy="410" r="5" fill="#0072B6"/>
+<circle cx="888" cy="410" r="10" fill="#0E1111"/><text x="888" y="414" text-anchor="middle" font-family="Poppins" font-size="10" font-weight="600" fill="#fff">B</text>
+<rect x="600" y="452" width="150" height="88" rx="18" fill="#E4E4E4"/>
+<circle cx="675" cy="486" r="10" stroke="#6F7378" stroke-width="2"/><path d="M652 530c3-18 11-26 23-26s20 8 23 26" stroke="#6F7378" stroke-width="2" stroke-linecap="round"/>
+<rect x="662" y="460" width="26" height="14" rx="7" fill="#0E1111"/><text x="675" y="470" text-anchor="middle" font-family="Poppins" font-size="8" font-weight="600" fill="#fff">HALL A</text>
+<rect x="770" y="452" width="150" height="88" rx="18" fill="#F0F1F3"/>
+<rect x="790" y="478" width="110" height="36" rx="8" fill="#fff" stroke="#E4E4E4" stroke-width="1.5"/><text x="845" y="500" text-anchor="middle" font-size="12" fill="#6F7378">Placeholder text</text>
+</g>
+</svg>
