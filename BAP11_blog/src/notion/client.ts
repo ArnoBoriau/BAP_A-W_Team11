@@ -304,9 +304,11 @@ async function blockToHtml(block: BlockObjectResponse, inner: string, text: stri
 		case 'heading_1':
 			return `<h2>${rich(block.heading_1.rich_text)}</h2>${inner}`;
 		case 'heading_2':
-			return `<h2>${rich(block.heading_2.rich_text)}</h2>${inner}`;
+			return `<h3>${rich(block.heading_2.rich_text)}</h3>${inner}`;
 		case 'heading_3':
-			return `<h3>${rich(block.heading_3.rich_text)}</h3>${inner}`;
+			return `<h4>${rich(block.heading_3.rich_text)}</h4>${inner}`;
+		case 'heading_4':
+			return `<h5>${rich(block.heading_4.rich_text)}</h5>${inner}`;
 		case 'bulleted_list_item':
 			return `<li>${rich(block.bulleted_list_item.rich_text)}${inner}</li>`;
 		case 'numbered_list_item':
