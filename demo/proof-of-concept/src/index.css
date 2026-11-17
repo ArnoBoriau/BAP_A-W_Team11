@@ -171,6 +171,11 @@ button {
 .panel__foot {
   border-top: 1px solid var(--line);
   padding-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .link {
@@ -486,6 +491,87 @@ button:focus-visible {
 
 .note {
   font-size: 12px;
+}
+
+/* Connection mode: quiet, it's a setting, not the title. */
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 3px;
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.segmented button {
+  padding: 7px 10px;
+  border: none;
+  border-radius: 7px;
+  background: none;
+  color: var(--muted);
+}
+
+.segmented button[aria-checked='true'] {
+  background: #fff;
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(40, 30, 20, 0.12);
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.steps ol {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.steps li {
+  padding-left: 4px;
+}
+
+.steps li > span:first-child {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.steps .primary {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.steps pre,
+.copy code {
+  font: 12px ui-monospace, monospace;
+}
+
+.steps pre {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.copy {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+}
+
+.copy code {
+  overflow-wrap: anywhere;
+  user-select: all;
 }
 
 kbd {

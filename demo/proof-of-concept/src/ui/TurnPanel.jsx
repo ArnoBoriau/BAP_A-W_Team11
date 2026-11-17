@@ -17,7 +17,7 @@ function swatchStyle(material) {
 }
 
 export function TurnPanel() {
-  const { game, player, opponent, otherOnline, myTurn, reset } = useGame()
+  const { game, player, opponent, otherOnline, link, net, myTurn, reset } = useGame()
   const surface = game.surfaceId && SURFACES_BY_ID[game.surfaceId]
 
   return (
@@ -28,7 +28,11 @@ export function TurnPanel() {
           <span className="round">Turn {game.round}</span>
         </div>
         <p className="presence" data-online={otherOnline}>
-          {otherOnline ? `Player ${opponent} is connected` : `Waiting for player ${opponent}'s window…`}
+          {link !== 'open'
+            ? "Can't reach the server, retrying…"
+            : otherOnline
+              ? `Player ${opponent} is connected`
+              : `Waiting for player ${opponent}'s window…`}
         </p>
       </header>
 
@@ -43,6 +47,7 @@ export function TurnPanel() {
         <button type="button" className="link" onClick={reset}>
           Restart game
         </button>
+        <span>{net === 'network' ? 'Over the network' : 'On this Mac'}</span>
       </footer>
     </aside>
   )
