@@ -8,6 +8,7 @@ import { PLAYERS } from './state/game'
 import { GameProvider } from './state/GameState'
 import { RoomScene } from './scene/RoomScene'
 import { TurnPanel } from './ui/TurnPanel'
+import { PresenceTile } from './ui/PresenceTile'
 import { Launcher } from './ui/Launcher'
 
 const player = new URLSearchParams(location.search).get('player')?.toUpperCase()
@@ -40,6 +41,7 @@ function PlayerScreen({ player }) {
         <RoomScene />
       </div>
       <TurnPanel />
+      <PresenceTile />
       <p className="hint">Drag to orbit · Scroll to zoom · F for fullscreen</p>
     </main>
   )

@@ -30,6 +30,24 @@ Drag each window to its own screen and press `F` for fullscreen.
   the other window sends it the current state.
 - `src/scene/`: the room. Only the player who picks the location can click surfaces.
 - `src/ui/TurnPanel.jsx`: shows each player what to do, or what they're waiting for.
+- `src/ui/PresenceTile.jsx`: a video-call style tile (top right) that shows the other player
+  as an abstract, faceless figure, plus a small inset of yourself as they see you.
+
+## The other player, abstracted
+
+Each window tracks its own player with the webcam (ml5 MoveNet, as in `tests/pulse-presence`).
+The video never leaves the window. Only 17 joint positions (`[x, y, confidence]`, 0…1) are sent
+to the other window, about 20 times a second, on a separate `BroadcastChannel`. The receiver
+draws a round head, a soft torso and rounded limbs from those points and blurs them into a glow.
+You can read posture and gestures (waving, nodding, leaning in), but not who it is: there is no
+face, skin, clothing or background to send.
+
+- `src/presence/tracking.js`: camera + pose model → 17 points per frame.
+- `src/presence/poseLink.js`: sends and receives those points between windows.
+- `src/presence/figure.js`: smooths the points and draws the abstract figure.
+
+**Hide me** stops sending your points (the other side sees "Player X is hidden"). Both windows on
+one laptop share the same webcam, so for a real test use one camera per screen.
 
 To run on two machines later, replace the `BroadcastChannel` with the WebSocket relay from
 `tests/websockets`. The messages can stay the same.
