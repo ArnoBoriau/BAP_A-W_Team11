@@ -12,6 +12,10 @@ export const PLAYERS = ['A', 'B']
 
 export const other = (player) => (player === 'A' ? 'B' : 'A')
 
+// Each player's colour: their figure in the tile, and the pulse that calls
+// the other player over.
+export const COLORS = { A: '#ff6a3d', B: '#6f9fd8' }
+
 export const initialGame = {
   version: 0, // bumped on every change; the highest version wins between windows
   round: 1,

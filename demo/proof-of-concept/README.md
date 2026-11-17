@@ -54,6 +54,37 @@ https is needed because browsers only allow the camera on https or `localhost`.
 The left panel shows "Over the network" at the bottom, and "Can't reach the server, retrying…" if
 the connection drops. It reconnects on its own.
 
+## Waiting for each other (the pulse)
+
+The game only plays while **both players are standing at their screens**. Until then, and whenever one
+of them walks away, a waiting screen covers the room (nothing is lost, the turn just pauses):
+
+| Your screen shows | When |
+| --- | --- |
+| Waiting for player X's screen | the other window isn't open (or can't be reached) |
+| Step in front of the screen | nobody here, nobody there |
+| **Come closer**, with a pulse in the other player's colour | the other player is here, waiting for you |
+| Waiting for player X… | you're here, they aren't (their screen is pulsing) |
+| Both here, then it fades out | the game plays |
+
+"Here" uses the rules from `tests/pulse-presence`: close to the screen, facing it, and standing still for
+1.5 s, so someone walking past doesn't start the game. Looking away for less than 3 s doesn't pause
+it. The ring on the waiting screen fills while it's making sure you're there. Without a camera
+(blocked), a player always counts as here.
+
+Press **P** in a window to pretend someone is standing there (for testing without a second person).
+
+## Playing against the computer
+
+Each window has a toggle under its header, **Player B: Person / Computer** (on B's screen:
+Player A). On the computer setting, that window plays both sides: you make your moves, the computer
+makes the other player's after a second or two, and only you need to stand in front of the screen. The
+waiting screen also offers it ("Play against the computer instead") when the other player isn't there.
+Each window remembers its choice.
+
+If the real other window is open meanwhile, it shows "Player X is playing against the computer" and
+waits (it can't play); when the computer is switched off, both windows continue the same game.
+
 ## How it works
 
 - `src/state/game.js`: the game as pure data plus a reducer (turns, roles, room config).
@@ -62,6 +93,10 @@ the connection drops. It reconnects on its own.
   the other window sends it the current state. Same on a reconnect.
 - `src/scene/`: the room. Only the player who picks the location can click surfaces.
 - `src/ui/TurnPanel.jsx`: shows each player what to do, or what they're waiting for.
+- `src/presence/presence.js`: decides whether the player is really standing at the screen (the pulse
+  mechanism). Its result (`here`) goes along with every game message.
+- `src/ui/WaitingScreen.jsx`: the waiting / paused screen with the pulse, over the room.
+- `src/state/computer.js`: the computer's moves (a random place, then a different material).
 - `src/ui/PresenceTile.jsx`: a video-call style tile (top right) that shows the other player
   as an abstract, faceless figure, plus a small inset of yourself as they see you.
 

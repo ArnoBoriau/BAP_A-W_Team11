@@ -6,20 +6,24 @@
 //
 // Everything moves in a requestAnimationFrame loop outside React. React only
 // re-renders when the caption changes (someone steps in or out of view).
+//
+// The same poses also feed the presence detector (the pulse mechanism): is
+// this player really standing here? That goes to GameState, which pauses the
+// game until both players are.
 
 import { useEffect, useRef, useState } from 'react'
 import { useGame } from '../state/GameState'
-import { other } from '../state/game'
+import { COLORS, other } from '../state/game'
 import { startTracking } from '../presence/tracking'
 import { createPoseLink } from '../presence/poseLink'
 import { createFigure } from '../presence/figure'
+import { createPresence } from '../presence/presence'
 
-const COLORS = { A: '#ff6a3d', B: '#6f9fd8' }
 const BACKGROUND = '#2a2826'
 const STALE_MS = 1000 // no pose for this long = nobody there
 
 export function PresenceTile() {
-  const { player, opponent, otherOnline } = useGame()
+  const { player, opponent, otherOnline, computer, setSeen, meter } = useGame()
   const [camera, setCamera] = useState('starting') // starting | loading | tracking | blocked
   const [hidden, setHidden] = useState(false)
   const [remote, setRemote] = useState('away') // here | away | hidden
@@ -27,23 +31,33 @@ export function PresenceTile() {
   const remoteCanvas = useRef(null)
   const selfCanvas = useRef(null)
   const hiddenRef = useRef(hidden)
+  const computerRef = useRef(computer)
 
   useEffect(() => {
     hiddenRef.current = hidden
-  }, [hidden])
+    computerRef.current = computer
+  }, [hidden, computer])
 
   useEffect(() => {
     const link = createPoseLink(player)
     const mine = { points: null, aspect: 4 / 3 }
     const them = createFigure()
     const me = createFigure()
+    const presence = createPresence()
 
     const stop = startTracking({
-      onStatus: setCamera,
+      onStatus: (status) => {
+        setCamera(status)
+        // No camera, no way to tell: don't lock this player out of the game.
+        if (status === 'blocked') setSeen(true)
+      },
       onPose: (points, aspect) => {
         mine.points = points
         mine.aspect = aspect
         link.send(points, aspect, hiddenRef.current)
+        presence.update(points)
+        meter.progress = presence.progress()
+        setSeen(presence.state.present) // React skips it when nothing changed
       },
     })
 
@@ -53,7 +67,8 @@ export function PresenceTile() {
       const dt = Math.min((now - last) / 1000, 0.1)
       last = now
       const r = link.remote
-      const fresh = now - r.at < STALE_MS
+      // Playing the computer: whoever is at the other screen isn't in this game.
+      const fresh = now - r.at < STALE_MS && !computerRef.current
       const points = fresh && !r.hidden ? r.points : null
 
       them.update(points, r.aspect, dt)
@@ -82,11 +97,13 @@ export function PresenceTile() {
       cancelAnimationFrame(raf)
       stop()
       link.close()
+      setSeen(false)
     }
-  }, [player])
+  }, [player, setSeen, meter])
 
   let caption = null
-  if (!otherOnline) caption = `Waiting for player ${opponent}…`
+  if (computer) caption = `Player ${opponent} is the computer`
+  else if (!otherOnline) caption = `Waiting for player ${opponent}…`
   else if (remote === 'hidden') caption = `Player ${opponent} is hidden`
   else if (remote === 'away') caption = `Player ${opponent} isn't in view`
 

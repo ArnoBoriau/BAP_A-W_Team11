@@ -580,3 +580,225 @@ kbd {
   border-radius: 4px;
   font: 11px ui-monospace, monospace;
 }
+
+/* --- waiting screen: the game waits until both players are here ------------ */
+
+/* Keeps the wrapped panel positioned against .app; only there for `inert`. */
+.contents {
+  display: contents;
+}
+
+/* Over the room and the panel, under the presence tile (later in the DOM). */
+.waiting {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  overflow: hidden;
+  background: rgba(233, 230, 225, 0.72);
+  backdrop-filter: blur(14px) saturate(0.8);
+  transition:
+    opacity 0.8s ease,
+    visibility 0s linear 0s;
+}
+
+.waiting[data-open='false'] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  /* hold "Both here" for a beat, then fade out */
+  transition:
+    opacity 0.8s ease 0.9s,
+    visibility 0s linear 1.7s;
+}
+
+/* The pulse, as in tests/pulse-presence: the outer layer fades in and out,
+   the inner one breathes, so it never snaps on mid-breath. */
+.waiting__pulse {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  pointer-events: none;
+}
+
+.waiting__pulse::before {
+  content: '';
+  position: absolute;
+  inset: -25%;
+  background: radial-gradient(circle at 50% 50%, var(--glow) 0%, transparent 62%);
+  animation: breathe 2.4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.waiting[data-pulsing='true'] .waiting__pulse {
+  opacity: 1;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(0.7);
+    opacity: 0.25;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+.waiting__card {
+  position: relative;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.waiting__eyebrow {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.waiting h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.waiting__card p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* "We see you, hold still": fills while the presence timer runs. */
+.waiting__ring {
+  width: 48px;
+  height: 48px;
+  transform: rotate(-90deg);
+}
+
+.waiting__ring circle {
+  fill: none;
+  stroke-width: 3;
+}
+
+.waiting__ring circle:first-child {
+  stroke: var(--line);
+}
+
+.waiting__ring circle:last-child {
+  stroke: var(--me);
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--progress, 0));
+}
+
+/* Waiting on the other side: three soft dots. */
+.waiting__dots {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.waiting__dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--me);
+  animation: dot 1.4s ease-in-out infinite;
+}
+
+.waiting__dots i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.waiting__dots i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dot {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.waiting__foot {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waiting__pulse::before {
+    animation-duration: 4.8s;
+  }
+
+  .waiting__dots i {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+@media (max-width: 640px) {
+  .waiting h2 {
+    font-size: 22px;
+  }
+
+  /* leave room for the tile at the top */
+  .waiting__card {
+    margin-top: 120px;
+  }
+}
+
+/* --- opponent: person or computer ----------------------------------------- */
+
+/* Quiet on purpose: a setting, not the thing to look at. */
+.opponent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: -6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.segmented--small {
+  padding: 2px;
+  border-radius: 8px;
+}
+
+.segmented--small button {
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.waiting__action {
+  margin-top: 14px;
+  font-size: 13px;
+}

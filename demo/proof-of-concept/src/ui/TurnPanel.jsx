@@ -2,6 +2,7 @@
 //   my turn, location phase  → list of surfaces to pick from
 //   my turn, material phase  → finishes for the picked surface
 //   other player's turn      → what we're waiting for
+// The opponent toggle (person / computer) sits under the header.
 
 import { MATERIALS_BY_ID, materialsFor } from '../config/materials'
 import { SURFACES } from '../config/room'
@@ -17,7 +18,7 @@ function swatchStyle(material) {
 }
 
 export function TurnPanel() {
-  const { game, player, opponent, otherOnline, link, net, myTurn, reset } = useGame()
+  const { game, player, opponent, otherOnline, link, net, myTurn, computer, reset } = useGame()
   const surface = game.surfaceId && SURFACES_BY_ID[game.surfaceId]
 
   return (
@@ -28,13 +29,17 @@ export function TurnPanel() {
           <span className="round">Turn {game.round}</span>
         </div>
         <p className="presence" data-online={otherOnline}>
-          {link !== 'open'
-            ? "Can't reach the server, retrying…"
-            : otherOnline
-              ? `Player ${opponent} is connected`
-              : `Waiting for player ${opponent}'s window…`}
+          {computer
+            ? `Player ${opponent} is the computer`
+            : link !== 'open'
+              ? "Can't reach the server, retrying…"
+              : otherOnline
+                ? `Player ${opponent} is connected`
+                : `Waiting for player ${opponent}'s window…`}
         </p>
       </header>
+
+      <OpponentToggle />
 
       <Status />
 
@@ -53,8 +58,27 @@ export function TurnPanel() {
   )
 }
 
+// Play against the other person or against the computer.
+function OpponentToggle() {
+  const { opponent, computer, playComputer } = useGame()
+  return (
+    <div className="opponent">
+      <span>Player {opponent}</span>
+      <div className="segmented segmented--small" role="radiogroup" aria-label={`Who plays player ${opponent}?`}>
+        <button type="button" role="radio" aria-checked={!computer} onClick={() => playComputer(false)}>
+          Person
+        </button>
+        <button type="button" role="radio" aria-checked={computer} onClick={() => playComputer(true)}>
+          Computer
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function Status() {
-  const { game, opponent, myTurn } = useGame()
+  const { game, opponent: letter, myTurn, computer } = useGame()
+  const opponent = computer ? `${letter} (computer)` : letter
   const surface = game.surfaceId && SURFACES_BY_ID[game.surfaceId]
 
   let role, text
