@@ -1,32 +1,43 @@
 /*
-  Global styles, after the ARCHITECT@WORK identity: a warm near-black, off-white Helvetica, square shapes,
-  uppercase headings and labels, thin rules, and one warm accent for what needs attention.
-  The pillar colours come from A@W's country palette.
+  Global styles: a near-black page, off-white text, square shapes, uppercase headings and labels, thin rules.
+  Type follows our concept's styleboard: Poppins for titles, labels and buttons, Manrope for running text.
+  Colours follow our concept, agora.: its blue is the site's main colour (links, focus, the current page,
+  what needs attention), with its light blue for small accent text, where the deep blue is too dark to read.
+  The pillar colours have a meaning: a person is shown in the colour of the pillar they lead. Planning and
+  Hours get their own colours on the home tiles, ones no team member uses.
 */
 
 :root {
 	color-scheme: dark;
 
-	--bg: #0b0b0a;
+	--bg: #0e1111;
 	--surface: #141413;
 	--surface-2: #1d1d1b;
 	--surface-3: #2a2a27;
-	--fg: #f2f0eb;
+	--fg: #edeae4;
 	--fg-soft: #c9c6bf;
 	--muted: #8f8c86;
-	--line: rgba(242, 240, 235, 0.1);
-	--line-strong: rgba(242, 240, 235, 0.24);
+	--line: rgba(237, 234, 228, 0.1);
+	--line-strong: rgba(237, 234, 228, 0.24);
 
-	--accent: #ff5b2e;
-	--ink: #0b0b0a;
-	--deadline: #ff7a5c;
+	--accent: #0072b6; /* agora. blue: fills, borders, outlines, large text */
+	--accent-text: #9ec5ff; /* agora. light blue: small accent text on the dark page */
+	--on-accent: #ffffff; /* text on a blue fill */
+	--ink: #0e1111;
+	--deadline: var(--accent-text);
 
-	--p-ux: #2bb7b4;
-	--p-design: #e87702;
-	--p-dev: #a6c20d;
+	--p-ux: #2bb7b4; /* Amber */
+	--p-design: #f08fb8; /* Emelie */
+	--p-dev: #f28c28; /* Arno */
 	--p-general: #a8a49c;
 
-	--font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	/* The other ways into the site (home tiles, footer strip), in colours from the earlier palette
+	   that no team member uses: the old Dev green and the old blue. */
+	--c-planning: #a6c20d;
+	--c-hours: #1f88cc;
+
+	--font: 'Manrope', 'Helvetica Neue', Arial, sans-serif;
+	--font-display: 'Poppins', 'Helvetica Neue', Arial, sans-serif;
 	--ease: cubic-bezier(0.16, 1, 0.3, 1);
 	--max: 1200px;
 	--gutter: clamp(16px, 4vw, 40px);
@@ -69,8 +80,19 @@ h4,
 h5,
 h6 {
 	margin: 0;
-	font-weight: 400;
+	font-family: var(--font-display);
+	font-weight: 600;
 	line-height: 1.15;
+}
+
+/* Titles, labels and controls: everything uppercase or short speaks in Poppins. */
+.label,
+.picker,
+.pillar,
+.tag,
+table.data th,
+.prose th {
+	font-family: var(--font-display);
 }
 
 p {
@@ -183,8 +205,8 @@ p {
 }
 
 .link:hover {
-	color: var(--accent);
-	text-decoration-color: var(--accent);
+	color: var(--accent-text);
+	text-decoration-color: var(--accent-text);
 }
 
 .btn {
@@ -197,6 +219,7 @@ p {
 	background: transparent;
 	color: var(--fg);
 	font: inherit;
+	font-family: var(--font-display);
 	font-size: 14px;
 	font-weight: 700;
 	letter-spacing: 0.02em;
@@ -219,7 +242,7 @@ p {
 .btn--primary:hover {
 	background: var(--accent);
 	border-color: var(--accent);
-	color: var(--ink);
+	color: var(--on-accent);
 }
 
 /* Tab bar, like the sub navigation on the A@W event pages. */
@@ -239,6 +262,7 @@ p {
 	background: var(--surface-2);
 	color: var(--fg);
 	font: inherit;
+	font-family: var(--font-display);
 	font-size: 14px;
 	font-weight: 700;
 	text-transform: uppercase;
@@ -453,7 +477,7 @@ table.data th.num {
 }
 
 .prose a:hover {
-	color: var(--accent);
+	color: var(--accent-text);
 }
 
 .prose ul,

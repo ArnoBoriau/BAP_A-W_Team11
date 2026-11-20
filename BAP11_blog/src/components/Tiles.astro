@@ -1,13 +1,14 @@
 ---
-// A cluster of slanted tiles, after the country tiles in the ARCHITECT@WORK identity.
-// Every tile is a link; they float slowly and shift a little with the cursor.
+// A ring of slanted tiles around whatever is passed in (the slot), after the country tiles in the
+// ARCHITECT@WORK identity. Every tile is a link; they float slowly and shift a little with the cursor.
+// On narrow screens the slot comes first and the tiles follow in a grid.
 
 export interface Tile {
 	label: string;
 	sub?: string;
 	href: string;
 	color: string;
-	/** Position in % of the cluster. */
+	/** Position of the tile's top-left corner, in % of the cluster. */
 	x: number;
 	y: number;
 	/** Slant direction: up to the right, or down to the right. */
@@ -24,7 +25,9 @@ interface Props {
 const { tiles, label } = Astro.props;
 ---
 
-<nav class="cluster" aria-label={label} data-cluster>
+<div class="cluster" data-cluster>
+	<div class="centre"><slot /></div>
+	<nav class="ring" aria-label={label}>
 	{
 		tiles.map((t, i) => (
 			<a
@@ -39,7 +42,8 @@ const { tiles, label } = Astro.props;
 			</a>
 		))
 	}
-</nav>
+	</nav>
+</div>
 
 <script>
 	document.addEventListener('astro:page-load', () => {
@@ -61,18 +65,31 @@ const { tiles, label } = Astro.props;
 	.cluster {
 		--mx: 0;
 		--my: 0;
+		--slant: 16deg; /* how far the tiles tilt */
 		position: relative;
 		width: 100%;
-		max-width: 460px;
-		aspect-ratio: 4 / 5.4;
+		aspect-ratio: 16 / 9;
+		max-height: 680px;
 		margin-inline: auto;
+	}
+
+	.centre {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-items: center;
+		pointer-events: none;
+	}
+
+	.centre > :global(*) {
+		pointer-events: auto;
 	}
 
 	.tile {
 		position: absolute;
 		left: var(--x);
 		top: var(--y);
-		width: 40%;
+		width: 18%;
 		aspect-ratio: 16 / 9;
 		color: var(--ink);
 		text-decoration: none;
@@ -96,14 +113,15 @@ const { tiles, label } = Astro.props;
 	}
 
 	.up .face {
-		transform: skewY(-26.57deg);
+		transform: skewY(calc(-1 * var(--slant)));
 	}
 
 	.down .face {
-		transform: skewY(26.57deg);
+		transform: skewY(var(--slant));
 	}
 
 	.name {
+		font-family: var(--font-display);
 		font-size: clamp(14px, 1.6vw, 18px);
 		font-weight: 700;
 		line-height: 1.1;
@@ -136,6 +154,37 @@ const { tiles, label } = Astro.props;
 	.tile:focus-visible .face {
 		outline: 2px solid var(--fg);
 		outline-offset: 3px;
+	}
+
+	@media (max-width: 760px) {
+		.cluster {
+			aspect-ratio: auto;
+			max-height: none;
+		}
+
+		.centre {
+			position: static;
+			padding-block: 24px 48px;
+		}
+
+		/* Three small tiles per row, with room above and below for their slant. */
+		.ring {
+			display: grid;
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+			gap: 8px 16px;
+			padding-block: 8px;
+		}
+
+		.tile {
+			position: relative;
+			left: auto;
+			top: auto;
+			width: 100%;
+			max-width: 200px;
+			justify-self: center;
+			/* A 16° slant reaches about 15% of the tile's width above and below it (% margins follow the column width). */
+			margin-block: 20%;
+		}
 	}
 
 	@keyframes float {

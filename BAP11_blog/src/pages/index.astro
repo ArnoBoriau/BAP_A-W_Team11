@@ -3,9 +3,9 @@ import FormattedDate from '../components/FormattedDate.astro';
 import PostList from '../components/PostList.astro';
 import SitePlan from '../components/SitePlan.astro';
 import Tiles from '../components/Tiles.astro';
-import { CLIENT_CONTACTS, MEMBER_COLORS, PILLARS, PROJECT } from '../consts';
+import { CLIENT_CONTACTS, PILLARS, PROJECT } from '../consts';
 import Layout from '../layouts/Layout.astro';
-import { DAY, formatDate, formatHours, getEntries, getPlanning, getTimeLog, sum, today } from '../lib/data';
+import { DAY, formatHours, getEntries, getPlanning, getTimeLog, sum, today } from '../lib/data';
 
 const [entries, time, { weeks, milestones }] = await Promise.all([getEntries(), getTimeLog(), getPlanning()]);
 
@@ -33,38 +33,37 @@ const requirements = [
 	{ what: 'Guidance from AI', where: 'Logbook, AI tag', href: '/logbook/?f=ai', stat: plural(has(tagged('ai')), 'post') },
 ];
 
-// The tile cluster in the hero: one tile per way into the logbook.
+// The concept in four points (from our concept text after the client meeting of 19 Nov).
+const conceptPoints = [
+	{ title: 'The gate', text: 'One wall is a game screen, the other wall and the ceiling one animation in black, white and blue.' },
+	{ title: 'The window', text: 'An abstract shape shows the group at the other gate, moving with them. You see strangers are there, never who.' },
+	{ title: 'Building together', text: 'Each round is one material. Most people in front of a version wins, then the halls switch roles.' },
+	{ title: 'The street', text: 'Every finished house starts a new one next door. Afterwards, a QR code lets you follow the street online.' },
+];
+
+// The tiles around the name in the hero: one per way into the logbook. Pillars in their colour, Planning and Hours in their own, Team in white.
+// Three on each side, the middle ones further out, so they ring the name without touching it.
 const tiles = [
-	{ label: 'UX', sub: plural(has(inPillar('ux')), 'post'), href: '/logbook/?f=ux', color: PILLARS.ux.color, x: 4, y: 8, slant: 'up', depth: 1.4 },
-	{ label: 'Design', sub: plural(has(inPillar('design')), 'post'), href: '/logbook/?f=design', color: PILLARS.design.color, x: 56, y: 19, slant: 'down', depth: 0.8 },
-	{ label: 'Dev', sub: plural(has(inPillar('dev')), 'post'), href: '/logbook/?f=dev', color: PILLARS.dev.color, x: 4, y: 36, slant: 'up', depth: 1 },
-	{ label: 'Planning', sub: plural(milestones.length, 'date'), href: '/planning/', color: '#d2a6b5', x: 56, y: 47, slant: 'down', depth: 1.6 },
-	{ label: 'Hours', sub: formatHours(totalHours), href: '/time/', color: MEMBER_COLORS[3], x: 4, y: 64, slant: 'up', depth: 0.7 },
-	{ label: 'Team', sub: PROJECT.members, href: '/team/', color: '#f2f0eb', x: 56, y: 75, slant: 'down', depth: 1.2 },
+	{ label: 'UX', sub: plural(has(inPillar('ux')), 'post'), href: '/logbook/?f=ux', color: PILLARS.ux.color, x: 14, y: 5, slant: 'up', depth: 1.4 },
+	{ label: 'Design', sub: plural(has(inPillar('design')), 'post'), href: '/logbook/?f=design', color: PILLARS.design.color, x: 68, y: 5, slant: 'down', depth: 0.8 },
+	{ label: 'Dev', sub: plural(has(inPillar('dev')), 'post'), href: '/logbook/?f=dev', color: PILLARS.dev.color, x: 0, y: 41, slant: 'up', depth: 1 },
+	{ label: 'Planning', sub: plural(milestones.length, 'date'), href: '/planning/', color: 'var(--c-planning)', x: 82, y: 41, slant: 'down', depth: 1.6 },
+	{ label: 'Hours', sub: formatHours(totalHours), href: '/time/', color: 'var(--c-hours)', x: 14, y: 77, slant: 'up', depth: 0.7 },
+	{ label: 'Team', sub: PROJECT.members, href: '/team/', color: 'var(--fg)', x: 68, y: 77, slant: 'down', depth: 1.2 },
 ] as const;
 ---
 
 <Layout>
+	<!-- Just the name, as on our presentation slides, with the ways into the logbook around it. -->
 	<section class="wrap hero">
-		<div class="intro">
-			<span class="badge">BAP · {PROJECT.team} · {PROJECT.client}</span>
+		<Tiles tiles={[...tiles]} label="Explore the logbook">
 			<h1>
-				{PROJECT.title.split(' ').map((word, i) => <span style={`--i: ${i}`}>{word}</span>)}
+				<span class="name" aria-hidden="true">{PROJECT.concept}<span class="dot"></span></span>
+				<span class="sr-only">
+					{PROJECT.concept}: logbook of BAP {PROJECT.team}, {PROJECT.title}, for {PROJECT.client}
+				</span>
 			</h1>
-			<ul class="facts">
-				<li>{PROJECT.event}</li>
-				<li>{formatDate(new Date(PROJECT.start))} – {formatDate(new Date(PROJECT.end), 'long')}</li>
-			</ul>
-			<p class="lead">
-				We're turning two walls in the arrival zone into an interactive experience. This logbook documents
-				everything: research, process, feedback, planning, hours and AI use.
-			</p>
-			<div class="actions">
-				<a href="/logbook/" class="btn btn--primary">Open the logbook</a>
-				<a href="/planning/" class="btn">Planning</a>
-			</div>
-		</div>
-		<Tiles tiles={[...tiles]} label="Explore the logbook" />
+		</Tiles>
 	</section>
 
 	<div class="wrap">
@@ -114,13 +113,22 @@ const tiles = [
 			<div class="sec-head">
 				<h2>Current concept</h2>
 			</div>
-			<p class="concept-name">{PROJECT.concept}</p>
 			<p class="concept-text">
-				Latin for window. The two walls become neighbouring buildings, 90 m apart, and visitors bring them to life
-				with their presence. When two strangers stand at the same spot in different halls, a window opens and they
-				see each other.
+				In each hall stands a slim, open gate that visitors walk straight through. Together, the two halls build a
+				house: one hall chooses a material by standing in front of the version they want to send, the other decides
+				where it goes. Room by room and house by house, a whole street grows over the two days.
 			</p>
-			{brainstorm && <a class="link" href={`/logbook/${brainstorm.id}/`}>How we got here</a>}
+			<dl class="concept-points">
+				{
+					conceptPoints.map((p) => (
+						<div>
+							<dt>{p.title}</dt>
+							<dd>{p.text}</dd>
+						</div>
+					))
+				}
+			</dl>
+			{brainstorm && <a class="link" href={`/logbook/${brainstorm.id}/`}>Where it started</a>}
 		</div>
 		<div data-reveal>
 			<SitePlan />
@@ -178,70 +186,25 @@ const tiles = [
 
 <style>
 	.hero {
-		display: grid;
-		grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-		gap: 64px;
-		align-items: center;
-		padding-block: 56px 72px;
+		padding-block: 24px 40px;
 	}
 
-	.badge {
-		display: inline-block;
-		padding: 3px 7px;
-		background: var(--fg);
-		color: var(--bg);
-		font-size: 11px;
-		font-weight: 700;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
-		animation: fade-up 0.8s var(--ease) both;
-	}
-
-	h1 {
-		display: flex;
-		flex-direction: column;
-		margin-top: 20px;
-		font-size: clamp(44px, 6.4vw, 92px);
-		line-height: 0.92;
-		letter-spacing: -0.02em;
-		text-transform: uppercase;
-	}
-
-	/* One word per line, each sliding up in turn. */
-	h1 span {
+	/* The name as in the logo: lowercase Poppins with a blue square for a full stop. */
+	h1 .name {
 		display: block;
-		animation: title-in 0.9s calc(0.1s + var(--i) * 0.1s) var(--ease) both;
+		font-size: clamp(60px, 11vw, 148px);
+		font-weight: 600;
+		line-height: 1;
+		letter-spacing: -0.04em;
+		animation: title-in 0.9s 0.1s var(--ease) both;
 	}
 
-	h1 span:last-child {
-		color: var(--accent);
-	}
-
-	.facts {
-		margin: 28px 0 0;
-		padding: 0;
-		list-style: none;
-		font-weight: 700;
-		animation: fade-up 0.8s 0.4s var(--ease) both;
-	}
-
-	.facts li + li {
-		margin-top: 4px;
-	}
-
-	.lead {
-		margin-top: 16px;
-		max-width: 50ch;
-		color: var(--fg-soft);
-		animation: fade-up 0.8s 0.5s var(--ease) both;
-	}
-
-	.actions {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 10px;
-		margin-top: 28px;
-		animation: fade-up 0.8s 0.6s var(--ease) both;
+	.dot {
+		display: inline-block;
+		width: 0.17em;
+		height: 0.17em;
+		margin-left: 0.05em;
+		background: var(--accent);
 	}
 
 	.stats {
@@ -262,11 +225,13 @@ const tiles = [
 	}
 
 	.stats .now .label {
-		color: var(--accent);
+		color: var(--accent-text);
 	}
 
 	.stats dd {
 		margin: 10px 0 0;
+		font-family: var(--font-display);
+		font-weight: 500;
 		font-size: 36px;
 		line-height: 1.1;
 		font-variant-numeric: tabular-nums;
@@ -340,17 +305,17 @@ const tiles = [
 		font-weight: 700;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
-		color: var(--accent);
+		color: var(--accent-text);
 	}
 
 	.tiles a:hover,
 	.tiles a:focus-visible {
-		color: var(--ink);
+		color: var(--on-accent);
 	}
 
 	.tiles a:hover :is(.tile-no, .tile-where, .tile-stat),
 	.tiles a:focus-visible :is(.tile-no, .tile-where, .tile-stat) {
-		color: rgba(11, 11, 10, 0.75);
+		color: rgba(255, 255, 255, 0.8);
 	}
 
 	.concept {
@@ -360,15 +325,30 @@ const tiles = [
 		align-items: center;
 	}
 
-	.concept-name {
-		font-size: clamp(56px, 8vw, 104px);
-		line-height: 0.95;
-		letter-spacing: -0.02em;
+	.concept-points {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 20px 28px;
+		margin: 0 0 24px;
+	}
+
+	.concept-points dt {
+		font-family: var(--font-display);
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: 0.04em;
 		text-transform: uppercase;
 	}
 
+	.concept-points dd {
+		margin: 4px 0 0;
+		font-size: 15px;
+		line-height: 1.5;
+		color: var(--fg-soft);
+	}
+
 	.concept-text {
-		margin: 20px 0 16px;
+		margin: 0 0 24px;
 		max-width: 52ch;
 		color: var(--fg-soft);
 	}
@@ -416,7 +396,6 @@ const tiles = [
 	}
 
 	@media (max-width: 900px) {
-		.hero,
 		.concept,
 		.two-col {
 			grid-template-columns: 1fr;
@@ -425,6 +404,10 @@ const tiles = [
 
 		.stats {
 			grid-template-columns: 1fr 1fr;
+		}
+
+		.concept-points {
+			grid-template-columns: 1fr;
 		}
 
 		.stats > div + div:nth-child(3) {
@@ -436,8 +419,5 @@ const tiles = [
 			border-top: 1px solid var(--line);
 		}
 
-		.hero :global(.cluster) {
-			max-width: 320px;
-		}
 	}
 </style>

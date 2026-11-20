@@ -1,6 +1,6 @@
 import type { ImageMetadata } from 'astro';
 import { type CollectionEntry, getCollection, render } from 'astro:content';
-import { MEMBER_COLORS } from '../consts';
+import { PILLAR_IDS, PILLARS, type PillarId } from '../consts';
 import { notion } from '../notion/client';
 import * as fromNotion from '../notion/source';
 
@@ -54,9 +54,15 @@ export async function getPost(id: string) {
 	return { ...around, Content, text: entry.body ?? '' };
 }
 
-/** Team members in their configured order, each with a fixed chart colour. */
+/** Team members in their configured order, each in the colour of the pillar they lead. */
 export async function getTeam(): Promise<Member[]> {
-	return (await teamList()).map((m, i) => ({ id: m.id, data: m.data, color: MEMBER_COLORS[i % MEMBER_COLORS.length] }));
+	return (await teamList()).map((m) => ({ id: m.id, data: m.data, color: PILLARS[m.data.pillar].color }));
+}
+
+/** The pillars in the order of the people who lead them (then the rest), so lists of people and of
+ *  pillars side by side line up colour for colour. */
+export function pillarsInTeamOrder(team: Member[]): PillarId[] {
+	return [...new Set([...team.map((m) => m.data.pillar), ...PILLAR_IDS])];
 }
 
 export async function getTimeLog() {

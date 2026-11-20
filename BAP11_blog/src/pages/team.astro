@@ -1,9 +1,9 @@
 ---
 import { Image } from 'astro:assets';
 import Pillar from '../components/Pillar.astro';
-import { PILLAR_IDS, PILLARS, PROJECT } from '../consts';
+import { PILLARS, PROJECT } from '../consts';
 import Layout from '../layouts/Layout.astro';
-import { formatHours, getEntries, getTeam, getTimeLog, sum } from '../lib/data';
+import { formatHours, getEntries, getTeam, getTimeLog, pillarsInTeamOrder, sum } from '../lib/data';
 
 const [team, sessions, entries] = await Promise.all([getTeam(), getTimeLog(), getEntries()]);
 const hours = (id: string) => sum(sessions.filter((s) => s.data.member.id === id).map((s) => s.data.hours));
@@ -99,7 +99,7 @@ const chronotype = { morning: 'In the morning', evening: 'In the evening' } as c
 				</thead>
 				<tbody>
 					{
-						PILLAR_IDS.map((id) => {
+						pillarsInTeamOrder(team).map((id) => {
 							const leads = team.filter((m) => m.data.pillar === id);
 							return (
 								<tr>

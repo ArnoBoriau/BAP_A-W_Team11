@@ -14,7 +14,7 @@ export const PROJECT = {
 	start: '2026-10-27',
 	end: '2026-12-17',
 	event: '29 & 30 April 2027, Kortrijk Xpo',
-	concept: 'Fenestra',
+	concept: 'agora', // written with a blue square as its full stop, like the logo
 	repo: 'https://github.com/ArnoBoriau/BAP_A-W_Team11',
 };
 
@@ -24,6 +24,8 @@ export const CLIENT_CONTACTS = [
 ];
 
 // Pillars: the same four as in Notion. Every logbook post, hour and task belongs to one.
+// The pillar colours are the only colours with a meaning on the site: a team member is shown in the colour of the
+// pillar they lead, and everything else (planning, hours, team…) stays neutral.
 export const PILLAR_IDS = ['ux', 'design', 'dev', 'general'] as const;
 export type PillarId = (typeof PILLAR_IDS)[number];
 export const PILLARS: Record<PillarId, { label: string; color: string }> = {
@@ -52,6 +54,3 @@ export const CHRONOTYPES = ['morning', 'evening'] as const;
 export const MILESTONE_TYPES = ['deadline', 'event', 'jury'] as const;
 export const TASK_STATUSES = ['todo', 'doing', 'done'] as const;
 export const TASK_STATUS_LABELS = { todo: 'Not started', doing: 'In progress', done: 'Done' } as const;
-
-// One colour per team member (in team `order`), from the A@W country palette and checked for colour-blind separation.
-export const MEMBER_COLORS = ['#2a9e8f', '#d4730a', '#1f88cc', '#b9852f'];

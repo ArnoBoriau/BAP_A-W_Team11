@@ -63,6 +63,8 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 
 	.brand {
 		display: flex;
+		font-family: var(--font-display);
+		font-weight: 600;
 		flex-direction: column;
 		font-size: 17px;
 		line-height: 1.05;
@@ -82,6 +84,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 		display: block;
 		padding: 10px 12px;
 		border-bottom: 3px solid transparent;
+		font-family: var(--font-display);
 		font-size: 14px;
 		font-weight: 700;
 		text-transform: uppercase;
@@ -106,6 +109,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 		background: none;
 		color: var(--fg);
 		font: inherit;
+		font-family: var(--font-display);
 		font-size: 14px;
 		font-weight: 700;
 		text-transform: uppercase;

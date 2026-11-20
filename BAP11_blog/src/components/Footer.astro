@@ -1,9 +1,9 @@
 ---
-import { MEMBER_COLORS, PILLARS, PROJECT } from '../consts';
+import { PILLARS, PROJECT } from '../consts';
 import { live } from '../lib/data';
 
-// A strip of slanted blocks in the A@W country colours, as a sign-off.
-const strip = [PILLARS.ux.color, '#d2a6b5', PILLARS.design.color, MEMBER_COLORS[3], PILLARS.dev.color, 'var(--fg)'];
+// A strip of slanted blocks as a sign-off: the colours of the home tiles.
+const strip = [PILLARS.ux.color, 'var(--c-planning)', PILLARS.design.color, 'var(--c-hours)', PILLARS.dev.color, 'var(--fg)'];
 ---
 
 <footer class="footer">
@@ -63,6 +63,8 @@ const strip = [PILLARS.ux.color, '#d2a6b5', PILLARS.design.color, MEMBER_COLORS[
 
 	.wordmark {
 		padding-block: 40px 32px;
+		font-family: var(--font-display);
+		font-weight: 600;
 		font-size: clamp(36px, 7vw, 96px);
 		line-height: 0.95;
 		letter-spacing: -0.02em;
