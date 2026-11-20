@@ -48,13 +48,15 @@ export function RoomScene({ config, glazing, selectedId, focusId, onSelect, canS
 }
 
 // Shift the projection so the room is centred in the free space next to the side panel.
-const PANEL_SPACE = 352 // panel width + margins, px (see .panel in index.css)
+const PANEL_SPACE = 22 // panel width + margins, rem (see .panel in index.css)
 
 function PanelOffset() {
   const { camera, size } = useThree()
   useLayoutEffect(() => {
+    // The UI scales with the root font size, so the panel's width does too.
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
     // Wide: panel on the left. Narrow: panel is a bottom sheet (~half the height).
-    const [x, y] = size.width > 640 ? [-PANEL_SPACE / 2, 0] : [0, size.height * 0.22]
+    const [x, y] = size.width > 640 ? [(-PANEL_SPACE * rem) / 2, 0] : [0, size.height * 0.22]
     camera.setViewOffset(size.width, size.height, x, y, size.width, size.height)
   }, [camera, size])
   return null

@@ -1,3 +1,17 @@
+/* Interface sizes are in rem, so the whole UI scales with the root font size
+   (1rem = 16px at full size). Hairlines (≤ 2px) and breakpoints stay in px.
+   The 3D canvas isn't affected, so clicking surfaces stays exact. */
+html {
+  font-size: 16px;
+}
+
+/* Smaller windows (e.g. two side by side on a MacBook): the same UI, smaller. */
+@media (max-width: 1200px), (max-height: 860px) {
+  html {
+    font-size: 13.5px;
+  }
+}
+
 :root {
   --bg: #e9e6e1;
   --panel: rgba(252, 251, 249, 0.92);
@@ -5,9 +19,9 @@
   --muted: #85807a;
   --line: #dedad4;
   --accent: #ff6a3d;
-  --radius: 10px;
+  --radius: 0.625rem;
 
-  font: 14px/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font: 0.875rem/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   color: var(--text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
@@ -45,25 +59,25 @@ button {
 
 .panel {
   position: absolute;
-  top: 16px;
-  left: 16px;
-  width: 320px;
-  max-height: calc(100% - 32px);
+  top: 1rem;
+  left: 1rem;
+  width: 20rem;
+  max-height: calc(100% - 2rem);
   overflow-y: auto;
-  padding: 18px;
+  padding: 1.125rem;
   background: var(--panel);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(0.75rem);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  box-shadow: 0 12px 32px -16px rgba(40, 30, 20, 0.25);
+  border-radius: 0.875rem;
+  box-shadow: 0 0.75rem 2rem -1rem rgba(40, 30, 20, 0.25);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 1.125rem;
 }
 
 .panel h1 {
   margin: 0;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -74,8 +88,8 @@ button {
 }
 
 .panel h2 {
-  margin: 0 0 8px;
-  font-size: 11px;
+  margin: 0 0 0.5rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -94,10 +108,10 @@ button {
 .element {
   width: 100%;
   display: grid;
-  grid-template-columns: 22px 1fr auto;
+  grid-template-columns: 1.375rem 1fr auto;
   align-items: center;
-  gap: 10px;
-  padding: 7px 8px;
+  gap: 0.625rem;
+  padding: 0.4375rem 0.5rem;
   border: 1px solid transparent;
   border-radius: var(--radius);
   background: none;
@@ -114,28 +128,28 @@ button {
 }
 
 .element__swatch {
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 0.375rem;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
 }
 
 .element__value {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 /* Finish grid */
 .finishes {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .finish {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.375rem;
   padding: 0;
   border: none;
   background: none;
@@ -156,11 +170,11 @@ button {
 .finish[aria-pressed='true'] .finish__swatch {
   box-shadow:
     0 0 0 2px var(--panel),
-    0 0 0 4px var(--accent);
+    0 0 0 0.25rem var(--accent);
 }
 
 .finish__label {
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.2;
 }
 
@@ -170,12 +184,12 @@ button {
 
 .panel__foot {
   border-top: 1px solid var(--line);
-  padding-top: 12px;
+  padding-top: 0.75rem;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .link {
@@ -184,7 +198,7 @@ button {
   background: none;
   color: var(--muted);
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 0.1875rem;
 }
 
 .link:hover {
@@ -198,12 +212,12 @@ button:focus-visible {
 
 .hint {
   position: absolute;
-  bottom: 16px;
+  bottom: 1rem;
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   white-space: nowrap;
   pointer-events: none;
 }
@@ -213,12 +227,12 @@ button:focus-visible {
 @media (max-width: 640px) {
   .panel {
     top: auto;
-    bottom: 16px;
-    left: 16px;
-    right: 16px;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
     width: auto;
     max-height: 48%;
-    gap: 14px;
+    gap: 0.875rem;
   }
 
   .panel__head p,
@@ -231,7 +245,7 @@ button:focus-visible {
   }
 
   .finish__label {
-    font-size: 10px;
+    font-size: 0.625rem;
   }
 }
 
@@ -241,25 +255,25 @@ button:focus-visible {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .round {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .presence {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: 0.375rem;
+  font-size: 0.75rem;
 }
 
 .presence::before {
   content: '';
-  width: 7px;
-  height: 7px;
+  width: 0.4375rem;
+  height: 0.4375rem;
   border-radius: 50%;
   background: var(--line);
 }
@@ -270,7 +284,7 @@ button:focus-visible {
 
 /* What's happening now: the one thing the player has to read. */
 .status {
-  padding: 12px 14px;
+  padding: 0.75rem 0.875rem;
   border-radius: var(--radius);
   background: rgba(0, 0, 0, 0.035);
   border: 1px solid transparent;
@@ -282,7 +296,7 @@ button:focus-visible {
 }
 
 .status__role {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -294,29 +308,29 @@ button:focus-visible {
 }
 
 .status p {
-  margin: 4px 0 0;
-  font-size: 15px;
+  margin: 0.25rem 0 0;
+  font-size: 0.9375rem;
   line-height: 1.35;
 }
 
 .hint-inline {
-  margin: 8px 0 0;
+  margin: 0.5rem 0 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 /* Current finish of the surface: quiet ring, not the accent (that's for actions). */
 .finish[aria-current='true'] .finish__swatch {
   box-shadow:
     0 0 0 2px var(--panel),
-    0 0 0 3px var(--muted);
+    0 0 0 0.1875rem var(--muted);
 }
 
 .last-move p {
   margin: 0;
   display: grid;
-  grid-template-columns: 22px 1fr;
-  gap: 10px;
+  grid-template-columns: 1.375rem 1fr;
+  gap: 0.625rem;
   align-items: center;
   color: var(--muted);
 }
@@ -325,24 +339,24 @@ button:focus-visible {
 
 .tile {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 268px;
-  padding: 6px;
+  top: 1rem;
+  right: 1rem;
+  width: 16.75rem;
+  padding: 0.375rem;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.375rem;
   background: var(--panel);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(0.75rem);
   border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: 0 12px 32px -16px rgba(40, 30, 20, 0.25);
+  border-radius: 1rem;
+  box-shadow: 0 0.75rem 2rem -1rem rgba(40, 30, 20, 0.25);
 }
 
 .tile__screen {
   position: relative;
   aspect-ratio: 4 / 3;
-  border-radius: 11px;
+  border-radius: 0.6875rem;
   overflow: hidden;
   background: #2a2826;
 }
@@ -356,22 +370,22 @@ button:focus-visible {
 .tile__caption {
   position: absolute;
   top: 30%;
-  left: 12px;
-  right: 12px;
+  left: 0.75rem;
+  right: 0.75rem;
   transform: translateY(-50%);
   margin: 0;
   text-align: center;
   color: rgba(255, 255, 255, 0.6);
-  font-size: 12px;
+  font-size: 0.75rem;
   pointer-events: none;
 }
 
 .tile__name {
   position: absolute;
-  left: 10px;
-  bottom: 8px;
+  left: 0.625rem;
+  bottom: 0.5rem;
   color: rgba(255, 255, 255, 0.85);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   pointer-events: none;
 }
@@ -379,11 +393,11 @@ button:focus-visible {
 /* Yourself, as the other player sees you. */
 .tile__self {
   position: absolute;
-  right: 8px;
-  bottom: 8px;
+  right: 0.5rem;
+  bottom: 0.5rem;
   width: 27%;
   aspect-ratio: 3 / 4;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   overflow: hidden;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
 }
@@ -401,30 +415,30 @@ button:focus-visible {
 
 .tile__self span {
   position: absolute;
-  inset: auto 0 6px;
+  inset: auto 0 0.375rem;
   text-align: center;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 
 .tile__bar {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 8px;
-  padding: 0 4px 2px;
+  gap: 0.5rem;
+  padding: 0 0.25rem 2px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 
 .tile__bar .link {
-  font-size: 11px;
+  font-size: 0.6875rem;
   white-space: nowrap;
 }
 
 @media (max-width: 640px) {
   .tile {
-    width: 158px;
+    width: 9.875rem;
   }
 
   .tile__bar span {
@@ -440,18 +454,18 @@ button:focus-visible {
 
 .launcher {
   height: 100%;
-  max-width: 460px;
+  max-width: 28.75rem;
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0 1rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .launcher h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 1.375rem;
   letter-spacing: -0.01em;
 }
 
@@ -463,11 +477,11 @@ button:focus-visible {
 .launcher__links {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .launcher__links a {
-  padding: 14px;
+  padding: 0.875rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel);
@@ -481,7 +495,7 @@ button:focus-visible {
 }
 
 .primary {
-  padding: 12px 16px;
+  padding: 0.75rem 1rem;
   border: none;
   border-radius: var(--radius);
   background: var(--text);
@@ -490,22 +504,22 @@ button:focus-visible {
 }
 
 .note {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 /* Connection mode: quiet, it's a setting, not the title. */
 .segmented {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  padding: 3px;
+  padding: 0.1875rem;
   border-radius: var(--radius);
   background: rgba(0, 0, 0, 0.05);
 }
 
 .segmented button {
-  padding: 7px 10px;
+  padding: 0.4375rem 0.625rem;
   border: none;
-  border-radius: 7px;
+  border-radius: 0.4375rem;
   background: none;
   color: var(--muted);
 }
@@ -520,24 +534,24 @@ button:focus-visible {
 .steps {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .steps ol {
   margin: 0;
-  padding-left: 20px;
+  padding-left: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .steps li {
-  padding-left: 4px;
+  padding-left: 0.25rem;
 }
 
 .steps li > span:first-child {
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 0.375rem;
 }
 
 .steps .primary {
@@ -547,12 +561,12 @@ button:focus-visible {
 
 .steps pre,
 .copy code {
-  font: 12px ui-monospace, monospace;
+  font: 0.75rem ui-monospace, monospace;
 }
 
 .steps pre {
   margin: 0;
-  padding: 10px 12px;
+  padding: 0.625rem 0.75rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel);
@@ -562,8 +576,8 @@ button:focus-visible {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--panel);
@@ -575,10 +589,10 @@ button:focus-visible {
 }
 
 kbd {
-  padding: 1px 5px;
+  padding: 1px 0.3125rem;
   border: 1px solid var(--line);
-  border-radius: 4px;
-  font: 11px ui-monospace, monospace;
+  border-radius: 0.25rem;
+  font: 0.6875rem ui-monospace, monospace;
 }
 
 /* --- waiting screen: the game waits until both players are here ------------ */
@@ -594,10 +608,10 @@ kbd {
   inset: 0;
   display: grid;
   place-items: center;
-  padding: 16px;
+  padding: 1rem;
   overflow: hidden;
   background: rgba(233, 230, 225, 0.72);
-  backdrop-filter: blur(14px) saturate(0.8);
+  backdrop-filter: blur(0.875rem) saturate(0.8);
   transition:
     opacity 0.8s ease,
     visibility 0s linear 0s;
@@ -650,18 +664,18 @@ kbd {
 
 .waiting__card {
   position: relative;
-  max-width: 380px;
+  max-width: 23.75rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 0.375rem;
   text-align: center;
 }
 
 .waiting__eyebrow {
-  margin-top: 14px;
+  margin-top: 0.875rem;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -669,22 +683,22 @@ kbd {
 
 .waiting h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
 .waiting__card p {
-  margin: 4px 0 0;
+  margin: 0.25rem 0 0;
   color: var(--muted);
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.5;
 }
 
 /* "We see you, hold still": fills while the presence timer runs. */
 .waiting__ring {
-  width: 48px;
-  height: 48px;
+  width: 3rem;
+  height: 3rem;
   transform: rotate(-90deg);
 }
 
@@ -706,15 +720,15 @@ kbd {
 
 /* Waiting on the other side: three soft dots. */
 .waiting__dots {
-  height: 48px;
+  height: 3rem;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 0.4375rem;
 }
 
 .waiting__dots i {
-  width: 8px;
-  height: 8px;
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: 50%;
   background: var(--me);
   animation: dot 1.4s ease-in-out infinite;
@@ -743,13 +757,13 @@ kbd {
 
 .waiting__foot {
   position: absolute;
-  bottom: 16px;
-  left: 16px;
-  right: 16px;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
   margin: 0;
   text-align: center;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -765,12 +779,12 @@ kbd {
 
 @media (max-width: 640px) {
   .waiting h2 {
-    font-size: 22px;
+    font-size: 1.375rem;
   }
 
   /* leave room for the tile at the top */
   .waiting__card {
-    margin-top: 120px;
+    margin-top: 7.5rem;
   }
 }
 
@@ -781,26 +795,26 @@ kbd {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: -6px;
+  gap: 0.5rem;
+  margin-top: -0.375rem;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .segmented--small {
   padding: 2px;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 }
 
 .segmented--small button {
-  padding: 3px 10px;
-  border-radius: 6px;
-  font-size: 12px;
+  padding: 0.1875rem 0.625rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
 }
 
 .waiting__action {
-  margin-top: 14px;
-  font-size: 13px;
+  margin-top: 0.875rem;
+  font-size: 0.8125rem;
 }
 
 /* --- v2: two different screens --------------------------------------------- */
@@ -830,10 +844,10 @@ kbd {
 /* Placer: the material they received, the one thing to look at. */
 .received__body {
   display: grid;
-  grid-template-columns: 44px 1fr;
-  gap: 12px;
+  grid-template-columns: 2.75rem 1fr;
+  gap: 0.75rem;
   align-items: center;
-  margin-top: 8px;
+  margin-top: 0.5rem;
 }
 
 .received__body p {
@@ -841,9 +855,9 @@ kbd {
 }
 
 .received__swatch {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.5rem;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
 }
 
@@ -853,15 +867,15 @@ kbd {
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 20rem 1fr;
   background: var(--bg);
 }
 
 .give__side {
-  padding: 34px 18px 18px 34px;
+  padding: 2.125rem 1.125rem 1.125rem 2.125rem;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 1.125rem;
   overflow-y: auto;
 }
 
@@ -871,13 +885,13 @@ kbd {
 
 .give__side h1 {
   margin: 0;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
 }
 
 .give__side h2 {
-  margin: 0 0 8px;
-  font-size: 11px;
+  margin: 0 0 0.5rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -891,7 +905,7 @@ kbd {
 
 /* Leaves the top right free for the presence tile. */
 .give__main {
-  padding: 120px 316px 48px 48px;
+  padding: 7.5rem 19.75rem 3rem 3rem;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -901,40 +915,40 @@ kbd {
 
 .give__eyebrow {
   color: var(--accent);
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .give__title {
-  margin: 6px 0 0;
-  font-size: 34px;
+  margin: 0.375rem 0 0;
+  font-size: 2.125rem;
   font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
 
 .give__lead {
-  margin: 10px 0 0;
+  margin: 0.625rem 0 0;
   max-width: 46ch;
   color: var(--muted);
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.5;
 }
 
 .gifts {
-  margin-top: 28px;
+  margin-top: 1.75rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 16px;
-  max-width: 760px;
+  grid-template-columns: repeat(auto-fill, minmax(9.375rem, 1fr));
+  gap: 1rem;
+  max-width: 47.5rem;
 }
 
 .gift {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
   padding: 0;
   border: none;
   background: none;
@@ -943,7 +957,7 @@ kbd {
 
 .gift__swatch {
   aspect-ratio: 1;
-  border-radius: 14px;
+  border-radius: 0.875rem;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.15s, transform 0.15s;
 }
@@ -954,12 +968,12 @@ kbd {
 
 .gift[aria-checked='true'] .gift__swatch {
   box-shadow:
-    0 0 0 3px var(--bg),
-    0 0 0 5px var(--accent);
+    0 0 0 0.1875rem var(--bg),
+    0 0 0 0.3125rem var(--accent);
 }
 
 .gift__label {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
 }
 
@@ -968,13 +982,13 @@ kbd {
 }
 
 .gift__note {
-  margin-top: -6px;
+  margin-top: -0.375rem;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .give__action {
-  margin-top: 28px;
+  margin-top: 1.75rem;
 }
 
 /* Sent: the material, big, while the other player places it. */
@@ -985,10 +999,10 @@ kbd {
 }
 
 .sent__swatch {
-  width: 180px;
+  width: 11.25rem;
   aspect-ratio: 1;
-  margin-bottom: 24px;
-  border-radius: 18px;
+  margin-bottom: 1.5rem;
+  border-radius: 1.125rem;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
@@ -1005,21 +1019,22 @@ kbd {
 
   .give__main {
     order: -1;
-    padding: 200px 16px 24px;
+    padding: 12.5rem 1rem 1.5rem;
     justify-content: flex-start;
   }
 
   .give__side {
-    padding: 16px;
+    padding: 1rem;
     border-top: 1px solid var(--line);
   }
 
   .give__title {
-    font-size: 26px;
+    font-size: 1.625rem;
   }
 
+  /* Modest tiles, as many per row as fit: they shouldn't push the button off screen. */
   .gifts {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+    gap: 0.625rem;
   }
 }
