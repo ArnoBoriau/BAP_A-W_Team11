@@ -1,11 +1,16 @@
 # Proof of concept v2: Room, together
 
-Two players, two screens, and the screens are **not** the same. Each turn:
+Two players, two screens, and the screens are **not** the same. The house has three rooms (living
+room, hallway, bathroom; see `src/config/room.js`) and an outside (its four façades). Each turn is
+about one of them, in turn: living room → hallway → bathroom → outside → living room…
+Each turn:
 
-1. The **giver** gets a full-screen picker: *pick a material for player X*. The giver never sees
-   the room, only (afterwards) where their material ended up.
-2. The **placer** sees the room. They get the material and choose where it goes (the floor or a
-   wall; glass only fits walls). Clicking a surface previews it there; **Place it** confirms.
+1. The **giver** gets a full-screen picker: *pick a material for the bathroom*. The giver knows the
+   room, but never sees the house, only (afterwards) where their material ended up.
+2. The **placer** sees the house. They get the material and choose where it goes in that room (its
+   floor or a wall; glass only fits walls), or on which façade for the outside. On the outside turn
+   the house is shown closed, so the façades are visible. Clicking a surface previews it there (the new material
+   fades in); **Place it** confirms.
 3. The roles swap and the next turn starts. To keep the roles fixed (A always gives, B always
    places), set `SWAP_ROLES = false` in `src/state/game.js`.
 
@@ -104,7 +109,17 @@ waits (it can't play); when the computer is switched off, both windows continue 
 - `src/ui/GiveScreen.jsx`: the giver's full-screen material picker, then "sent, they're placing it".
 - `src/ui/PlacePanel.jsx`: the placer's panel: the material they got and where to put it.
 - `src/ui/PlayerBits.jsx`: header, person/computer toggle, footer and "last turn", on both screens.
-- `src/scene/`: the room. Only the placer can click surfaces, and only those the material fits.
+- `src/config/room.js`: the floor plan (rooms on wall centre lines, door openings). Every floor and
+  wall face is generated from it. Every wall is two surfaces, one per side: between two rooms one per
+  room, on an exterior wall one for the room (inside) and one for the façade (outside).
+  Glass is the exception: it isn't a finish of one side but goes *through* the wall (`through: true`
+  in `materials.js`). Placed on a side, it opens that span through both halves and fills it with one
+  pane; the finishes stay underneath (`game.glazing` is kept apart from `game.config`), so covering
+  either side closes the glass and the other side gets its own material back. The rules live in
+  `applyPlacement` (`src/state/game.js`). Windows can later reuse this as a smaller glazed opening.
+- `src/scene/`: the house. Only the placer can click surfaces, and only those in this turn's room
+  that the material fits. Walls facing the camera fold down, and so do interior walls of rooms that
+  aren't in focus, so the overview reads like a plan.
 - `src/presence/presence.js`: decides whether the player is really standing at the screen (the pulse
   mechanism). Its result (`here`) goes along with every game message.
 - `src/ui/WaitingScreen.jsx`: the waiting / paused screen with the pulse, over the room.

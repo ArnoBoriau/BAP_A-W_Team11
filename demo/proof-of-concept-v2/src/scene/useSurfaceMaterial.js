@@ -5,10 +5,12 @@ import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { getPatternTexture } from '../textures/patterns'
 
-export function useSurfaceMaterial(definition, [width, height]) {
+// `overrides` are extra material parameters (e.g. transparency for a fade);
+// pass a stable object, it is part of the memo key.
+export function useSurfaceMaterial(definition, [width, height], overrides) {
   const material = useMemo(() => {
     const MaterialClass = definition.physical ? THREE.MeshPhysicalMaterial : THREE.MeshStandardMaterial
-    const material = new MaterialClass({ ...definition.props, envMapIntensity: 0.9 })
+    const material = new MaterialClass({ ...definition.props, envMapIntensity: 0.9, ...overrides })
 
     if (definition.pattern) {
       const texture = getPatternTexture(definition.pattern).clone()
@@ -21,7 +23,7 @@ export function useSurfaceMaterial(definition, [width, height]) {
       }
     }
     return material
-  }, [definition, width, height])
+  }, [definition, width, height, overrides])
 
   useEffect(
     () => () => {

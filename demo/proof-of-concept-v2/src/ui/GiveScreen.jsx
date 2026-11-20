@@ -1,6 +1,7 @@
 // The giver's screen: full screen, no room. You pick a material FOR the
-// other player; they decide where it goes in the room. You never see the
-// room yourself, only what they did with your material (last turn).
+// other player, for one room of the house (you know which); they decide where
+// in that room it goes. You never see the house yourself, only what they did
+// with your material (last turn).
 //
 //   material phase → pick one, then "Give it to player X"
 //   place phase    → sent; waiting while they choose where it goes
@@ -8,6 +9,7 @@
 import { useState } from 'react'
 import { MATERIALS, MATERIALS_BY_ID } from '../config/materials'
 import { useGame } from '../state/GameState'
+import { turnRoom } from '../state/game'
 import { LastMove, OpponentToggle, PlayerFoot, PlayerHead } from './PlayerBits'
 import { fitsLabel, swatchStyle } from './swatch'
 
@@ -33,12 +35,15 @@ function Picker() {
   const [choice, setChoice] = useState({ round: 0, id: null })
   const chosen = choice.round === game.round ? MATERIALS_BY_ID[choice.id] : null
   const them = computer ? `player ${opponent} (computer)` : `player ${opponent}`
+  const room = turnRoom(game).label.toLowerCase()
 
   return (
     <>
       <span className="give__eyebrow">Your turn · A material for {them}</span>
-      <h2 className="give__title">Pick a material for player {opponent}</h2>
-      <p className="give__lead">They'll choose where it goes in the room. You won't see the room, only where they put it.</p>
+      <h2 className="give__title">Pick a material for the {room}</h2>
+      <p className="give__lead">
+        Player {opponent} will choose where it goes in the {room}. You won't see the house, only where they put it.
+      </p>
 
       <div className="gifts" role="radiogroup" aria-label="Materials">
         {MATERIALS.map((material) => (
@@ -74,7 +79,7 @@ function Sent() {
       <span className="sent__swatch" style={swatchStyle(material)} />
       <span className="give__eyebrow">Sent to player {opponent}{computer ? ' (computer)' : ''}</span>
       <h2 className="give__title">{material.label}</h2>
-      <p className="give__lead">Player {opponent} is choosing where it goes in the room…</p>
+      <p className="give__lead">Player {opponent} is choosing where it goes in the {turnRoom(game).label.toLowerCase()}…</p>
       <span className="waiting__dots" aria-hidden="true">
         <i />
         <i />

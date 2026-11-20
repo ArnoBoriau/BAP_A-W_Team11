@@ -7,8 +7,9 @@
 // material picker (no room), the placer gets the room. Roles swap per turn.
 
 import { useEffect, useState } from 'react'
-import { PLAYERS } from './state/game'
+import { PLAYERS, applyPlacement, turnRoom } from './state/game'
 import { MATERIALS_BY_ID } from './config/materials'
+import { areaFocusId } from './config/room'
 import { GameProvider } from './state/GameState'
 import { RoomScene } from './scene/RoomScene'
 import { GiveScreen } from './ui/GiveScreen'
@@ -43,8 +44,13 @@ function PlayerScreen({ player }) {
 
   // Preview the received material on the selected surface.
   const material = placing ? MATERIALS_BY_ID[game.materialId] : null
-  const config = selectedId ? { ...game.config, [selectedId]: game.materialId } : game.config
-  const canSelect = (surface) => !!material && material.appliesTo.includes(surface.kind)
+  const house = selectedId ? applyPlacement(game, selectedId, game.materialId) : game
+  const room = turnRoom(game).id
+  const canSelect = (surface) => !!material && surface.roomId === room && material.appliesTo.includes(surface.kind)
+
+  // Where the camera looks: the picked surface; else, while placing, the
+  // turn's room; else where the last material went; else the whole house.
+  const focusId = selectedId ?? (placing ? areaFocusId(room) : (game.lastMove?.surfaceId ?? null))
 
   useEffect(() => {
     document.title = `Player ${player}`
@@ -71,9 +77,10 @@ function PlayerScreen({ player }) {
       <div className="viewport" inert={!together || giving} hidden={giving}>
         <RoomScene
           active={!giving}
-          config={config}
+          config={house.config}
+          glazing={house.glazing}
           selectedId={selectedId}
-          focusId={selectedId ?? game.lastMove?.surfaceId ?? 'floor'}
+          focusId={focusId}
           onSelect={placing ? select : undefined}
           canSelect={canSelect}
         />

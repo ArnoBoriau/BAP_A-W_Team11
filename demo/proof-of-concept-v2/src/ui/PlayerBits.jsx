@@ -3,7 +3,7 @@
 // toggle, the footer and what happened last turn.
 
 import { MATERIALS_BY_ID } from '../config/materials'
-import { SURFACES_BY_ID } from '../config/room'
+import { SURFACES_BY_ID, placeName } from '../config/room'
 import { useGame } from '../state/GameState'
 import { swatchStyle } from './swatch'
 
@@ -63,13 +63,13 @@ export function LastMove() {
   const { game, player } = useGame()
   const move = game.lastMove
   if (!move) return null
-  const surface = SURFACES_BY_ID[move.surfaceId].label.toLowerCase()
+  const place = placeName(SURFACES_BY_ID[move.surfaceId])
   const material = MATERIALS_BY_ID[move.materialId]
   const name = material.label.toLowerCase()
   const text =
     move.giver === player
-      ? `Player ${move.placer} put your ${name} on the ${surface}.`
-      : `You put player ${move.giver}'s ${name} on the ${surface}.`
+      ? `Player ${move.placer} put your ${name} on ${place}.`
+      : `You put player ${move.giver}'s ${name} on ${place}.`
   return (
     <section className="last-move">
       <h2>Last turn</h2>

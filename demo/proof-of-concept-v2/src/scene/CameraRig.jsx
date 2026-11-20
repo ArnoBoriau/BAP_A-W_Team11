@@ -1,20 +1,25 @@
-// Orbit camera. When the selection changes, it glides to a view that faces
-// the selected wall (or looks down onto the floor).
+// Orbit camera. When the focus changes, it glides to the room the surface is
+// in, facing the selected wall (or looking down onto the floor). No focus:
+// back to an overview of the whole house.
 
 import { useEffect, useRef } from 'react'
 import { CameraControls } from '@react-three/drei'
 import * as THREE from 'three'
+import { AREAS_BY_ID } from '../config/room'
 
-const TARGET = [0, 0.9, 0]
+const EYE_HEIGHT = 0.9 // height of the point the camera looks at
 const WALL_POLAR = 1.05 // radians from straight up
 const FLOOR_POLAR = 0.5
+const OVERVIEW_DISTANCE = 17
+// How far to stand back from a room: bigger rooms need more distance.
+const roomDistance = (room) => 5 + 1.4 * Math.max(room.x[1] - room.x[0], room.z[1] - room.z[0])
 
 export function CameraRig({ surfaces, selectedId }) {
   const controls = useRef()
   const previousId = useRef(selectedId)
 
   useEffect(() => {
-    controls.current?.setTarget(...TARGET, false)
+    controls.current?.setTarget(0, EYE_HEIGHT, 0, false)
   }, [])
 
   useEffect(() => {
@@ -23,7 +28,15 @@ export function CameraRig({ surfaces, selectedId }) {
     previousId.current = selectedId
 
     const surface = surfaces.find((s) => s.id === selectedId)
-    if (!surface) return
+    if (!surface) {
+      c.moveTo(0, EYE_HEIGHT, 0, true)
+      c.dollyTo(OVERVIEW_DISTANCE, true)
+      return
+    }
+
+    const room = AREAS_BY_ID[surface.roomId]
+    c.moveTo((room.x[0] + room.x[1]) / 2, EYE_HEIGHT, (room.z[0] + room.z[1]) / 2, true)
+    c.dollyTo(roomDistance(room), true)
     if (surface.kind === 'floor') {
       c.rotatePolarTo(FLOOR_POLAR, true)
     } else {
@@ -38,8 +51,8 @@ export function CameraRig({ surfaces, selectedId }) {
     <CameraControls
       ref={controls}
       makeDefault
-      minDistance={5}
-      maxDistance={18}
+      minDistance={4}
+      maxDistance={24}
       minPolarAngle={0.15}
       maxPolarAngle={1.42}
       smoothTime={0.35}

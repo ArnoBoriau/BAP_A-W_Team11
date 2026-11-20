@@ -2,7 +2,7 @@
 // Pure: given the game, returns the action the computer takes, or null when
 // it isn't its turn. GameState.jsx dispatches it after a short "thinking" pause.
 
-import { activePlayer } from './game'
+import { activePlayer, shownMaterialId, turnRoom } from './game'
 import { SURFACES } from '../config/room'
 import { MATERIALS, MATERIALS_BY_ID } from '../config/materials'
 
@@ -17,10 +17,11 @@ export function computerMove(game, player) {
     return { type: 'giveMaterial', player, materialId: pick(options).id }
   }
 
-  // Somewhere the material fits and actually changes something.
+  // Somewhere in this turn's room where the material fits and actually changes something.
   const material = MATERIALS_BY_ID[game.materialId]
-  const fits = SURFACES.filter((s) => material.appliesTo.includes(s.kind))
-  const changes = fits.filter((s) => game.config[s.id] !== material.id)
+  const room = turnRoom(game).id
+  const fits = SURFACES.filter((s) => s.roomId === room && material.appliesTo.includes(s.kind))
+  const changes = fits.filter((s) => shownMaterialId(game, s.id) !== material.id)
   return { type: 'placeMaterial', player, surfaceId: pick(changes.length ? changes : fits).id }
 }
 

@@ -8,6 +8,9 @@
 //   bump        relief strength derived from the pattern (grout, plank gaps, ...)
 //   physical    use MeshPhysicalMaterial (needed for transmission / clearcoat)
 //   appliesTo   which surface kinds may use this finish
+//   through     not a finish of one side but a fill for the whole wall (glass):
+//               placed on a wall side, it opens that span through both halves
+//               of the wall and fills it (see DEFAULT_GLAZING in room.js)
 
 export const MATERIALS = [
   {
@@ -61,6 +64,7 @@ export const MATERIALS = [
     id: 'glass',
     label: 'Glass',
     appliesTo: ['wall'],
+    through: true,
     pattern: null,
     physical: true,
     castShadow: false,

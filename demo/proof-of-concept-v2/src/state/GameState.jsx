@@ -25,7 +25,7 @@ import { initialGame, reducer, activePlayer, other } from './game'
 import { computerMove, THINK_MS } from './computer'
 import { createTransport, netMode } from '../net/transport'
 
-const CHANNEL = 'poc2-room-game' // not v1's: the game state has a different shape
+const CHANNEL = 'poc2-house-game' // not v1's (or the one-room v2's): the game state has a different shape
 const STALE_MS = 3000
 
 const GameContext = createContext(null)
