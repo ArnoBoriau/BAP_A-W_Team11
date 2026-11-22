@@ -1,8 +1,13 @@
 # Proof of concept v2: Room, together
 
-Two players, two screens, and the screens are **not** the same. The house has three rooms (living
-room, hallway, bathroom; see `src/config/room.js`) and an outside (its four façades). Each turn is
-about one of them, in turn: living room → hallway → bathroom → outside → living room…
+Two players, two screens, and the screens are **not** the same. The house has five rooms (living
+room, bathroom, bedroom, kitchen, hallway; see `src/config/room.js`) in an L-shaped plan, and an
+outside (its six façades). The house
+starts as a line drawing in 3D: nothing is filled in, every surface is see-through white with
+crisp dark outlines and dark wall tops (`src/scene/blueprintMaterial.js`). The
+game goes room per room: it stays in the living room until every surface there is filled in, then
+moves to the bathroom, the bedroom, the kitchen, the hallway and finally the outside. When the outside is done, the house is
+finished.
 Each turn:
 
 1. The **giver** gets a full-screen picker: *pick a material for the bathroom*. The giver knows the

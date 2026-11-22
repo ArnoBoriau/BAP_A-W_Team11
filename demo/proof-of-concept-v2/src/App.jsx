@@ -7,7 +7,7 @@
 // material picker (no room), the placer gets the room. Roles swap per turn.
 
 import { useEffect, useState } from 'react'
-import { PLAYERS, applyPlacement, turnRoom } from './state/game'
+import { PLAYERS, applyPlacement, fits, isFinished, turnRoom } from './state/game'
 import { MATERIALS_BY_ID } from './config/materials'
 import { areaFocusId } from './config/room'
 import { GameProvider } from './state/GameState'
@@ -33,8 +33,9 @@ export default function App() {
 
 function PlayerScreen({ player }) {
   const { game, role, together, toggleFake } = useGame()
-  const placing = role === 'placer' && game.phase === 'place'
-  const giving = role === 'giver'
+  const finished = isFinished(game)
+  const placing = !finished && role === 'placer' && game.phase === 'place'
+  const giving = !finished && role === 'giver' // once the house is finished, both see it
 
   // Where the placer wants the material: local until they place it, and only
   // for this turn (tied to the round, so it clears itself).
@@ -45,12 +46,12 @@ function PlayerScreen({ player }) {
   // Preview the received material on the selected surface.
   const material = placing ? MATERIALS_BY_ID[game.materialId] : null
   const house = selectedId ? applyPlacement(game, selectedId, game.materialId) : game
-  const room = turnRoom(game).id
-  const canSelect = (surface) => !!material && surface.roomId === room && material.appliesTo.includes(surface.kind)
+  const room = turnRoom(game)?.id
+  const canSelect = (surface) => !!material && surface.roomId === room && fits(game, material, surface)
 
   // Where the camera looks: the picked surface; else, while placing, the
-  // turn's room; else where the last material went; else the whole house.
-  const focusId = selectedId ?? (placing ? areaFocusId(room) : (game.lastMove?.surfaceId ?? null))
+  // turn's room; else where the last material went; finished: the whole house.
+  const focusId = finished ? null : (selectedId ?? (placing ? areaFocusId(room) : (game.lastMove?.surfaceId ?? null)))
 
   useEffect(() => {
     document.title = `Player ${player}`

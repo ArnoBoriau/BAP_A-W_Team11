@@ -4,11 +4,13 @@
 import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { getPatternTexture } from '../textures/patterns'
+import { createBlueprintMaterial } from './blueprintMaterial'
 
 // `overrides` are extra material parameters (e.g. transparency for a fade);
 // pass a stable object, it is part of the memo key.
 export function useSurfaceMaterial(definition, [width, height], overrides) {
   const material = useMemo(() => {
+    if (definition.blank) return createBlueprintMaterial(overrides) // not filled in yet
     const MaterialClass = definition.physical ? THREE.MeshPhysicalMaterial : THREE.MeshStandardMaterial
     const material = new MaterialClass({ ...definition.props, envMapIntensity: 0.9, ...overrides })
 

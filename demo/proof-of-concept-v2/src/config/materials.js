@@ -11,6 +11,10 @@
 //   through     not a finish of one side but a fill for the whole wall (glass):
 //               placed on a wall side, it opens that span through both halves
 //               of the wall and fills it (see DEFAULT_GLAZING in room.js)
+//
+// A surface nobody has filled in yet shows BLANK: an architectural line
+// drawing of the house in 3D (scene/blueprintMaterial.js). It isn't in MATERIALS, so
+// it can't be given or placed.
 
 export const MATERIALS = [
   {
@@ -81,6 +85,19 @@ export const MATERIALS = [
 ]
 
 export const MATERIALS_BY_ID = Object.fromEntries(MATERIALS.map((m) => [m.id, m]))
+
+export const BLANK = {
+  id: 'blank',
+  label: 'Not filled in',
+  blank: true,
+  appliesTo: [],
+  pattern: null,
+  castShadow: false,
+  swatch: '#ffffff',
+}
+
+// A surface's material by id; no id (not filled in yet) is BLANK.
+export const materialOf = (id) => (id ? MATERIALS_BY_ID[id] : BLANK)
 
 export function materialsFor(kind) {
   return MATERIALS.filter((m) => m.appliesTo.includes(kind))

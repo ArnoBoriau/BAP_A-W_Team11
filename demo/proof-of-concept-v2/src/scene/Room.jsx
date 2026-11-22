@@ -1,9 +1,9 @@
 // Renders the house from data: a list of surfaces, each surface's finish
-// ({ surfaceId: materialId }) and the glass through the walls (same shape).
+// ({ surfaceId: materialId }, null = not filled in yet) and the glass through the walls (same shape).
 // Stateless on purpose, so several houses can later be rendered side by side.
 
 import { useMemo } from 'react'
-import { MATERIALS_BY_ID } from '../config/materials'
+import { materialOf } from '../config/materials'
 import { glassOpenings } from '../config/room'
 import { Surface } from './Surface'
 
@@ -26,7 +26,7 @@ export function Room({
         <Surface
           key={surface.id}
           surface={surface}
-          definition={MATERIALS_BY_ID[glazing[surface.id] ?? config[surface.id]]}
+          definition={materialOf(glazing[surface.id] ?? config[surface.id])}
           glazed={!!glazing[surface.id]}
           openings={openings[surface.id]}
           selected={surface.id === selectedId}

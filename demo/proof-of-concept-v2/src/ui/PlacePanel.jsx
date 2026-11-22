@@ -3,12 +3,13 @@
 //   place phase    → the material you got, and where to put it in this
 //                    turn's room: pick a surface (here or in the house), see
 //                    it previewed, place it
+//   finished       → the whole house is filled in (both players see this)
 // The selection is owned by the screen (App.jsx) so the room can preview it.
 
-import { MATERIALS_BY_ID } from '../config/materials'
+import { MATERIALS_BY_ID, materialOf } from '../config/materials'
 import { SURFACES, placeName } from '../config/room'
 import { useGame } from '../state/GameState'
-import { shownMaterialId, turnRoom } from '../state/game'
+import { fits, isFinished, shownMaterialId, turnRoom } from '../state/game'
 import { LastMove, OpponentToggle, PlayerFoot, PlayerHead } from './PlayerBits'
 import { fitsLabel, swatchStyle } from './swatch'
 
@@ -18,10 +19,29 @@ export function PlacePanel({ selectedId, onSelect }) {
     <aside className="panel">
       <PlayerHead />
       <OpponentToggle />
-      {game.phase === 'material' ? <Waiting /> : <Place selectedId={selectedId} onSelect={onSelect} />}
+      {isFinished(game) ? (
+        <Finished />
+      ) : game.phase === 'material' ? (
+        <Waiting />
+      ) : (
+        <Place selectedId={selectedId} onSelect={onSelect} />
+      )}
       <LastMove />
       <PlayerFoot />
     </aside>
+  )
+}
+
+function Finished() {
+  const { reset } = useGame()
+  return (
+    <section className="status" data-active="true">
+      <span className="status__role">Finished</span>
+      <p>Every room and the outside are filled in. This is the house you made together.</p>
+      <button type="button" className="primary" onClick={reset}>
+        Start a new house
+      </button>
+    </section>
   )
 }
 
@@ -43,7 +63,6 @@ function Place({ selectedId, onSelect }) {
   const material = MATERIALS_BY_ID[game.materialId]
   const room = turnRoom(game)
   const surfaces = SURFACES.filter((s) => s.roomId === room.id)
-  const fits = (surface) => material.appliesTo.includes(surface.kind)
   const selected = surfaces.find((s) => s.id === selectedId)
 
   return (
@@ -66,14 +85,14 @@ function Place({ selectedId, onSelect }) {
         </h2>
         <ul className="elements">
           {surfaces.map((surface) => {
-            const current = MATERIALS_BY_ID[shownMaterialId(game, surface.id)]
+            const current = materialOf(shownMaterialId(game, surface.id))
             return (
               <li key={surface.id}>
                 <button
                   type="button"
                   className="element"
                   aria-pressed={surface.id === selectedId}
-                  disabled={!fits(surface)}
+                  disabled={!fits(game, material, surface)}
                   onClick={() => onSelect(surface.id)}
                 >
                   <span className="element__swatch" style={swatchStyle(current)} />

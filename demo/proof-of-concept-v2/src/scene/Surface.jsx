@@ -7,12 +7,17 @@
 // A new material doesn't snap in: the previous one fades out on top of it.
 // Glass is a pane through the whole wall: a glazed surface draws the pane
 // (both halves' thickness), and the other half of the wall is opened behind it.
+// A surface that isn't filled in yet (BLANK) is drawn like an architectural
+// line drawing (see blueprintMaterial.js): flat white with dark outlines. The
+// two halves of a blank wall leave out the lines on the wall's centre line,
+// so they read as one wall.
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Edges } from '@react-three/drei'
+import { Edges, Line } from '@react-three/drei'
 import * as THREE from 'three'
 import { useSurfaceMaterial } from './useSurfaceMaterial'
+import { LINE_COLOR, LINE_WIDTH, blueprintEdges } from './blueprintMaterial'
 import { OUTSIDE_ID, solidPieces } from '../config/room'
 
 const CUT_HEIGHT = 0.12 // fraction of wall height left when cut away
@@ -49,6 +54,12 @@ export function Surface({ surface, definition, glazed = false, openings = [], se
 
   const uvSize = isWall ? WORLD_UV : [surface.size[0], surface.size[2]]
   const material = useSurfaceMaterial(definition, uvSize)
+
+  const blank = !!definition.blank
+  const outlines = useMemo(
+    () => (blank ? geometries.map((g) => blueprintEdges(g, { wall: isWall })) : null),
+    [blank, geometries, isWall],
+  )
 
   // When the material changes, keep the old one around just long enough to fade it out.
   const [shown, setShown] = useState(definition)
@@ -117,6 +128,19 @@ export function Surface({ surface, definition, glazed = false, openings = [], se
   }, [onSelect])
 
   const outline = selected || (hovered && onSelect)
+  const lines =
+    outlines &&
+    !outline &&
+    outlines.map((points, i) => (
+      <Line
+        key={`line-${i}`}
+        points={points}
+        segments
+        color={LINE_COLOR}
+        lineWidth={LINE_WIDTH}
+        raycast={() => null}
+      />
+    ))
   const meshes = geometries.map((geometry, i) => (
     <mesh
       key={i}
@@ -136,6 +160,7 @@ export function Surface({ surface, definition, glazed = false, openings = [], se
     return (
       <group position={surface.position}>
         {meshes}
+        {lines}
         {fade}
       </group>
     )
@@ -145,6 +170,7 @@ export function Surface({ surface, definition, glazed = false, openings = [], se
     <group position={surface.position} rotation-y={surface.rotationY}>
       <group ref={scaleRef}>
         {meshes}
+        {lines}
         {fade}
       </group>
       {/* Dark top cap: reads like the poché of an architectural section cut. */}
@@ -188,7 +214,9 @@ function FadeOut({ definition, geometries, uvSize, scale, onDone }) {
     if (progress.current >= 1 || !groupRef.current) return
     progress.current = Math.min(1, progress.current + delta / FADE_SECONDS)
     const opacity = 1 - THREE.MathUtils.smoothstep(progress.current, 0, 1)
-    groupRef.current.children.forEach((mesh) => (mesh.material.opacity = opacity))
+    groupRef.current.children.forEach((mesh) => {
+      mesh.material.opacity = (mesh.material.userData.baseOpacity ?? 1) * opacity
+    })
     if (progress.current >= 1) onDone()
   })
 

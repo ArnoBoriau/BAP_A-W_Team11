@@ -5,6 +5,7 @@
 import { MATERIALS_BY_ID } from '../config/materials'
 import { SURFACES_BY_ID, placeName } from '../config/room'
 import { useGame } from '../state/GameState'
+import { blanksIn, turnRoom } from '../state/game'
 import { swatchStyle } from './swatch'
 
 export function PlayerHead() {
@@ -13,7 +14,9 @@ export function PlayerHead() {
     <header className="panel__head">
       <div className="panel__title">
         <h1>Player {player}</h1>
-        <span className="round">Turn {game.round}</span>
+        <span className="round">
+          <RoomProgress game={game} />
+        </span>
       </div>
       <p className="presence" data-online={otherOnline}>
         {computer
@@ -26,6 +29,13 @@ export function PlayerHead() {
       </p>
     </header>
   )
+}
+
+// "Hallway · 3 to fill in", or "Finished" once the whole house is done.
+function RoomProgress({ game }) {
+  const room = turnRoom(game)
+  if (!room) return 'Finished'
+  return `${room.label} · ${blanksIn(game, room.id).length} to fill in`
 }
 
 // Play against the other person or against the computer.

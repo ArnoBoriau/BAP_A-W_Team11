@@ -9,7 +9,7 @@
 import { useState } from 'react'
 import { MATERIALS, MATERIALS_BY_ID } from '../config/materials'
 import { useGame } from '../state/GameState'
-import { turnRoom } from '../state/game'
+import { fitsRoom, turnRoom } from '../state/game'
 import { LastMove, OpponentToggle, PlayerFoot, PlayerHead } from './PlayerBits'
 import { fitsLabel, swatchStyle } from './swatch'
 
@@ -53,6 +53,7 @@ function Picker() {
             role="radio"
             className="gift"
             aria-checked={chosen?.id === material.id}
+            disabled={!fitsRoom(game, material)}
             onClick={() => setChoice({ round: game.round, id: material.id })}
           >
             <span className="gift__swatch" style={swatchStyle(material)} />

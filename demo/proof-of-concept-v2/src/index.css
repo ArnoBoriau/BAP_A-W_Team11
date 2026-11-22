@@ -987,6 +987,16 @@ kbd {
   font-size: 0.75rem;
 }
 
+/* Fits nowhere in this turn's room (e.g. glass when every wall already has a window from the other side). */
+.gift:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.gift:disabled .gift__swatch {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
 .give__action {
   margin-top: 1.75rem;
 }

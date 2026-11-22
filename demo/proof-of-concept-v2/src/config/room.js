@@ -4,14 +4,21 @@
 //
 // The plan is drawn on the centre lines of the walls, in metres:
 // x runs east, z runs south, and the house is centred on the origin.
+// It doesn't have to be a rectangle: any set of rectangular rooms works, as
+// long as each side of a room is either all outside wall or all shared with
+// rooms next to it (buildSurfaces checks this).
 //
-//   z=-3  ┌────────────┬────────┐
-//         │            │  Bath  │
-//         │   Living   ├── ─────┤ z=0.4
-//         │            ╵ Hallway│
-//         │            ╷        │
-//   z= 3  └────────────┴─── ────┘
-//       x=-4        x=1.2     x=4
+//   z=-4.5 ┌──────────────┬────────┐
+//          │   Bedroom    │Bathroom│
+//          │              │        │
+//   z=-0.5 ├──── ─────────┴── ─────┼────────────────┐
+//          ╵    Hallway            ╵                │
+//          ╷                       ╷                │
+//   z= 1.5 ├────────── ────────────┤  Living room   │
+//          │                                        │
+//          │    Kitchen                             │
+//   z= 4.5 └───────────────────────┴──────     ─────┘
+//        x=-7          x=-2      x=1              x=7
 
 export const WALL = {
   height: 2.8,
@@ -20,10 +27,13 @@ export const WALL = {
   doorWidth: 0.9,
 }
 
+// In the order the game goes through them (see turnRoom in state/game.js).
 export const ROOMS = [
-  { id: 'living', label: 'Living room', x: [-4, 1.2], z: [-3, 3] },
-  { id: 'hallway', label: 'Hallway', x: [1.2, 4], z: [0.4, 3] },
-  { id: 'bathroom', label: 'Bathroom', x: [1.2, 4], z: [-3, 0.4] },
+  { id: 'living', label: 'Living room', x: [1, 7], z: [-0.5, 4.5] },
+  { id: 'bathroom', label: 'Bathroom', x: [-2, 1], z: [-4.5, -0.5] },
+  { id: 'bedroom', label: 'Bedroom', x: [-7, -2], z: [-4.5, -0.5] },
+  { id: 'kitchen', label: 'Kitchen', x: [-7, 1], z: [1.5, 4.5] },
+  { id: 'hallway', label: 'Hallway', x: [-7, 1], z: [-0.5, 1.5] },
 ]
 
 // Openings, as a point on a wall's centre line. Every wall face through that
@@ -31,9 +41,13 @@ export const ROOMS = [
 // Openings are full height (no lintel), so the cutaway walls stay simple.
 // Exterior doors cut through the room's wall and the façade alike.
 export const DOORS = [
-  { at: [1.2, 1.7] }, // living room ↔ hallway
-  { at: [2.6, 0.4] }, // hallway ↔ bathroom
-  { at: [2.6, 3] }, // front door
+  { at: [-7, 0.5] }, // front door, into the hallway
+  { at: [-4.5, -0.5] }, // hallway ↔ bedroom
+  { at: [-0.5, -0.5] }, // hallway ↔ bathroom
+  { at: [-3, 1.5] }, // hallway ↔ kitchen
+  { at: [1, 0.5] }, // hallway ↔ living room
+  { at: [1, 3], width: 1.6 }, // kitchen ↔ living room, a wide opening
+  { at: [4.5, 4.5], width: 1.8 }, // garden door, from the living room
 ]
 
 const SIDES = [
@@ -58,16 +72,34 @@ export function boundsOf(rooms) {
 // Each surface is an independently configurable element:
 //   - one floor per room
 //   - one wall face per side of each room: the inner half of that wall
-//   - one façade per side of the house: the outer half of the exterior walls
+//   - the façades: the outer half of the exterior walls, one per straight
+//     stretch of the outline (an L-shaped house has more than four)
 // So every wall is two surfaces (half the thickness each): between two rooms
 // one per room, on the outside one for the room and one for the façade.
 export function buildSurfaces(rooms, doors, { height, thickness: t, floorThickness, doorWidth }) {
   const half = t / 2
-  const bounds = boundsOf(rooms)
   const lineOf = (area, side) => area[side.axis][side.end]
-  const isExterior = (room, side) => Math.abs(lineOf(room, side) - bounds[side.axis][side.end]) < EPS
+  const alongOf = (side) => (side.axis === 'z' ? 'x' : 'z')
   const side = Object.fromEntries(SIDES.map((s) => [s.id, s]))
   const outward = (s) => (s.end === 0 ? -1 : 1) // along the side's axis
+  const overlap = (a, b) => Math.max(0, Math.min(a[1], b[1]) - Math.max(a[0], b[0]))
+
+  // Is a point (strictly) inside one of the rooms?
+  const inside = (x, z) => rooms.some((r) => x > r.x[0] && x < r.x[1] && z > r.z[0] && z < r.z[1])
+
+  // A room's side is an outside wall when no other room is on the other side
+  // of it. Partly shared sides aren't supported: split the room instead.
+  const isExterior = (room, s) => {
+    const along = alongOf(s)
+    const shared = rooms
+      .filter((r) => r !== room && Math.abs(r[s.axis][1 - s.end] - lineOf(room, s)) < EPS)
+      .reduce((sum, r) => sum + overlap(r[along], room[along]), 0)
+    const length = room[along][1] - room[along][0]
+    if (shared > EPS && shared < length - EPS) {
+      throw new Error(`room.js: the ${s.id} side of the ${room.id} is partly an outside wall; split the room`)
+    }
+    return shared < EPS
+  }
 
   const roomSurfaces = rooms.flatMap((room) => {
     const grow = (s) => (isExterior(room, s) ? half : 0) // floors run under the façades
@@ -87,7 +119,7 @@ export function buildSurfaces(rooms, doors, { height, thickness: t, floorThickne
       // The room's half of the wall: from its inner face up to the centre line.
       // North/south walls run on to the cross walls' centre lines (covering
       // the corners); east/west walls stop at the inner faces.
-      const along = s.axis === 'z' ? 'x' : 'z'
+      const along = alongOf(s)
       const span = s.axis === 'z' ? room[along] : [room[along][0] + half, room[along][1] - half]
       return wall(s, {
         id: `${room.id}-${s.id}`,
@@ -103,22 +135,51 @@ export function buildSurfaces(rooms, doors, { height, thickness: t, floorThickne
     return [floor, ...walls]
   })
 
-  // The façades: the outer half of each side of the house. They face outward,
-  // so they're turned half round compared with the room walls on that side.
-  // North/south façades run on over the outer corners.
-  const facades = SIDES.map((s) => {
-    const along = s.axis === 'z' ? 'x' : 'z'
-    const span = s.axis === 'z' ? [bounds[along][0] - half, bounds[along][1] + half] : bounds[along]
-    return wall(s, {
-      id: `${OUTSIDE_ID}-${s.id}`,
-      roomId: OUTSIDE_ID,
-      label: `${s.label.split(' ')[0]} façade`,
-      line: lineOf(bounds, s),
-      across: lineOf(bounds, s) + (outward(s) * half) / 2,
-      span,
-      rotationY: Math.atan2(Math.sin(s.rotationY + Math.PI), Math.cos(s.rotationY + Math.PI)),
-      exterior: true,
-      facade: true,
+  // The façades: the outer half of the exterior walls. Exterior sides of
+  // rooms on the same line that touch are one façade.
+  const facades = SIDES.flatMap((s) => {
+    const along = alongOf(s)
+    const stretches = []
+    const sides = rooms
+      .filter((room) => isExterior(room, s))
+      .map((room) => ({ line: lineOf(room, s), span: [...room[along]], rooms: [room] }))
+      .sort((a, b) => a.line - b.line || a.span[0] - b.span[0])
+    for (const next of sides) {
+      const last = stretches.at(-1)
+      if (last && Math.abs(last.line - next.line) < EPS && Math.abs(last.span[1] - next.span[0]) < EPS) {
+        last.span[1] = next.span[1]
+        last.rooms.push(...next.rooms)
+      } else stretches.push(next)
+    }
+
+    // North/south façades cover the corners: at an outside corner they run on
+    // over it, at an inside corner (where the outline turns outward, as in
+    // the crook of an L) they stop short and the east/west façade covers it.
+    const point = (u, v) => (s.axis === 'z' ? [u, v] : [v, u]) // (along, across) → (x, z)
+    const insideCorner = (u, line) => inside(...point(u, line - outward(s) * 1e-3))
+
+    const name = s.label.split(' ')[0]
+    return stretches.map(({ line, span, rooms: behind }, i) => {
+      if (s.axis === 'z') {
+        span = [
+          span[0] + (insideCorner(span[0] - 1e-3, line) ? half : -half),
+          span[1] + (insideCorner(span[1] + 1e-3, line) ? -half : half),
+        ]
+      }
+      const several = stretches.length > 1
+      return wall(s, {
+        id: several ? `${OUTSIDE_ID}-${s.id}-${i + 1}` : `${OUTSIDE_ID}-${s.id}`,
+        roomId: OUTSIDE_ID,
+        label: several
+          ? `${name} façade (${behind.map((r) => r.label.toLowerCase()).join(' and ')})`
+          : `${name} façade`,
+        line,
+        across: line + (outward(s) * half) / 2,
+        span,
+        rotationY: Math.atan2(Math.sin(s.rotationY + Math.PI), Math.cos(s.rotationY + Math.PI)),
+        exterior: true,
+        facade: true,
+      })
     })
   })
 
@@ -206,8 +267,9 @@ export const AREAS_BY_ID = Object.fromEntries(AREAS.map((a) => [a.id, a]))
 export const SURFACES = buildSurfaces(ROOMS, DOORS, WALL)
 export const SURFACES_BY_ID = Object.fromEntries(SURFACES.map((s) => [s.id, s]))
 
-// Where the camera goes for an area: a room's floor, or the front façade.
-export const areaFocusId = (areaId) => (areaId === OUTSIDE_ID ? `${OUTSIDE_ID}-south` : `${areaId}-floor`)
+// Where the camera goes for an area: a room's floor, or the (longest) south façade.
+const FRONT_FACADE = SURFACES.filter((s) => s.id.startsWith(`${OUTSIDE_ID}-south`)).sort((a, b) => b.length - a.length)[0]
+export const areaFocusId = (areaId) => (areaId === OUTSIDE_ID ? FRONT_FACADE.id : `${areaId}-floor`)
 
 // Footprint of the whole house, façades included.
 export const FOOTPRINT = {
@@ -222,24 +284,17 @@ export function placeName(surface) {
   return surface.kind === 'floor' ? `the ${room} floor` : `the ${surface.label.toLowerCase()} of the ${room}`
 }
 
-const DEFAULT_FLOORS = { living: 'oak', hallway: 'terrazzo', bathroom: 'tiles' }
-const DEFAULT_WALLS = { 'living-north': 'concrete' }
-const DEFAULT_FACADE = 'concrete'
-
-// Each surface's own finish. Glass isn't in here: see DEFAULT_GLAZING.
-export const DEFAULT_ROOM_CONFIG = Object.fromEntries(
-  SURFACES.map((s) => [
-    s.id,
-    s.kind === 'floor' ? DEFAULT_FLOORS[s.roomId] : (DEFAULT_WALLS[s.id] ?? (s.facade ? DEFAULT_FACADE : 'plaster')),
-  ]),
-)
+// Each surface's own finish. The house starts as a blueprint: nothing filled in
+// yet (null), the players fill it in room per room. Glass isn't in here: see
+// DEFAULT_GLAZING.
+export const DEFAULT_ROOM_CONFIG = Object.fromEntries(SURFACES.map((s) => [s.id, null]))
 
 // Glass goes *through* a wall (an opening filled with a pane), so it isn't a
 // finish of one side: it's kept apart, as { surfaceId: materialId }, and the
 // finishes underneath stay as they were. The glass fills that surface's whole
 // span, through both halves of the wall. Windows will later be the same thing
 // over a smaller opening.
-export const DEFAULT_GLAZING = { 'living-west': 'glass' }
+export const DEFAULT_GLAZING = {}
 
 // Where glass on *another* half of the same wall opens this surface, as
 // [from, to] ranges in its local x: { [surfaceId]: [[from, to], ...] }.

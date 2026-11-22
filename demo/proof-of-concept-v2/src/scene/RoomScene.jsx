@@ -13,6 +13,7 @@ import { Room } from './Room'
 import { CameraRig } from './CameraRig'
 
 const BACKGROUND = '#e9e6e1'
+const SHADOW_REACH = Math.max(FOOTPRINT.width, FOOTPRINT.depth) / 2 + 4 // metres around the centre
 
 export function RoomScene({ config, glazing, selectedId, focusId, onSelect, canSelect, active = true }) {
   return (
@@ -20,13 +21,13 @@ export function RoomScene({ config, glazing, selectedId, focusId, onSelect, canS
       frameloop={active ? 'always' : 'never'}
       shadows="soft"
       dpr={[1, 2]}
-      camera={{ position: [9.5, 8.5, 11.5], fov: 35 }}
+      camera={{ position: [14, 12.5, 17], fov: 35 }}
       onCreated={({ gl }) => {
         gl.toneMapping = THREE.NeutralToneMapping
       }}
     >
       <color attach="background" args={[BACKGROUND]} />
-      <fog attach="fog" args={[BACKGROUND, 22, 40]} />
+      <fog attach="fog" args={[BACKGROUND, 40, 70]} />
 
       <Lighting />
       <Plinth />
@@ -71,13 +72,13 @@ function Lighting() {
         intensity={2.2}
         color="#fff6ea"
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[4096, 4096]}
         shadow-bias={-0.0004}
         shadow-normalBias={0.02}
-        shadow-camera-left={-9}
-        shadow-camera-right={9}
-        shadow-camera-top={9}
-        shadow-camera-bottom={-9}
+        shadow-camera-left={-SHADOW_REACH}
+        shadow-camera-right={SHADOW_REACH}
+        shadow-camera-top={SHADOW_REACH}
+        shadow-camera-bottom={-SHADOW_REACH}
       />
       {/* Studio-style reflections without downloading an HDRI. */}
       <Environment resolution={256}>

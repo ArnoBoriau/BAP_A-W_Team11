@@ -6,14 +6,14 @@ import { useEffect, useRef } from 'react'
 import { CameraControls } from '@react-three/drei'
 import { useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { AREAS_BY_ID } from '../config/room'
+import { AREAS_BY_ID, OUTSIDE } from '../config/room'
 
 const EYE_HEIGHT = 0.9 // height of the point the camera looks at
 const WALL_POLAR = 1.05 // radians from straight up
 const FLOOR_POLAR = 0.5
-const OVERVIEW_DISTANCE = 17
 // How far to stand back from a room: bigger rooms need more distance.
 const roomDistance = (room) => 5 + 1.4 * Math.max(room.x[1] - room.x[0], room.z[1] - room.z[0])
+const OVERVIEW_DISTANCE = roomDistance(OUTSIDE) // the whole house
 // The distances above suit a wide screen; a narrower window (e.g. two side by
 // side) sees less across, so the camera stands further back.
 const WIDE_ASPECT = 1.5
@@ -58,7 +58,7 @@ export function CameraRig({ surfaces, selectedId }) {
       ref={controls}
       makeDefault
       minDistance={4}
-      maxDistance={32}
+      maxDistance={48}
       minPolarAngle={0.15}
       maxPolarAngle={1.42}
       smoothTime={0.35}
