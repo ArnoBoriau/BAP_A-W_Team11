@@ -1,0 +1,154 @@
+:root {
+  --bg: #0b0c10;
+  --text: #f1efe9;
+  --muted: rgba(241, 239, 233, 0.5);
+  --a: #e8a25c;
+  --b: #6fb3d9;
+  --font: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: 11px/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  color-scheme: dark;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  overflow: hidden;
+}
+
+#stage {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+
+/* --- question ----------------------------------------------------------- */
+
+.question {
+  position: fixed;
+  top: 6vh;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 0 1rem;
+  pointer-events: none;
+}
+
+.step {
+  font: var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 1rem;
+}
+
+.question h1 {
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+  transition: opacity 0.5s ease;
+}
+
+/* --- the two sides ------------------------------------------------------- */
+
+.side {
+  position: fixed;
+  top: 26vh;
+  width: 50vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  pointer-events: none;
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.side-a {
+  left: 0;
+  color: var(--a);
+}
+
+.side-b {
+  right: 0;
+  color: var(--b);
+}
+
+.letter {
+  font-size: clamp(3rem, 9vw, 8rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.answer {
+  font-size: clamp(1.1rem, 2.4vw, 2rem);
+  color: var(--text);
+}
+
+.count {
+  font: var(--mono);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
+  margin-top: 0.4rem;
+}
+
+/* result: the winning side comes forward, the other steps back */
+body.result .side.lost {
+  opacity: 0.25;
+}
+
+body.result .side.won {
+  transform: scale(1.08);
+}
+
+/* --- status + timer ------------------------------------------------------ */
+
+.status {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 8vh;
+  text-align: center;
+  font-size: clamp(1rem, 1.8vw, 1.5rem);
+  color: var(--muted);
+  margin: 0;
+  pointer-events: none;
+}
+
+.timer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+#timer-bar {
+  height: 100%;
+  width: 0;
+  background: var(--muted);
+}
+
+/* --- camera preview (V) -------------------------------------------------- */
+
+#camera {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 240px;
+  transform: scaleX(-1);
+  border-radius: 6px;
+  opacity: 0.8;
+  display: none;
+}
+
+body.show-camera #camera {
+  display: block;
+}

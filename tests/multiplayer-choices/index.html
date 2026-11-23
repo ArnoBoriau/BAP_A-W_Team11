@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multiplayer choices</title>
+  </head>
+  <body>
+    <canvas id="stage"></canvas>
+    <video id="camera" autoplay playsinline muted></video>
+
+    <header class="question">
+      <p class="step" id="step"></p>
+      <h1 id="question"></h1>
+    </header>
+
+    <section class="side side-a" id="side-a">
+      <span class="letter">A</span>
+      <span class="answer" id="answer-a"></span>
+      <span class="count" id="count-a">0</span>
+    </section>
+    <section class="side side-b" id="side-b">
+      <span class="letter">B</span>
+      <span class="answer" id="answer-b"></span>
+      <span class="count" id="count-b">0</span>
+    </section>
+
+    <p class="status" id="status">Starting camera…</p>
+    <div class="timer"><div id="timer-bar"></div></div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
