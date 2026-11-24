@@ -1,0 +1,43 @@
+{
+  "number": 1,
+  "builtAt": "2026-11-24T15:48:00.000Z",
+  "config": {
+    "living-floor": "terrazzo",
+    "living-north": "concrete",
+    "living-east": "oak",
+    "living-south": "oak",
+    "living-west": "concrete",
+    "bathroom-floor": "oak",
+    "bathroom-north": "concrete",
+    "bathroom-east": "terrazzo",
+    "bathroom-south": "plaster",
+    "bathroom-west": "tiles",
+    "bedroom-floor": "oak",
+    "bedroom-north": "oak",
+    "bedroom-east": "concrete",
+    "bedroom-south": "concrete",
+    "bedroom-west": "plaster",
+    "kitchen-floor": "terrazzo",
+    "kitchen-north": "concrete",
+    "kitchen-east": "terrazzo",
+    "kitchen-south": "terrazzo",
+    "kitchen-west": "terrazzo",
+    "hallway-floor": "oak",
+    "hallway-north": "concrete",
+    "hallway-east": "plaster",
+    "hallway-south": "plaster",
+    "hallway-west": "tiles",
+    "outside-north-1": "plaster",
+    "outside-north-2": "concrete",
+    "outside-east-1": "concrete",
+    "outside-east-2": "concrete",
+    "outside-south": "concrete",
+    "outside-west": "plaster"
+  },
+  "glazing": {
+    "living-north": "glass",
+    "bathroom-south": "glass",
+    "bedroom-east": "glass",
+    "hallway-south": "glass"
+  }
+}

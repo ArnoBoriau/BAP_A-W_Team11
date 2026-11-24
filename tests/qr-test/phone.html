@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0c10" />
+    <title>Vote</title>
+  </head>
+  <body class="phone">
+    <header class="phone-top">
+      <p class="step" id="step"></p>
+      <h1 id="question">Connecting…</h1>
+    </header>
+
+    <main class="buttons">
+      <button class="vote vote-a" id="vote-a" data-choice="A" disabled>
+        <span class="letter">A</span>
+        <span class="answer" id="answer-a"></span>
+      </button>
+      <button class="vote vote-b" id="vote-b" data-choice="B" disabled>
+        <span class="letter">B</span>
+        <span class="answer" id="answer-b"></span>
+      </button>
+    </main>
+
+    <p class="phone-status" id="status"></p>
+
+    <script type="module" src="/src/phone.js"></script>
+  </body>
+</html>

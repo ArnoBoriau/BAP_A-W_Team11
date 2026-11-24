@@ -1,0 +1,351 @@
+/* Same look as demo/proof-of-concept-v2: a calm architecture-model palette,
+   sizes in rem so the UI scales with the root font size. */
+
+html {
+  font-size: 16px;
+}
+
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+:root {
+  --bg: #e9e6e1;
+  --panel: rgba(252, 251, 249, 0.92);
+  --text: #2a2826;
+  --muted: #85807a;
+  --line: #dedad4;
+  --radius: 0.625rem;
+
+  font: 0.875rem/1.4 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.app {
+  position: relative;
+  height: 100%;
+}
+
+.viewport {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+}
+
+/* --- on the street ------------------------------------------------------ */
+
+.intro {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  max-width: 22rem;
+  pointer-events: none;
+}
+
+.intro h1 {
+  margin: 0 0 0.375rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.intro p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* the house number over each front door (see PlateTracker in Street.jsx) */
+.plates {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.plates.is-hidden {
+  opacity: 0;
+}
+
+.plate {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  min-width: 1.75rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.3rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  font: 600 0.8125rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  text-align: center;
+  color: var(--muted);
+  pointer-events: none;
+  user-select: none;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.plate.is-focus {
+  color: var(--text);
+  border-color: var(--muted);
+}
+
+.walk {
+  position: absolute;
+  left: 50%;
+  bottom: 2.25rem;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3rem;
+  background: var(--panel);
+  backdrop-filter: blur(0.75rem);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.walk button {
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  height: 2.25rem;
+}
+
+.walk .arrow {
+  width: 2.25rem;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.walk .enter {
+  padding: 0 1rem;
+  font-weight: 600;
+  background: var(--text);
+  color: var(--bg);
+}
+
+.walk button:not(:disabled):hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.walk .enter:hover {
+  background: #000 !important;
+}
+
+.hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.75rem;
+  margin: 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+/* --- visiting a house ---------------------------------------------------- */
+
+.card {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: 19rem;
+  max-height: calc(100% - 2rem);
+  overflow-y: auto;
+  padding: 1.125rem;
+  background: var(--panel);
+  backdrop-filter: blur(0.75rem);
+  border: 1px solid var(--line);
+  border-radius: 0.875rem;
+  box-shadow: 0 0.75rem 2rem -1rem rgba(40, 30, 20, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.back {
+  align-self: flex-start;
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--muted);
+}
+
+.back:hover {
+  color: var(--text);
+}
+
+.card h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.card .name {
+  margin: 0.125rem 0 0;
+  font-size: 1rem;
+}
+
+.card .meta {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+}
+
+.rooms {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.rooms li {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+
+.rooms h2 {
+  margin: 0 0 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rooms dl {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  gap: 0.5rem;
+}
+
+.row dt {
+  color: var(--muted);
+}
+
+.row dd {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+}
+
+.material {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.swatch {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 0.2rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.none {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.neighbours {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.neighbours button {
+  height: 2.25rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: var(--radius);
+}
+
+.neighbours button:not(:disabled):hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.hint-inline {
+  margin: -0.25rem 0 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* phones: the card becomes a sheet over the bottom half */
+@media (max-width: 640px) {
+  .card {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: auto;
+    max-height: 48%;
+    border-radius: 0.875rem 0.875rem 0 0;
+  }
+
+  .intro {
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+  }
+}
+
+/* --- no homes yet --------------------------------------------------------- */
+
+.empty {
+  height: 100%;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+}
+
+.empty p {
+  margin: 0;
+  color: var(--muted);
+}

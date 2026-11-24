@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Material particles</title>
+  </head>
+  <body>
+    <canvas id="stage"></canvas>
+
+    <!-- why it looks like this: the move, its behaviour, its expression -->
+    <section class="trace" aria-live="polite">
+      <p id="trace-input"></p>
+      <p id="trace-behaviour"></p>
+      <p id="trace-expression"></p>
+    </section>
+
+    <!-- test only: make a move by hand (in the installation, moves come from the game) -->
+    <form class="picker" id="picker">
+      <select id="room" aria-label="Room"></select>
+      <select id="element" aria-label="Element"></select>
+      <select id="material" aria-label="Material"></select>
+      <select id="version" aria-label="Version"></select>
+      <button type="submit">Send</button>
+      <button type="button" id="random">Random</button>
+    </form>
+
+    <div class="hint"><span>n</span> random · <span>space</span> pause · <span>f</span> fullscreen · <span>h</span> hide</div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,278 @@
+:root {
+  --bg: #0b0c10;
+  --text: #f1efe9;
+  --muted: rgba(241, 239, 233, 0.5);
+  --a: #e8a25c;
+  --b: #6fb3d9;
+  --font: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: 0.6875rem/1 ui-monospace, 'SF Mono', Menlo, monospace;
+  color-scheme: dark;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+}
+
+.step {
+  font: var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 1rem;
+}
+
+.letter {
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ===== main screen ====================================================== */
+
+.screen {
+  overflow: hidden;
+}
+
+.question {
+  position: fixed;
+  top: 6vh;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 0 1rem;
+}
+
+.question h1 {
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.sides {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: opacity 0.6s ease, transform 0.6s ease, background 0.6s ease;
+}
+
+.side-a {
+  color: var(--a);
+  background: color-mix(in srgb, var(--a) 5%, transparent);
+}
+
+.side-b {
+  color: var(--b);
+  background: color-mix(in srgb, var(--b) 5%, transparent);
+  border-left: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.side .letter {
+  font-size: clamp(3rem, 9vw, 8rem);
+}
+
+.side .answer {
+  font-size: clamp(1.1rem, 2.4vw, 2rem);
+  color: var(--text);
+}
+
+.side .count {
+  font: var(--mono);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
+  margin-top: 0.4rem;
+}
+
+/* result: the winning side comes forward, the other steps back */
+.result .side.lost {
+  opacity: 0.25;
+}
+
+.result .side.won {
+  transform: scale(1.08);
+}
+
+.result .side-a.won {
+  background: color-mix(in srgb, var(--a) 18%, transparent);
+}
+
+.result .side-b.won {
+  background: color-mix(in srgb, var(--b) 18%, transparent);
+}
+
+.status {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 8vh;
+  text-align: center;
+  font-size: clamp(1rem, 1.8vw, 1.5rem);
+  color: var(--muted);
+  margin: 0;
+}
+
+.timer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+#timer-bar {
+  height: 100%;
+  width: 0;
+  background: var(--muted);
+}
+
+/* the join code: small and quiet in the corner, there for whoever wants it */
+.join {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  transition: opacity 0.4s ease;
+}
+
+.join canvas {
+  display: block;
+  width: 8.25rem !important;
+  height: 8.25rem !important;
+  border-radius: 0.375rem;
+}
+
+.join p {
+  margin: 0;
+  font: var(--mono);
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.join-label {
+  text-transform: uppercase;
+}
+
+.join-url {
+  font-size: 0.625rem !important;
+  opacity: 0.7;
+}
+
+.hide-join .join {
+  opacity: 0;
+}
+
+/* ===== phone ============================================================ */
+
+.phone {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding: max(1.25rem, env(safe-area-inset-top)) 1rem max(1rem, env(safe-area-inset-bottom));
+  gap: 1rem;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.phone-top {
+  text-align: center;
+}
+
+.phone-top .step {
+  margin-bottom: 0.5rem;
+}
+
+.phone-top h1 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.buttons {
+  flex: 1;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 1rem;
+}
+
+.vote {
+  --c: var(--a);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  background: var(--c);
+  color: var(--bg);
+  font: inherit;
+  cursor: pointer;
+  transition: opacity 0.25s ease, transform 0.15s ease, border-color 0.2s ease;
+}
+
+.vote-b {
+  --c: var(--b);
+}
+
+.vote:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.vote .letter {
+  font-size: 4rem;
+}
+
+.vote .answer {
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+/* before the question and before you tap: both buttons equal */
+.vote:disabled {
+  cursor: default;
+}
+
+[data-phase='waiting'] .vote {
+  opacity: 0.2;
+}
+
+/* after you tap: your pick stays full, the other one steps back */
+[data-phase='asking']:not([data-mine='']) .vote:not(.picked) {
+  opacity: 0.3;
+}
+
+.vote.picked {
+  border-color: var(--text);
+}
+
+/* result: the winning answer stays, the rest fades */
+[data-phase='result'] .vote:not(.won) {
+  opacity: 0.2;
+}
+
+.phone-status {
+  margin: 0;
+  min-height: 1.4em;
+  text-align: center;
+  color: var(--muted);
+}
