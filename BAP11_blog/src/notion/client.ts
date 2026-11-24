@@ -447,17 +447,28 @@ async function rowImage(row: Page): Promise<{ url: string; alt: string } | undef
 	}
 }
 
-/** A database whose rows have images becomes a photo grid; everything else stays a table. */
-async function galleryToHtml(rows: Page[], title: string): Promise<string | undefined> {
+/** Text under a photo: only what someone wrote in a "Caption" (or "Bijschrift") text property. Names are never shown. */
+function captionOf(row: Page): string {
+	const entry = Object.entries(row.properties).find(([name]) => ['caption', 'bijschrift'].includes(name.toLowerCase().trim()));
+	return entry && entry[1].type === 'rich_text' ? richText(entry[1].rich_text) : '';
+}
+
+/**
+ * A database whose rows have images becomes a photo grid, for every post written in Notion.
+ * No database title and no captions by default (the "hide title" eye in Notion isn't sent to the website);
+ * add a text property called "Caption" to a database to show text under its photos.
+ */
+async function galleryToHtml(rows: Page[]): Promise<string | undefined> {
 	const images = await Promise.all(rows.map(rowImage));
 	if (images.filter(Boolean).length < Math.ceil(rows.length / 2)) return;
 	const figures = rows.map((row, i) => {
 		const image = images[i];
 		if (!image) return '';
 		const url = image.url.startsWith('/') ? image.url : fileRoute(row.cover ? 'cover' : 'row', row.id);
-		return `<figure><img src="${escape(url)}" alt="${escape(image.alt)}" loading="lazy">${image.alt ? `<figcaption>${escape(image.alt)}</figcaption>` : ''}</figure>`;
+		const caption = captionOf(row);
+		return `<figure><img src="${escape(url)}" alt="${escape(image.alt)}" loading="lazy">${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`;
 	});
-	return `${title ? `<h3>${escape(title)}</h3>` : ''}<div class="gallery">${figures.join('')}</div>`;
+	return `<div class="gallery">${figures.join('')}</div>`;
 }
 
 async function databaseToHtml(databaseId: string, title: string): Promise<string> {
@@ -470,7 +481,7 @@ async function databaseToHtml(databaseId: string, title: string): Promise<string
 	}
 	if (!rows.length) return '';
 
-	const gallery = await galleryToHtml(rows, title);
+	const gallery = await galleryToHtml(rows);
 	if (gallery) return gallery;
 
 	// Title column first, then the others in Notion's order. Oldest rows first.
