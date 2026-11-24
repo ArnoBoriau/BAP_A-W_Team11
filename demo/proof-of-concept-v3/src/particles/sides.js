@@ -1,0 +1,51 @@
+// v3: what one hall's particles screen shows (?screen=particles&side=A).
+// Each player has their own side, and it follows the turn as it happens:
+//
+//   giver picks a material     → the giver's side: that material, no form yet
+//   giver sends it             → the placer's side receives it (the giver's keeps it)
+//   placer picks a place       → the placer's side: the material takes that element's form
+//   placer places it           → both sides: the move as placed
+//   nothing going on           → the last thing shown stays, and roams (render/canvas.js)
+//
+// `preview` is the latest pick this side's player made but didn't send yet
+// ({ round, materialId, surfaceId }), sent by their window (GameState preview()).
+// A view is { key, move, status }: the screen only builds a new field when the
+// key changes, so sending what you picked doesn't restart it.
+
+import { SURFACES_BY_ID } from '../config/room'
+import { isFinished, other, turnRoom } from '../state/game'
+import { fromPocMaterial, fromPocMove } from './adapters'
+
+export function sideView(side, game, preview) {
+  const me = `Player ${side}`
+  const them = `player ${other(side)}`
+  const last = game.lastMove
+  const placed = last
+    ? {
+        key: `placed|${last.round}|${last.surfaceId}|${last.materialId}`,
+        move: fromPocMove(last, SURFACES_BY_ID[last.surfaceId]),
+      }
+    : { key: null, move: null }
+
+  const room = turnRoom(game)
+  if (isFinished(game) || !room) return { ...placed, status: 'The house is finished' }
+
+  const giving = game.giver === side
+  const pick = preview?.round === game.round ? preview : null
+  const material = (id) => ({ key: `material|${game.round}|${id}`, move: fromPocMaterial(id, room.id, game.round) })
+
+  if (game.phase === 'material') {
+    if (giving && pick?.materialId) return { ...material(pick.materialId), status: `${me} is choosing a material` }
+    return { ...placed, status: giving ? `${me} picks a material` : `Waiting for ${them}'s material` }
+  }
+
+  // place phase: the material is on its way to the placer
+  if (giving) return { ...material(game.materialId), status: `Sent to ${them}` }
+  const surface = pick?.surfaceId && SURFACES_BY_ID[pick.surfaceId]
+  if (surface) {
+    const move = fromPocMove({ round: game.round, materialId: game.materialId, surfaceId: surface.id }, surface)
+    // the same key as when it's placed there: placing it doesn't restart the field
+    return { key: `placed|${game.round}|${surface.id}|${game.materialId}`, move, status: `${me} is trying a place` }
+  }
+  return { ...material(game.materialId), status: `Received from ${them}` }
+}
