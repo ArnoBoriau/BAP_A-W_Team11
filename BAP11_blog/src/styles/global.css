@@ -513,6 +513,22 @@ table.data th.num {
 	margin-inline: 0;
 }
 
+.prose .gallery {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 16px;
+	margin-block: 32px;
+}
+
+.prose .gallery figure {
+	margin: 0;
+}
+
+.prose .gallery img {
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+}
+
 .prose figcaption {
 	margin-top: 8px;
 	font-size: 14px;

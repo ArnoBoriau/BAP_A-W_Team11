@@ -194,7 +194,7 @@ export function teamMatcher(team: { id: string; name: string }[]) {
  * Files uploaded to Notion have links that expire after an hour, so the site links to /notion/file/…,
  * which asks Notion for a fresh link on every (cached) request. External links are used as they are.
  */
-export const fileRoute = (kind: 'block' | 'cover', id: string) => `/notion/file/${kind}/${id}`;
+export const fileRoute = (kind: 'block' | 'cover' | 'row', id: string) => `/notion/file/${kind}/${id}`;
 
 /** A fresh link for the file in an image, video, file, PDF or audio block. */
 export async function blockFileUrl(blockId: string): Promise<string | undefined> {
@@ -213,6 +213,16 @@ export async function blockFileUrl(blockId: string): Promise<string | undefined>
 							? block.audio
 							: undefined;
 	return media?.type === 'file' ? media.file.url : media?.type === 'external' ? media.external.url : undefined;
+}
+
+/** A fresh link for the image of a database row (same order as rowImage). */
+export async function rowImageUrl(pageId: string): Promise<string | undefined> {
+	const page = await api().pages.retrieve({ page_id: pageId });
+	if (!isFullPage(page)) return;
+	const image = await rowImage(page);
+	if (!image) return;
+	if (!image.url.startsWith('/')) return image.url;
+	return blockFileUrl(image.url.split('/').pop()!);
 }
 
 /** A fresh link for a page's cover: its Cover property first, then the page cover. */
@@ -418,6 +428,38 @@ function cell(p: Property): string {
 	}
 }
 
+/** The image of a database row: its page cover, an image in a Files property, or the first image inside the page. */
+async function rowImage(row: Page): Promise<{ url: string; alt: string } | undefined> {
+	const title = Object.values(row.properties).find((p) => p.type === 'title');
+	const alt = title?.type === 'title' ? plain(title.title) : '';
+	if (row.cover) return { url: row.cover.type === 'file' ? row.cover.file.url : row.cover.external.url, alt };
+	for (const p of Object.values(row.properties)) {
+		if (p.type === 'files' && p.files.length) {
+			const f = p.files[0];
+			return { url: f.type === 'file' ? f.file.url : f.external.url, alt };
+		}
+	}
+	try {
+		const first = (await children(row.id)).find((b) => b.type === 'image');
+		if (first) return { url: fileRoute('block', first.id), alt };
+	} catch {
+		// A row without readable content simply has no image.
+	}
+}
+
+/** A database whose rows have images becomes a photo grid; everything else stays a table. */
+async function galleryToHtml(rows: Page[], title: string): Promise<string | undefined> {
+	const images = await Promise.all(rows.map(rowImage));
+	if (images.filter(Boolean).length < Math.ceil(rows.length / 2)) return;
+	const figures = rows.map((row, i) => {
+		const image = images[i];
+		if (!image) return '';
+		const url = image.url.startsWith('/') ? image.url : fileRoute(row.cover ? 'cover' : 'row', row.id);
+		return `<figure><img src="${escape(url)}" alt="${escape(image.alt)}" loading="lazy">${image.alt ? `<figcaption>${escape(image.alt)}</figcaption>` : ''}</figure>`;
+	});
+	return `${title ? `<h3>${escape(title)}</h3>` : ''}<div class="gallery">${figures.join('')}</div>`;
+}
+
 async function databaseToHtml(databaseId: string, title: string): Promise<string> {
 	let rows: Page[];
 	try {
@@ -427,6 +469,9 @@ async function databaseToHtml(databaseId: string, title: string): Promise<string
 		return title ? `<p><em>${escape(title)}: open in Notion to see this table.</em></p>` : '';
 	}
 	if (!rows.length) return '';
+
+	const gallery = await galleryToHtml(rows, title);
+	if (gallery) return gallery;
 
 	// Title column first, then the others in Notion's order. Oldest rows first.
 	const names = Object.entries(rows[0].properties)
