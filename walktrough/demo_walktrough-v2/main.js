@@ -114,21 +114,31 @@ wall(EX, EX + 0.3, -0.95, 0.95, COR_H - 2.3, blackWall, 2.3);
 
 const ICE = '#9ec5ff';
 
-/* ---------- two monitors in the corridor (0.85 m high, about half a person), one on each wall (left towards Hall A, right towards Hall B). Each shows a house ---------- */
+/* ---------- two kiosk totems in the corridor (like self-order kiosks): a 2 m column with a 65" landscape screen, a little out from the wall (left towards Hall A, right towards Hall B). Each shows a house ---------- */
 {
   const houses = [
     { facade: 'concrete', roof: 'tile', door: 'oak', terrace: 'teak' },
     { facade: 'terrazzo', roof: 'steel', door: 'teak', terrace: 'cork' },
   ];
-  const MW = 1.51, MH = 0.85, bezel = new THREE.MeshStandardMaterial({ color: 0x0c0c0c, roughness: 0.5 });
+  const MW = 1.439, MH = 0.809, MY = 1.4;                  // 65" 16:9 panel in landscape, centre at 1.4 m
+  const KW = 1.57, KH = 2.0, KD = 0.14;                    // kiosk housing
+  const OUT = 0.9;                                         // kiosk stands 0.9 m out from the wall
+  const housing = new THREE.MeshStandardMaterial({ color: 0x2a2a2c, roughness: 0.45, metalness: 0.3 });
+  const glassBlack = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.15 });
   [-1, 1].forEach((side, i) => {
     const c = mkCanvas(960, 540), g = c.getContext('2d');
     g.fillStyle = '#e9eaec'; g.fillRect(0, 0, 960, 540);
     g.drawImage(getRoom(houses[i], 'house'), 200, 20, 560, 480);
-    const z = side * 12, x = side * HX;                     // side -1: left wall, side +1: right wall
-    const body = new THREE.Mesh(new THREE.BoxGeometry(0.04, MH + 0.03, MW + 0.03), bezel); body.position.set(x - side * 0.02, 1.6, z); scene.add(body);
+    const z = side * 12, x = side * (HX - OUT);             // side -1: left wall, side +1: right wall
+    // local +z faces the middle of the corridor
+    const G = new THREE.Group(); G.position.set(x, 0, z); G.rotation.y = -side * Math.PI / 2; scene.add(G);
+    const add = (w, h, d, px, py, pz, mat = housing) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(px, py, pz); G.add(m); };
+    add(KW + 0.08, 0.04, 0.5, 0, 0.02, -0.04, steel);       // floor plinth
+    add(KW, KH - 0.04, KD, 0, 0.04 + (KH - 0.04) / 2, 0);   // column
+    add(MW + 0.06, MH + 0.06, 0.01, 0, MY, KD / 2 + 0.005, glassBlack); // black glass around the screen
     const scr = new THREE.Mesh(new THREE.PlaneGeometry(MW, MH), new THREE.MeshBasicMaterial({ map: canvasTex(c) }));
-    scr.position.set(x - side * 0.041, 1.6, z); scr.rotation.y = -side * Math.PI / 2; scene.add(scr);
+    scr.position.set(0, MY, KD / 2 + 0.011); G.add(scr);
+    blocks.push({ x0: x - 0.35, x1: x + 0.35, z0: z - KW / 2 - 0.1, z1: z + KW / 2 + 0.1 }); // visitor walks around the kiosk
   });
 }
 
