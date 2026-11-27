@@ -19,12 +19,18 @@
 // on the picker, a place in the room), so their hall's particles answer every
 // click, not just the moves.
 //
-// The computer (src/state/computer.js): a window can replace the other player
-// with the computer. That window then plays both sides on its own: the
-// computer is always "here", and its moves are made locally. Every message
-// says so (`computer`), so if the real other window is open it knows it has
-// been replaced: it keeps watching the room but can't play, and its state
-// updates are ignored, until the computer is switched off again.
+// The computer (src/state/computer.js) fills in for an empty hall, on its own:
+//   - you're here and the other hall stays empty for FALLBACK_MS → the computer joins
+//   - the other hall's player walks away mid-game → the computer takes over at once
+//   - someone steps up in the other hall → the computer steps aside, they play on
+// The window with the computer plays both sides: the computer is always
+// "here", and its moves are made locally. Every message says so (`computer`),
+// so the real other window knows it has been replaced: it shows "Jump in!" and
+// keeps its player's presence going, which is what hands the game back.
+//
+// Joining shows a short brief (who joined, how a round works) before the game
+// is playable: `brief`. A handover in the middle of a game doesn't: a short
+// `notice` says what happened and the game carries on.
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import { GAME_CHANNEL, initialGame, reducer, activePlayer, other } from './game'
@@ -32,18 +38,11 @@ import { computerMove, THINK_MS } from './computer'
 import { createTransport, netMode } from '../net/transport'
 
 const STALE_MS = 3000
+const FALLBACK_MS = 6000 // alone this long, the computer joins
+const BRIEF_MS = 5000 // "Hall B has joined!" and how a round works
+const NOTICE_MS = 4000 // "Hall B left, the computer takes over"
 
 const GameContext = createContext(null)
-
-const computerKey = (player) => `poc2-room:computer:${player}`
-
-function savedComputer(player) {
-  try {
-    return localStorage.getItem(computerKey(player)) === 'on'
-  } catch {
-    return false
-  }
-}
 
 export function GameProvider({ player, children }) {
   const opponent = other(player)
@@ -53,7 +52,9 @@ export function GameProvider({ player, children }) {
   const [seen, setSeen] = useState(false) // the camera sees this player (PresenceTile)
   const [faked, setFaked] = useState(false) // P key: pretend someone is here, for testing
   const [otherHere, setOtherHere] = useState(false)
-  const [computer, setComputer] = useState(() => savedComputer(player)) // the opponent is the computer
+  const [computer, setComputer] = useState(false) // the opponent is the computer
+  const [brief, setBrief] = useState(null) // null | 'person' | 'computer' | 'arrived': shown before playing
+  const [notice, setNotice] = useState(null) // null | 'left' | 'joined': a handover mid-game
   const [otherComputer, setOtherComputer] = useState(false) // the other window replaced us
   const here = seen || faked
   const channel = useRef(null)
@@ -70,7 +71,48 @@ export function GameProvider({ player, children }) {
   const replaced = otherComputer && !computer
   const opponentOnline = computer || otherOnline
   const opponentHere = computer || otherHere
-  const together = here && !replaced && (computer || (link === 'open' && otherOnline && otherHere))
+  // A real person in each hall, both at their screen.
+  const people = here && link === 'open' && otherOnline && otherHere
+  const together = here && !replaced && (computer || people)
+  // The game takes input once the brief is over.
+  const playing = together && !brief
+
+  // The computer steps in and out (see the top of this file). Adjusted while
+  // rendering, not in an effect, so a handover never flashes the waiting
+  // screen for a frame.
+  const [last, setLast] = useState({ people, together, replaced })
+  if (computer && otherOnline && otherHere && link === 'open') {
+    setComputer(false) // a real person stepped up in the other hall
+    setNotice('joined')
+  } else if (!computer && !replaced && last.people && !people && here) {
+    setComputer(true) // they walked away mid-game
+    setNotice('left')
+    setLast({ people, together: true, replaced }) // still together: no brief
+  } else if (last.people !== people || last.together !== together || last.replaced !== replaced) {
+    // Joining (not a handover): show who joined and how a round works.
+    if (together && !last.together) setBrief(computer ? 'computer' : last.replaced ? 'arrived' : 'person')
+    if (!together) setBrief(null)
+    setLast({ people, together, replaced })
+  }
+
+  // Alone at the screen for a while: the computer joins.
+  useEffect(() => {
+    if (computer || replaced || !here || people) return
+    const timer = setTimeout(() => setComputer(true), FALLBACK_MS)
+    return () => clearTimeout(timer)
+  }, [computer, replaced, here, people])
+
+  useEffect(() => {
+    if (!brief) return
+    const timer = setTimeout(() => setBrief(null), BRIEF_MS)
+    return () => clearTimeout(timer)
+  }, [brief])
+
+  useEffect(() => {
+    if (!notice) return
+    const timer = setTimeout(() => setNotice(null), NOTICE_MS)
+    return () => clearTimeout(timer)
+  }, [notice])
 
   // Broadcast every local change (and the state we adopted from a sync, harmless).
   useEffect(() => {
@@ -145,34 +187,23 @@ export function GameProvider({ player, children }) {
   // The computer's turn: think for a moment, then move. Only while the game
   // plays, so it waits too when this player walks away.
   useEffect(() => {
-    if (!computer || !together) return
+    if (!computer || !playing) return
     const action = computerMove(game, opponent)
     if (!action) return
     const [min, max] = THINK_MS
     const timer = setTimeout(() => dispatch(action), min + Math.random() * (max - min))
     return () => clearTimeout(timer)
-  }, [computer, together, game, opponent])
+  }, [computer, playing, game, opponent])
 
   const toggleFake = useCallback(() => setFaked((f) => !f), [])
 
-  // What this player picked but didn't send yet: { round, materialId, surfaceId }.
+  // What this player picked but didn't send yet: { round, materialId, surfaceId }
+  // (the giver: the material they clicked last; the placer: the one they use).
   // Only particles screens use it; the other player's window ignores it.
   const preview = useCallback(
     (pick) => {
       previewRef.current = pick
       channel.current?.send({ from: player, type: 'preview', ...meRef.current, preview: pick })
-    },
-    [player],
-  )
-
-  const playComputer = useCallback(
-    (on) => {
-      setComputer(on)
-      try {
-        localStorage.setItem(computerKey(player), on ? 'on' : 'off')
-      } catch {
-        // private window: just don't remember
-      }
     },
     [player],
   )
@@ -191,21 +222,23 @@ export function GameProvider({ player, children }) {
       faked,
       computer, // the opponent is the computer (in this window)
       replaced, // the other window plays this player with the computer
-      together, // both players are here (or the computer): the game plays
+      together, // both players are here (or the computer)
+      playing, // together, and the brief is over: the game takes input
+      brief,
+      notice,
       meter,
       setSeen,
       toggleFake,
-      playComputer,
       preview,
       myTurn: activePlayer(game) === player,
       // This turn's role decides the whole screen: the giver gets the
       // full-screen material picker, the placer gets the room.
       role: game.giver === player ? 'giver' : 'placer',
-      giveMaterial: (materialId) => dispatch({ type: 'giveMaterial', player, materialId }),
-      placeMaterial: (surfaceId) => dispatch({ type: 'placeMaterial', player, surfaceId }),
+      sendMaterials: (materialIds) => dispatch({ type: 'sendMaterials', player, materialIds }),
+      placeMaterial: (materialId, surfaceId) => dispatch({ type: 'placeMaterial', player, materialId, surfaceId }),
       reset: () => dispatch({ type: 'reset' }),
     }),
-    [game, player, opponent, opponentOnline, opponentHere, link, here, faked, computer, replaced, together, meter, toggleFake, playComputer, preview],
+    [game, player, opponent, opponentOnline, opponentHere, link, here, faked, computer, replaced, together, playing, brief, notice, meter, toggleFake, preview],
   )
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>

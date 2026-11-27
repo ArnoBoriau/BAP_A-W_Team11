@@ -240,8 +240,11 @@ a:focus-visible {
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
-  color: var(--muted);
-  font-size: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text-soft);
+  font-size: 0.9375rem;
   white-space: nowrap;
   pointer-events: none;
 }
@@ -842,27 +845,9 @@ kbd {
   }
 }
 
-/* --- opponent: person or computer ----------------------------------------- */
-
-/* Quiet on purpose: a setting, not the thing to look at. */
-.opponent {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-top: -0.375rem;
-  color: var(--muted);
-  font-size: 0.75rem;
-}
-
 .segmented--small button {
   padding: 0.25rem 0.625rem;
   font-size: 0.6875rem;
-}
-
-.waiting__action {
-  margin-top: 0.875rem;
-  font-size: 0.8125rem;
 }
 
 /* --- v2: two different screens --------------------------------------------- */
@@ -1007,6 +992,7 @@ kbd {
 }
 
 .gift__swatch {
+  position: relative;
   aspect-ratio: 1;
   box-shadow: inset 0 0 0 1px var(--line);
   transition: box-shadow 0.15s;
@@ -1016,6 +1002,7 @@ kbd {
   box-shadow: inset 0 0 0 1px var(--line-strong);
 }
 
+.gift[aria-pressed='true'] .gift__swatch,
 .gift[aria-checked='true'] .gift__swatch {
   box-shadow:
     0 0 0 0.1875rem var(--bg),
@@ -1030,6 +1017,7 @@ kbd {
   text-transform: uppercase;
 }
 
+.gift[aria-pressed='true'] .gift__label,
 .gift[aria-checked='true'] .gift__label {
   color: var(--accent-text);
 }
@@ -1052,6 +1040,36 @@ kbd {
 
 .give__action {
   margin-top: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.give__count {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+/* Which of the three it is: 1, 2, 3, in the order they were chosen. */
+.gift__order {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* Three chosen: the others wait quietly until one is taken off. */
+.gift[data-full='true'] {
+  opacity: 0.5;
+  cursor: default;
 }
 
 /* Sent: the material, big, while the other player places it. */
@@ -1061,10 +1079,15 @@ kbd {
   align-items: flex-start;
 }
 
-.sent__swatch {
-  width: 11.25rem;
-  aspect-ratio: 1;
+.sent__swatches {
+  display: flex;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
+}
+
+.sent__swatch {
+  width: 7.5rem;
+  aspect-ratio: 1;
   box-shadow: inset 0 0 0 1px var(--line);
 }
 
@@ -1198,4 +1221,184 @@ kbd {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+/* --- the flow between turns (wireframes) ------------------------------------ */
+
+/* Something happened that doesn't stop the game: "Materials have arrived",
+   "Hall B left". Centre of the screen, gone after a few seconds. */
+.notice {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  min-width: 22rem;
+  padding: 1.5rem 2.5rem;
+  background: var(--panel);
+  backdrop-filter: blur(0.75rem);
+  border: 1px solid var(--line-strong);
+  border-top: 3px solid var(--accent);
+  text-align: center;
+  pointer-events: none;
+  animation: notice 0.3s ease-out;
+}
+
+.notice strong {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.notice span {
+  color: var(--text-soft);
+  font-size: 1.0625rem;
+}
+
+@keyframes notice {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 0.5rem));
+  }
+}
+
+.interlude {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* What the other hall did with your materials: the room, with a caption
+   above and "next up" below. */
+.interlude--reveal {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.125rem 19.75rem 2.125rem 2.125rem;
+}
+
+.interlude__top .give__eyebrow {
+  font-size: 0.875rem;
+}
+
+.interlude__top h2 {
+  margin: 0.5rem 0 0;
+  max-width: 22ch;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.interlude__top p {
+  margin: 0.75rem 0 0;
+  color: var(--text-soft);
+  font-size: 1.125rem;
+}
+
+/* The caption sits on the room: a soft shade behind it keeps it readable. */
+.interlude--reveal::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 16rem;
+  background: linear-gradient(rgba(14, 17, 17, 0.85), transparent);
+  pointer-events: none;
+}
+
+.interlude__top,
+.interlude__next {
+  position: relative;
+}
+
+.interlude__next {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1rem 1.75rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.interlude__bar {
+  width: 18rem;
+  height: 4px;
+  background: var(--line-strong);
+}
+
+.interlude__bar::after {
+  content: '';
+  display: block;
+  height: 100%;
+  background: var(--accent-text);
+  transform-origin: left;
+  animation: fill var(--duration) linear forwards;
+}
+
+@keyframes fill {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+/* The roles swap: a short card over everything, like the waiting screen. */
+.interlude--switch {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: var(--bg);
+  animation: notice-fade 0.4s ease-out;
+}
+
+.interlude--switch .waiting__card {
+  max-width: 40rem;
+  gap: 0.625rem;
+}
+
+.interlude--switch .waiting__eyebrow {
+  font-size: 0.875rem;
+}
+
+.interlude--switch h2 {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.interlude--switch .waiting__card p {
+  font-size: 1.1875rem;
+  color: var(--text-soft);
+}
+
+.interlude__changing {
+  margin-top: 1.25rem !important;
+  font-size: 0.9375rem !important;
+}
+
+@keyframes notice-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .interlude--reveal {
+    padding: 12.5rem 1rem 1.5rem;
+  }
 }

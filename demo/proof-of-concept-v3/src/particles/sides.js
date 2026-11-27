@@ -2,8 +2,10 @@
 // Each player has their own side, and it follows the turn as it happens:
 //
 //   giver picks a material     → the giver's side: that material, no form yet
-//   giver sends it             → the placer's side receives it (the giver's keeps it)
-//   placer picks a place       → the placer's side: the material takes that element's form
+//                                (of the three, the one clicked last)
+//   giver sends them           → the placer's side receives them: the first
+//                                one shows (the giver's keeps its last)
+//   placer picks one, a place  → the placer's side: that material, in that element's form
 //   placer places it           → both sides: the move as placed
 //   nothing going on           → the last thing shown stays, and roams (render/canvas.js)
 //
@@ -13,12 +15,12 @@
 // key changes, so sending what you picked doesn't restart it.
 
 import { SURFACES_BY_ID } from '../config/room'
-import { isFinished, other, turnRoom } from '../state/game'
+import { hallName, isFinished, other, turnRoom } from '../state/game'
 import { fromPocMaterial, fromPocMove } from './adapters'
 
 export function sideView(side, game, preview) {
-  const me = `Player ${side}`
-  const them = `player ${other(side)}`
+  const me = hallName(side)
+  const them = hallName(other(side))
   const last = game.lastMove
   const placed = last
     ? {
@@ -35,17 +37,18 @@ export function sideView(side, game, preview) {
   const material = (id) => ({ key: `material|${game.round}|${id}`, move: fromPocMaterial(id, room.id, game.round) })
 
   if (game.phase === 'material') {
-    if (giving && pick?.materialId) return { ...material(pick.materialId), status: `${me} is choosing a material` }
-    return { ...placed, status: giving ? `${me} picks a material` : `Waiting for ${them}'s material` }
+    if (giving && pick?.materialId) return { ...material(pick.materialId), status: `${me} is choosing materials` }
+    return { ...placed, status: giving ? `${me} picks materials` : `Waiting for materials from ${them}` }
   }
 
-  // place phase: the material is on its way to the placer
-  if (giving) return { ...material(game.materialId), status: `Sent to ${them}` }
+  // place phase: the materials are on their way to the placer
+  if (giving) return { ...material(pick?.materialId ?? game.materialIds[0]), status: `Sent to ${them}` }
+  const chosen = game.materialIds.includes(pick?.materialId) ? pick.materialId : game.materialIds[0]
   const surface = pick?.surfaceId && SURFACES_BY_ID[pick.surfaceId]
   if (surface) {
-    const move = fromPocMove({ round: game.round, materialId: game.materialId, surfaceId: surface.id }, surface)
+    const move = fromPocMove({ round: game.round, materialId: chosen, surfaceId: surface.id }, surface)
     // the same key as when it's placed there: placing it doesn't restart the field
-    return { key: `placed|${game.round}|${surface.id}|${game.materialId}`, move, status: `${me} is trying a place` }
+    return { key: `placed|${game.round}|${surface.id}|${chosen}`, move, status: `${me} is trying a place` }
   }
-  return { ...material(game.materialId), status: `Received from ${them}` }
+  return { ...material(chosen), status: pick?.materialId ? `${me} is trying a material` : `Received from ${them}` }
 }

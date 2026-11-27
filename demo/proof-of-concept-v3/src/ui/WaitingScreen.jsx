@@ -1,41 +1,27 @@
-// Covers the room until both players are standing at their screens, and
-// again whenever one of them walks away (the game pauses, nothing is lost).
+// Covers the room until both halls are playing, and again whenever one of
+// them walks away (the game pauses, nothing is lost). The copy follows the
+// designer's wireframes:
 //
-// The pulse (from tests/pulse-presence): when the OTHER player is here and
-// nobody is at this screen, it breathes in their colour: an invitation to
-// come closer, because someone is waiting on the other side.
+//   the other hall plays with the computer → "Jump in! Hall A is playing alone" (pulse)
+//   nobody here, the other hall is         → PULSE: come closer, they're waiting
+//   nobody here                            → step in front of the screen
+//   you're here, the other hall is empty   → "Waiting for the other person"
+//                                            (the computer joins after a while)
+//   both here (or the computer joined)     → the brief: "Hall B has joined!" /
+//                                            "The computer has joined!" and how a
+//                                            round works, then it fades out
 //
-//   replaced by the computer  → the other window plays this side for now
-//   other screen not open     → waiting for their screen
-//   nobody here, they are     → PULSE: player X is waiting for you
-//   nobody on either side     → step in front of the screen
-//   you're here, they aren't  → waiting for player X (their screen pulses)
-//   both here                 → fades out, the game plays
-//
-// With the computer as the other player, it's always "here": only this
-// player has to step up.
+// The pulse (from tests/pulse-presence) breathes in the other hall's colour:
+// an invitation to come closer, because someone is waiting on the other side.
 
 import { useEffect, useRef } from 'react'
 import { useGame } from '../state/GameState'
-import { COLORS } from '../state/game'
+import { COLORS, HOW_IT_WORKS, hallName } from '../state/game'
+
+const HOW = HOW_IT_WORKS
 
 export function WaitingScreen() {
-  const {
-    game,
-    player,
-    opponent,
-    link,
-    net,
-    otherOnline,
-    otherHere,
-    here,
-    faked,
-    computer,
-    replaced,
-    together,
-    meter,
-    playComputer,
-  } = useGame()
+  const { player, opponent, link, here, otherHere, faked, computer, replaced, together, brief, meter } = useGame()
   const ring = useRef(null)
 
   // The "we see you, hold still" ring fills with the dwell timer. Straight
@@ -50,56 +36,55 @@ export function WaitingScreen() {
     return () => cancelAnimationFrame(raf)
   }, [meter])
 
-  const started = game.round > 1 || game.phase !== 'material'
-  const pulsing = !together && !computer && !replaced && otherOnline && otherHere && !here
-
-  let eyebrow = started ? 'Paused' : `Player ${player}`
+  const them = hallName(opponent)
+  const open = !together || !!brief
+  let eyebrow = them
   let title, text
   let showRing = false
-  if (together) {
-    eyebrow = started ? 'Back together' : computer ? 'You and the computer' : 'Both here'
-    title = started ? 'Carry on' : "Let's start"
+  let pulsing = false
+
+  if (brief === 'computer') {
+    eyebrow = `${them} · computer`
+    title = 'The computer has joined!'
+    text = `Nobody in ${them}, the computer will help you. ${HOW}`
+  } else if (brief === 'arrived') {
+    title = 'You’re in!'
+    text = `You take over from the computer and build with ${them}. ${HOW}`
+  } else if (brief) {
+    title = `${them} has joined!`
+    text = HOW
   } else if (replaced) {
-    eyebrow = `Player ${player}`
-    title = `Player ${opponent} is playing against the computer`
-    text = `Their window plays you for now. You're back in the game when they switch the computer off.`
-  } else if (!computer && link !== 'open') {
-    title = "Can't reach the other MacBook"
+    title = `Jump in! ${them} is playing alone`
+    text = `${them} is building a house with the computer. Step up and help.`
+    showRing = !here
+    pulsing = !here
+  } else if (!computer && link !== 'open' && here) {
+    title = "Can't reach the other hall"
     text = 'Retrying… Are both MacBooks on the same Wi-Fi?'
-  } else if (!otherOnline) {
-    title = `Waiting for player ${opponent}'s screen`
-    text = net === 'network' ? 'Open the link from the launcher on the other MacBook.' : `Open player ${opponent}'s window.`
-  } else if (!here && computer) {
-    title = 'Step in front of the screen'
-    text = `You're playing against the computer. Stand still, facing the screen, and it starts.`
-    showRing = true
-  } else if (!here && otherHere) {
-    eyebrow = `Player ${opponent} is here`
+  } else if (!here && otherHere && !computer) {
     title = 'Come closer'
-    text = `Player ${opponent} is waiting for you on the other screen. Stand in front of this one, facing it.`
+    text = `${them} is waiting for you. Stand in front of this screen, facing it.`
     showRing = true
+    pulsing = true
   } else if (!here) {
+    eyebrow = hallName(player)
     title = 'Step in front of the screen'
-    text = started
-      ? 'The game carries on when both players are back.'
-      : 'Stand still, facing the screen. The room opens when both players are here.'
+    text = 'Stand still, facing the screen, and the game starts.'
     showRing = true
   } else {
-    title = `Waiting for player ${opponent}…`
-    text = `You're here. Player ${opponent}'s screen is pulsing to call them over.`
+    eyebrow = `${them} · empty`
+    title = 'Waiting for the other person'
+    text = `${them} is empty right now. The game starts as soon as someone steps up.`
   }
-
-  // Nobody on the other side? Offer the computer instead.
-  const offerComputer = !together && !computer && !replaced && !otherHere
 
   return (
     <div
       className="waiting"
-      data-open={!together}
+      data-open={open}
       data-pulsing={pulsing}
       style={{ '--glow': COLORS[opponent], '--me': COLORS[player] }}
-      aria-hidden={together}
-      inert={together}
+      aria-hidden={!open}
+      inert={!open}
       role="status"
     >
       <div className="waiting__pulse" />
@@ -110,7 +95,7 @@ export function WaitingScreen() {
             <circle cx="24" cy="24" r="20" pathLength="1" />
           </svg>
         ) : (
-          !together && (
+          !brief && (
             <span className="waiting__dots" aria-hidden="true">
               <i />
               <i />
@@ -121,16 +106,6 @@ export function WaitingScreen() {
         <span className="waiting__eyebrow">{eyebrow}</span>
         <h2>{title}</h2>
         {text && <p>{text}</p>}
-        {offerComputer && (
-          <button type="button" className="link waiting__action" onClick={() => playComputer(true)}>
-            Play against the computer instead
-          </button>
-        )}
-        {computer && !together && (
-          <button type="button" className="link waiting__action" onClick={() => playComputer(false)}>
-            Play against player {opponent} again
-          </button>
-        )}
       </div>
       <p className="waiting__foot">
         {faked ? 'Pretending someone is here · ' : ''}

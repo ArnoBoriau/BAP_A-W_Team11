@@ -1,16 +1,16 @@
-// The giver's screen: full screen, no room. You pick a material FOR the
-// other player, for one room of the house (you know which); they decide where
-// in that room it goes. You never see the house yourself, only what they did
-// with your material (last turn).
+// The giver's screen: full screen, no room. You choose three materials FOR the
+// other hall, for one room of the house (you know which); they dress the house
+// with one of them. You never see the house while you choose; after they've
+// placed it, you see what they did (ui/Interlude.jsx).
 //
-//   material phase → pick one, then "Give it to player X"
-//   place phase    → sent; waiting while they choose where it goes
+//   material phase → choose PICKS, then "Send to hall X"
+//   place phase    → "Your materials are on their way", while they design
 
 import { useEffect, useState } from 'react'
 import { MATERIALS, MATERIALS_BY_ID } from '../config/materials'
 import { useGame } from '../state/GameState'
-import { fitsRoom, turnRoom } from '../state/game'
-import { LastMove, OpponentToggle, PlayerFoot, PlayerHead } from './PlayerBits'
+import { fitsRoom, hallName, materialsWord, picksFor, turnRoom } from '../state/game'
+import { LastMove, PlayerFoot, PlayerHead } from './PlayerBits'
 import { fitsLabel, swatchStyle } from './swatch'
 
 export function GiveScreen() {
@@ -19,7 +19,6 @@ export function GiveScreen() {
     <div className="give">
       <aside className="give__side">
         <PlayerHead />
-        <OpponentToggle />
         <LastMove />
         <PlayerFoot />
       </aside>
@@ -29,50 +28,81 @@ export function GiveScreen() {
 }
 
 function Picker() {
-  const { game, opponent, computer, giveMaterial, preview } = useGame()
-  // Local until it's given: the other player only sees the final choice.
+  const { game, opponent, computer, sendMaterials, preview } = useGame()
+  const needed = picksFor(game)
+  // Local until they're sent: the other hall only sees the final choice.
   // Tied to the round, so a new turn starts without a choice.
-  const [choice, setChoice] = useState({ round: 0, id: null })
-  const chosen = choice.round === game.round ? MATERIALS_BY_ID[choice.id] : null
+  const [choice, setChoice] = useState({ round: 0, ids: [], last: null })
+  const current = choice.round === game.round ? choice : { round: game.round, ids: [], last: null }
+  const chosen = current.ids
+  const full = chosen.length >= needed
+  const single = needed === 1
 
-  // This player's hall sees it already (their particles screen), before it's given.
-  const chosenId = chosen?.id ?? null
+  // One to send: a click picks it (another click picks another, nothing to
+  // undo). Several: a click adds it, or takes it off again.
+  const toggle = (id) => {
+    if (single) setChoice({ round: game.round, ids: [id], last: id })
+    else if (chosen.includes(id)) setChoice({ round: game.round, ids: chosen.filter((x) => x !== id), last: null })
+    else if (!full) setChoice({ round: game.round, ids: [...chosen, id], last: id })
+  }
+
+  // This hall sees the material clicked last already (their particles screen), before it's sent.
+  const shownId = current.last ?? chosen.at(-1) ?? null
   useEffect(() => {
-    preview({ round: game.round, materialId: chosenId })
-  }, [preview, game.round, chosenId])
-  const them = computer ? `player ${opponent} (computer)` : `player ${opponent}`
+    preview({ round: game.round, materialId: shownId })
+  }, [preview, game.round, shownId])
+
+  const them = hallName(opponent) + (computer ? ' (computer)' : '')
   const room = turnRoom(game).label.toLowerCase()
 
   return (
     <>
-      <span className="give__eyebrow">Your turn · A material for {them}</span>
-      <h2 className="give__title">Pick a material for the {room}</h2>
+      <span className="give__eyebrow">
+        Your turn · {single ? 'A material' : 'Materials'} for {them}
+      </span>
+      <h2 className="give__title">It’s your turn to choose {single ? 'a material' : 'materials'}</h2>
       <p className="give__lead">
-        Player {opponent} will choose where it goes in the {room}. You won't see the house, only where they put it.
+        {hallName(opponent)} is designing the {room} right now.{' '}
+        {single
+          ? 'Choose a material they can use there.'
+          : `Choose ${needed} materials they can use there; they dress the house with one of them.`}
       </p>
 
-      <div className="gifts" role="radiogroup" aria-label="Materials">
-        {MATERIALS.map((material) => (
-          <button
-            key={material.id}
-            type="button"
-            role="radio"
-            className="gift"
-            aria-checked={chosen?.id === material.id}
-            disabled={!fitsRoom(game, material)}
-            onClick={() => setChoice({ round: game.round, id: material.id })}
-          >
-            <span className="gift__swatch" style={swatchStyle(material)} />
-            <span className="gift__label">{material.label}</span>
-            {fitsLabel(material) && <span className="gift__note">{fitsLabel(material)}</span>}
-          </button>
-        ))}
+      <div className="gifts" role={single ? 'radiogroup' : 'group'} aria-label={`Materials, choose ${materialsWord(needed)}`}>
+        {MATERIALS.map((material) => {
+          const order = chosen.indexOf(material.id) + 1
+          const usable = fitsRoom(game, material)
+          return (
+            <button
+              key={material.id}
+              type="button"
+              className="gift"
+              role={single ? 'radio' : undefined}
+              aria-checked={single ? order > 0 : undefined}
+              aria-pressed={single ? undefined : order > 0}
+              disabled={!usable}
+              data-full={!single && full && !order}
+              onClick={() => toggle(material.id)}
+            >
+              <span className="gift__swatch" style={swatchStyle(material)}>
+                {!single && order > 0 && <span className="gift__order">{order}</span>}
+              </span>
+              <span className="gift__label">{material.label}</span>
+              {fitsLabel(material) && <span className="gift__note">{fitsLabel(material)}</span>}
+            </button>
+          )
+        })}
       </div>
 
       <div className="give__action">
-        <button type="button" className="primary" disabled={!chosen} onClick={() => giveMaterial(chosen.id)}>
-          {chosen ? `Give ${chosen.label.toLowerCase()} to player ${opponent}` : 'Pick a material first'}
+        <button type="button" className="primary" disabled={!full} onClick={() => sendMaterials(chosen)}>
+          {full ? `Send to ${hallName(opponent)}` : `Choose ${materialsWord(needed)} to send`}
         </button>
+        {!single && (
+          <span className="give__count" aria-live="polite">
+            {chosen.length} of {needed} selected
+          </span>
+        )}
       </div>
     </>
   )
@@ -80,13 +110,19 @@ function Picker() {
 
 function Sent() {
   const { game, opponent, computer } = useGame()
-  const material = MATERIALS_BY_ID[game.materialId]
   return (
     <div className="sent" role="status">
-      <span className="sent__swatch" style={swatchStyle(material)} />
-      <span className="give__eyebrow">Sent to player {opponent}{computer ? ' (computer)' : ''}</span>
-      <h2 className="give__title">{material.label}</h2>
-      <p className="give__lead">Player {opponent} is choosing where it goes in the {turnRoom(game).label.toLowerCase()}…</p>
+      <div className="sent__swatches">
+        {game.materialIds.map((id) => (
+          <span key={id} className="sent__swatch" style={swatchStyle(MATERIALS_BY_ID[id])} title={MATERIALS_BY_ID[id].label} />
+        ))}
+      </div>
+      <span className="give__eyebrow">
+        Sent to {hallName(opponent)}
+        {computer ? ' (computer)' : ''}
+      </span>
+      <h2 className="give__title">Your {game.materialIds.length === 1 ? 'material is' : 'materials are'} on their way</h2>
+      <p className="give__lead">Waiting for {hallName(opponent)} to design.</p>
       <span className="waiting__dots" aria-hidden="true">
         <i />
         <i />

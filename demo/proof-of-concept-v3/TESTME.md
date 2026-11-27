@@ -1,6 +1,6 @@
 # Test me
 
-One screen picks a material (full screen, no room), the other places it in the room. Roles swap every turn.
+One hall chooses three materials (full screen, no room), the other uses one of them in the room. Roles swap every turn.
 
 First time: `npm install`
 
@@ -17,7 +17,8 @@ Both screens wait until both players stand in front of them (close, facing the s
 moment). The other screen pulses to call its player over. Testing alone? Press **P** in a window to
 pretend someone is there.
 
-No second person? Set **Player B → Computer** in A's panel (or Player A → Computer in B's) and play alone.
+No second person? Stand at one screen and wait 6 s: the computer joins as the other hall. Close the
+other window mid-game and the computer takes over; open it again and that person takes over back.
 
 Browser says "not private"? Click through it (needed for the camera).
 "Can't reach the server"? Same Wi-Fi? Otherwise use a phone hotspot.

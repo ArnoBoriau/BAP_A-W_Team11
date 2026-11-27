@@ -13,7 +13,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useGame } from '../state/GameState'
-import { COLORS, other } from '../state/game'
+import { COLORS, hallName, other } from '../state/game'
 import { startTracking } from '../presence/tracking'
 import { createPoseLink } from '../presence/poseLink'
 import { createFigure } from '../presence/figure'
@@ -102,23 +102,23 @@ export function PresenceTile() {
   }, [player, setSeen, meter])
 
   let caption = null
-  if (computer) caption = `Player ${opponent} is the computer`
-  else if (!otherOnline) caption = `Waiting for player ${opponent}…`
-  else if (remote === 'hidden') caption = `Player ${opponent} is hidden`
-  else if (remote === 'away') caption = `Player ${opponent} isn't in view`
+  if (computer) caption = `${hallName(opponent)} · computer`
+  else if (!otherOnline) caption = `${hallName(opponent)} · empty`
+  else if (remote === 'hidden') caption = `${hallName(opponent)} is hidden`
+  else if (remote === 'away') caption = `Nobody in view in ${hallName(opponent)}`
 
   let selfNote = { starting: 'Camera…', loading: 'Loading…', blocked: 'No camera' }[camera]
   if (hidden) selfNote = 'Hidden'
   else if (camera === 'tracking' && !selfInView) selfNote = 'Not in view'
 
   return (
-    <section className="tile" aria-label={`Player ${opponent}, abstracted`}>
+    <section className="tile" aria-label={`${hallName(opponent)}, abstracted`}>
       <div className="tile__screen">
         <canvas ref={remoteCanvas} className="tile__remote" />
         {caption && <p className="tile__caption">{caption}</p>}
-        <span className="tile__name">Player {opponent}</span>
+        <span className="tile__name">{hallName(opponent)}</span>
 
-        <div className="tile__self" data-hidden={hidden} title="What the other player sees of you">
+        <div className="tile__self" data-hidden={hidden} title="What the other hall sees of you">
           <canvas ref={selfCanvas} />
           {selfNote && <span>{selfNote}</span>}
         </div>
