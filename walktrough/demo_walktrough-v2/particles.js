@@ -1,7 +1,6 @@
 // The particle wall: black, white dots and fine lines, one ice-blue accent.
-// It only reacts to choices (a material placed on a part of the room, materials sent from Hall A).
+// It only reacts to choices (a material put on a part of the house, a material sent to the other hall).
 // Both halls show the same field. Placeholder for the real engine in tests/material-particles.
-import { MATS, ROOMS } from './materials.js';
 
 // the patterns are laid out on 1280 × 640, the canvas is 3:2 like the 3 × 2 m screen
 const W = 1280, H = 640, CH = 854, N = 560, ICE = '#9ec5ff', INK = '#08090b';
@@ -9,20 +8,14 @@ const canvas = document.createElement('canvas'); canvas.width = W; canvas.height
 const g = canvas.getContext('2d');
 export const particleWall = { canvas };
 
-// what a material looks like as particles: density, organic (0 = rigid), round dots, movement, transparency
-const TAGS = {
-  terrazzo: [0.8, 0.3, false, 'still', 0], carpet: [0.9, 0.8, true, 'flow', 0], oak: [0.7, 0.7, true, 'flow', 0],
-  chocolate: [0.85, 0.6, true, 'disperse', 0], marble: [0.95, 0.5, true, 'still', 0.1], bubble: [0.3, 0.6, true, 'expand', 0.8],
-  tile: [0.8, 0.05, false, 'rhythm', 0], teak: [0.75, 0.7, true, 'flow', 0], velvet: [0.9, 0.9, true, 'flow', 0.1],
-  mosaic: [0.65, 0.1, false, 'rhythm', 0.5], sponge: [0.35, 0.9, true, 'disperse', 0.2], steel: [1, 0, false, 'still', 0],
-  concrete: [0.95, 0.2, false, 'still', 0], cork: [0.45, 0.7, true, 'disperse', 0], gold: [0.6, 0.3, false, 'expand', 0.2],
-};
-const tagsOf = (id) => { const [d, org, round, move, tr] = TAGS[id] || [0.6, 0.4, true, 'still', 0]; return { d, org, round, move, tr }; };
+// what a material looks like as particles: density, organic (0 = rigid), round dots, movement,
+// transparency. Each material brings its own (catalogue.data.js `particles`).
+const IDLE_TAGS = { d: 0.6, org: 0.4, round: true, move: 'still', tr: 0 };
 const MOVE_WORD = { flow: 'flowing', rhythm: 'rhythmic', expand: 'expanding', disperse: 'dispersing', still: 'still' };
 const densityWord = (d) => (d >= 0.85 ? 'solid' : d >= 0.65 ? 'dense' : d >= 0.45 ? 'open' : 'porous');
 const charWord = (o) => (o > 0.6 ? 'organic' : o < 0.25 ? 'rigid' : 'soft');
-// the part of the room decides the behaviour (where the particles go)
-const BEHAVIOUR = { floor: 'layering', walls: 'filtering', bath: 'enclosing', counter: 'enclosing', sofa: 'enclosing', bed: 'enclosing' };
+// the part of the house decides the behaviour (where the particles go)
+const BEHAVIOUR = { terrace: 'layering', facade: 'filtering', roof: 'enclosing', door: 'directing' };
 
 function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 function hash(s) { let h = 2166136261; for (const ch of s) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -68,7 +61,7 @@ const PATTERNS = {
 };
 
 const P = Array.from({ length: N }, (_, i) => ({ x: W / 2, y: H / 2, hx: W / 2, hy: H / 2, s: 0, a: 0, on: 1, ph: (i * 2.399) % 6.283, ice: i % 9 === 0 }));
-let state = { behaviour: 'idle', t: tagsOf(null), line1: 'Waiting for the first choice', line2: '' };
+let state = { behaviour: 'idle', t: IDLE_TAGS, line1: 'Waiting for the first choice', line2: '' };
 
 function apply(behaviour, t, seed) {
   const r = rng(seed), active = behaviour === 'idle' ? 364 : Math.round(N * (0.4 + 0.6 * t.d));
@@ -80,14 +73,13 @@ function apply(behaviour, t, seed) {
 }
 apply('idle', state.t, 1);
 
-// a choice in the game: { room, slot, mat } from the room designer, or { send: [ids] } from the material desk
+// a choice in the game: { mat, part } a material put on a part of the house, or { send: mat } a
+// material sent to the other hall (mat: a catalogue material, part: a catalogue part)
 export function particleChoice(c) {
-  if (!c) { state = { behaviour: 'idle', t: tagsOf(null), line1: 'Waiting for the first choice', line2: '' }; apply('idle', state.t, 1); return; }
-  const id = c.send ? c.send[0] : c.mat, t = tagsOf(id), behaviour = c.send ? 'directing' : BEHAVIOUR[c.slot] || 'layering';
-  const part = c.send ? 'sent to Hall B' : `${ROOMS[c.room].name} · ${ROOMS[c.room].slots.find((s) => s[0] === c.slot)[1].toLowerCase()}`;
-  const mats = c.send ? c.send.map((m) => MATS[m].name).join(', ') : MATS[id].name;
-  state = { behaviour, t, line1: `${mats}  ·  ${part}`, line2: `${behaviour}  ·  ${densityWord(t.d)} · ${charWord(t.org)} · ${MOVE_WORD[t.move]}` };
-  apply(behaviour, t, hash(JSON.stringify(c)));
+  if (!c) { state = { behaviour: 'idle', t: IDLE_TAGS, line1: 'Waiting for the first choice', line2: '' }; apply('idle', state.t, 1); return; }
+  const mat = c.send ?? c.mat, t = mat.tags, behaviour = c.send ? 'directing' : BEHAVIOUR[c.part.id] || 'layering';
+  state = { behaviour, t, line1: `${mat.name}  ·  ${c.send ? 'sent to the other hall' : 'the house · ' + c.part.label.toLowerCase()}`, line2: `${behaviour}  ·  ${densityWord(t.d)} · ${charWord(t.org)} · ${MOVE_WORD[t.move]}` };
+  apply(behaviour, t, hash(mat.id + (c.part?.id ?? 'send')));
 }
 
 export function drawParticles(time, dt) {
