@@ -1,0 +1,25 @@
+[
+  {
+    "id": "glass",
+    "name": "Glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#dbeef0",
+    "roughness": 0.04,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 1,
+      "thickness": 0.15,
+      "ior": 1.5
+    }
+  }
+]

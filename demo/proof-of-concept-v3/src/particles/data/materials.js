@@ -21,7 +21,7 @@ const v = (id, label, density, structure, character, movement, transparency) => 
 export const MATERIALS = [
   {
     id: 'cork',
-    category: 'natural',
+    category: 'wood',
     label: 'Cork',
     versions: [
       v('natural', 'Natural', 'porous', 'fragmented', ['organic', 'soft'], 'still', 'opaque'),
@@ -64,6 +64,18 @@ export const MATERIALS = [
     ],
   },
   {
+    // v3: the stand-in for every metal in the game (see adapters.js)
+    id: 'steel',
+    category: 'metals',
+    label: 'Steel',
+    versions: [
+      v('sheet', 'Sheet', 'solid', 'monolithic', ['rigid', 'geometric'], 'still', 'opaque'),
+      v('brushed', 'Brushed', 'solid', 'linear', ['geometric'], 'flowing', 'opaque'),
+      v('perforated', 'Perforated', 'porous', 'modular', ['geometric'], 'rhythmic', 'opaque'),
+      v('mesh', 'Mesh', 'open', 'woven', ['rigid'], 'still', 'translucent'),
+    ],
+  },
+  {
     id: 'brick',
     category: 'ceramics',
     label: 'Brick',
@@ -99,7 +111,7 @@ export const MATERIALS = [
   },
   {
     id: 'terrazzo',
-    category: 'concrete',
+    category: 'stone',
     label: 'Terrazzo',
     versions: [v('classic', 'Classic', 'dense', 'fragmented', ['geometric', 'organic'], 'still', 'opaque')],
   },

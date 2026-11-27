@@ -1,0 +1,623 @@
+[
+  {
+    "id": "reinforced-concrete",
+    "name": "Reinforced concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "concrete",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a19e98",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "holes": false,
+      "bugholes": 0.6
+    }
+  },
+  {
+    "id": "precast-concrete",
+    "name": "Precast concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "concrete",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 3,
+    "color": "#b9b6b0",
+    "roughness": 0.7,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "clouds": 0.5,
+      "holes": false,
+      "seams": false,
+      "joints": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "id": "polished-concrete",
+    "name": "Polished concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "concrete",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a8a49d",
+    "roughness": 0.2,
+    "metalness": 0,
+    "clearcoat": 0.6,
+    "bump": 0.2,
+    "params": {
+      "holes": false,
+      "seams": false,
+      "speckle": 0.5,
+      "aggregate": [
+        "#6b665f",
+        "#d8d2c8",
+        "#8a8178"
+      ]
+    }
+  },
+  {
+    "id": "concrete",
+    "name": "Exposed concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "concrete",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#aeaba5",
+    "roughness": 0.85,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.5,
+    "params": {}
+  },
+  {
+    "id": "stamped-concrete",
+    "name": "Stamped concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "flagstone",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.6,
+    "color": "#9d958a",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.6,
+    "params": {
+      "stones": 18,
+      "gap": 6,
+      "tones": [
+        "#9d958a",
+        "#a89f92",
+        "#8f887e",
+        "#b1a99c"
+      ]
+    }
+  },
+  {
+    "id": "stained-concrete",
+    "name": "Stained concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "concrete",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#8f8579",
+    "roughness": 0.4,
+    "metalness": 0,
+    "clearcoat": 0.3,
+    "bump": 0.4,
+    "params": {
+      "holes": false,
+      "seams": false,
+      "stains": [
+        "#8a5a32",
+        "#5d4a33",
+        "#a0703f",
+        "#4f5a4a"
+      ]
+    }
+  },
+  {
+    "id": "poured-concrete",
+    "name": "Poured concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "concrete",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a9a6a0",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "trowel": true,
+      "holes": false,
+      "seams": false
+    }
+  },
+  {
+    "id": "lightweight-concrete",
+    "name": "Lightweight concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "sediment",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c3c0b9",
+    "roughness": 0.9,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "pores": 0.8
+    }
+  },
+  {
+    "id": "heavyweight-concrete",
+    "name": "Heavyweight concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "granular",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#5a5856",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.8,
+    "params": {
+      "crystals": [
+        "#2c2b2a",
+        "#3d3c3b",
+        "#77736e"
+      ],
+      "size": 0.8
+    }
+  },
+  {
+    "id": "self-compacting-concrete",
+    "name": "Self-compacting concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "concrete",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#bdbab4",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "clouds": 0.4,
+      "speckle": 0.5,
+      "bugholes": 0.3
+    }
+  },
+  {
+    "id": "fibre-reinforced-concrete",
+    "name": "Fibre-reinforced concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "concrete",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a3a09a",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "holes": false,
+      "seams": false,
+      "fibres": 1.5
+    }
+  },
+  {
+    "id": "architectural-concrete",
+    "name": "Architectural concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "concrete",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2.4,
+    "color": "#c4c1bb",
+    "roughness": 0.55,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.8,
+    "params": {
+      "clouds": 0.5,
+      "speckle": 0.6,
+      "holes": [
+        4,
+        2
+      ]
+    }
+  },
+  {
+    "id": "textured-concrete",
+    "name": "Textured concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.4,
+    "color": "#9e9b95",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 2,
+    "params": {
+      "boards": 7,
+      "grain": 2.2,
+      "variance": 1.5
+    }
+  },
+  {
+    "id": "exposed-aggregate-concrete",
+    "name": "Exposed aggregate concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "pebbles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.8,
+    "color": "#9b958b",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.8,
+    "params": {
+      "matrix": "#8d877e",
+      "tones": [
+        "#b5a68e",
+        "#7d756b",
+        "#d1c6b4",
+        "#8f7b62",
+        "#5f5953"
+      ],
+      "count": 1100,
+      "size": 0.45
+    }
+  },
+  {
+    "id": "recycled-concrete",
+    "name": "Recycled concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "terrazzo",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a7a39c",
+    "roughness": 0.7,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.8,
+    "params": {
+      "chips": [
+        "#8b4a3a",
+        "#6f6a64",
+        "#c9c3b8",
+        "#9a5040",
+        "#55524e"
+      ],
+      "count": 700,
+      "size": 16
+    }
+  },
+  {
+    "id": "shotcrete",
+    "name": "Shotcrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "granular",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a6a29b",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 2.2,
+    "params": {
+      "crystals": [
+        "#8f8b84",
+        "#bcb8b1",
+        "#9d9992"
+      ],
+      "size": 0.9
+    }
+  },
+  {
+    "id": "uhpc",
+    "name": "Ultra-high-performance concrete (UHPC)",
+    "categories": [
+      "concrete"
+    ],
+    "family": "concrete",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2.4,
+    "color": "#c9c7c2",
+    "roughness": 0.3,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.2,
+    "params": {
+      "clouds": 0.3,
+      "speckle": 0.3,
+      "holes": false,
+      "seams": false,
+      "joints": [
+        2,
+        1
+      ]
+    }
+  },
+  {
+    "id": "lightweight-aggregate-concrete",
+    "name": "Lightweight aggregate concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "pebbles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.8,
+    "color": "#8a8680",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.4,
+    "params": {
+      "matrix": "#9a968f",
+      "tones": [
+        "#8c5a3c",
+        "#a0684a",
+        "#7a4e36"
+      ],
+      "count": 260,
+      "size": 0.45
+    }
+  },
+  {
+    "id": "foam-concrete",
+    "name": "Foam concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "sediment",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e4e1db",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.4,
+    "params": {
+      "pores": 4,
+      "joints": [
+        2,
+        4
+      ]
+    }
+  },
+  {
+    "id": "porous-concrete",
+    "name": "Porous concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "pebbles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.6,
+    "color": "#7f7a72",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 2,
+    "params": {
+      "matrix": "#2f2d2b",
+      "tones": [
+        "#8d887f",
+        "#a39d93",
+        "#77726a",
+        "#b0aa9f"
+      ],
+      "count": 1300,
+      "size": 0.5
+    }
+  },
+  {
+    "id": "self-healing-concrete",
+    "name": "Self-healing concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "veined",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a9a6a0",
+    "roughness": 0.7,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "vein": "#f2efe8",
+      "veins": 3
+    }
+  },
+  {
+    "id": "decorative-concrete",
+    "name": "Decorative concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "motif",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.8,
+    "color": "#e7e1d6",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "colors": [
+        "#2f4a5a",
+        "#c46a4a"
+      ]
+    }
+  },
+  {
+    "id": "coloured-concrete",
+    "name": "Coloured concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "concrete",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a8634a",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "clouds": 0.6,
+      "holes": false
+    }
+  },
+  {
+    "id": "white-concrete",
+    "name": "White concrete",
+    "categories": [
+      "concrete"
+    ],
+    "family": "concrete",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e6e4df",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "clouds": 0.5
+    }
+  },
+  {
+    "id": "hempcrete",
+    "name": "Hempcrete",
+    "categories": [
+      "concrete",
+      "natural"
+    ],
+    "family": "chipboard",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#cdbf9c",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.5,
+    "params": {}
+  }
+]

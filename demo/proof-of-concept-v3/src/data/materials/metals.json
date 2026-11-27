@@ -1,0 +1,571 @@
+[
+  {
+    "id": "steel",
+    "name": "Steel",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#8d9196",
+    "roughness": 0.45,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "brushed": 0.4
+    }
+  },
+  {
+    "id": "stainless-steel",
+    "name": "Stainless steel",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c3c6c9",
+    "roughness": 0.3,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "brushed": 1
+    }
+  },
+  {
+    "id": "aluminium",
+    "name": "Aluminium",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c9ccce",
+    "roughness": 0.4,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "brushed": 0.6
+    }
+  },
+  {
+    "id": "copper",
+    "name": "Copper",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2,
+    "color": "#c27a4f",
+    "roughness": 0.3,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "joints": [
+        4,
+        1
+      ]
+    }
+  },
+  {
+    "id": "brass",
+    "name": "Brass",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c9a54f",
+    "roughness": 0.3,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "brushed": 0.5
+    }
+  },
+  {
+    "id": "bronze",
+    "name": "Bronze",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#8c6a3f",
+    "roughness": 0.5,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.5,
+    "params": {
+      "patina": "#5c8a72",
+      "amount": 0.3
+    }
+  },
+  {
+    "id": "iron",
+    "name": "Iron",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#5d5f61",
+    "roughness": 0.6,
+    "metalness": 0.8,
+    "clearcoat": 0,
+    "bump": 0.5,
+    "params": {
+      "clouds": 2,
+      "patina": "#7a4a2e",
+      "amount": 0.15
+    }
+  },
+  {
+    "id": "cast-iron",
+    "name": "Cast iron",
+    "categories": [
+      "metals"
+    ],
+    "family": "granular",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#3c3d3f",
+    "roughness": 0.7,
+    "metalness": 0.7,
+    "clearcoat": 0,
+    "bump": 1,
+    "params": {
+      "crystals": [
+        "#2e2f31",
+        "#4a4b4e",
+        "#56585b"
+      ],
+      "size": 0.7
+    }
+  },
+  {
+    "id": "wrought-iron",
+    "name": "Wrought iron",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#3a3b3d",
+    "roughness": 0.55,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "hammered": 1
+    }
+  },
+  {
+    "id": "zinc",
+    "name": "Zinc",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2,
+    "color": "#9ea4a8",
+    "roughness": 0.55,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "clouds": 1.5,
+      "patina": "#b9c0c3",
+      "amount": 0.4,
+      "joints": [
+        4,
+        1
+      ]
+    }
+  },
+  {
+    "id": "titanium",
+    "name": "Titanium",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a7a9ac",
+    "roughness": 0.35,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "brushed": 0.3
+    }
+  },
+  {
+    "id": "corten-steel",
+    "name": "Corten steel",
+    "categories": [
+      "metals"
+    ],
+    "family": "rust",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.8,
+    "color": "#6e3a22",
+    "roughness": 0.9,
+    "metalness": 0.15,
+    "clearcoat": 0,
+    "bump": 1,
+    "params": {
+      "runs": 0.6,
+      "joints": [
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "id": "galvanised-steel",
+    "name": "Galvanised steel",
+    "categories": [
+      "metals"
+    ],
+    "family": "flagstone",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a9afb3",
+    "roughness": 0.45,
+    "metalness": 0.9,
+    "clearcoat": 0,
+    "bump": 0.2,
+    "params": {
+      "stones": 40,
+      "gap": 1.5,
+      "tones": [
+        "#a3a9ad",
+        "#b4babe",
+        "#9aa0a4",
+        "#bfc4c7"
+      ],
+      "joint": "#9da3a7"
+    }
+  },
+  {
+    "id": "nickel",
+    "name": "Nickel",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#b5b0a5",
+    "roughness": 0.25,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {}
+  },
+  {
+    "id": "chrome",
+    "name": "Chrome",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e4e7ea",
+    "roughness": 0.05,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {}
+  },
+  {
+    "id": "tin",
+    "name": "Tin",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c8c9c6",
+    "roughness": 0.45,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "brushed": 0.3
+    }
+  },
+  {
+    "id": "lead",
+    "name": "Lead",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#6f7377",
+    "roughness": 0.7,
+    "metalness": 0.6,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "patina": "#a9adae",
+      "amount": 0.35
+    }
+  },
+  {
+    "id": "silver",
+    "name": "Silver",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d8d8d6",
+    "roughness": 0.15,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {}
+  },
+  {
+    "id": "gold",
+    "name": "Gold",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d4af37",
+    "roughness": 0.2,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {}
+  },
+  {
+    "id": "cobalt",
+    "name": "Cobalt",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#8f96a3",
+    "roughness": 0.35,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "brushed": 0.3
+    }
+  },
+  {
+    "id": "magnesium",
+    "name": "Magnesium",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c2c3c0",
+    "roughness": 0.5,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "brushed": 0.2
+    }
+  },
+  {
+    "id": "tungsten",
+    "name": "Tungsten",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#7d7f80",
+    "roughness": 0.4,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "brushed": 0.2
+    }
+  },
+  {
+    "id": "chromium",
+    "name": "Chromium",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c8ccd0",
+    "roughness": 0.25,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "brushed": 0.5
+    }
+  },
+  {
+    "id": "pewter",
+    "name": "Pewter",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#8e9192",
+    "roughness": 0.45,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0.8,
+    "params": {
+      "hammered": 0.4
+    }
+  },
+  {
+    "id": "weathering-steel",
+    "name": "Weathering steel",
+    "categories": [
+      "metals"
+    ],
+    "family": "rust",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.8,
+    "color": "#9c5228",
+    "roughness": 0.85,
+    "metalness": 0.2,
+    "clearcoat": 0,
+    "bump": 0.8,
+    "params": {
+      "runs": 1.2,
+      "fresh": true
+    }
+  },
+  {
+    "id": "anodised-aluminium",
+    "name": "Anodised aluminium",
+    "categories": [
+      "metals"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#5a4632",
+    "roughness": 0.35,
+    "metalness": 0.8,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "brushed": 0.4
+    }
+  }
+]

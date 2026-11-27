@@ -14,7 +14,20 @@
 // the move itself, so every particles screen shows exactly the same thing.
 
 import { ROOMS_BY_ID } from './data/rooms.js'
+import { MATERIALS_BY_ID as PARTICLE_MATERIALS } from './data/materials.js'
 import { hashSeed } from './engine/random.js'
+import { MATERIALS_BY_ID } from '../config/materials'
+
+// The game has far more materials than the particles have characteristics
+// for. A material the particles don't know shows a stand-in from its
+// category (a row can name its own with `particles`, see src/data/README.md).
+const STAND_IN = { wood: 'oak', natural: 'cork', stone: 'terrazzo', concrete: 'concrete', glass: 'glass', ceramics: 'tiles', metals: 'steel' }
+
+export function particleMaterial(materialId) {
+  if (PARTICLE_MATERIALS[materialId]) return materialId
+  const material = MATERIALS_BY_ID[materialId]
+  return material?.row.particles ?? STAND_IN[material?.category] ?? materialId
+}
 
 const ROOM = { living: 'living', bathroom: 'bathroom', bedroom: 'master', kitchen: 'kitchen', hallway: 'hallway', outside: 'exterior' }
 
@@ -22,13 +35,13 @@ const ROOM = { living: 'living', bathroom: 'bathroom', bedroom: 'master', kitche
 // turn's room. Same seed on both sides, so the giver's "sent" and the placer's
 // "received" are the same field.
 export function fromPocMaterial(materialId, roomId, round) {
-  return { room: ROOM[roomId] ?? null, material: materialId, seed: hashSeed('poc-material', round, materialId) }
+  return { room: ROOM[roomId] ?? null, material: particleMaterial(materialId), seed: hashSeed('poc-material', round, materialId) }
 }
 
 export function fromPocMove(lastMove, surface) {
   const room = ROOM[surface.roomId] ?? 'living'
   let element = surface.kind === 'floor' ? 'floor' : surface.facade ? 'outside_wall' : 'wall'
-  if (lastMove.materialId === 'glass') {
+  if (MATERIALS_BY_ID[lastMove.materialId]?.through) {
     // glass goes through the wall: the room's filtering opening
     const opening = ROOMS_BY_ID[room].elements.find((e) => e.behaviour === 'filtering' && e.type === 'architectural')
     if (opening) element = opening.id
@@ -36,7 +49,7 @@ export function fromPocMove(lastMove, surface) {
   return {
     room,
     element,
-    material: lastMove.materialId,
+    material: particleMaterial(lastMove.materialId),
     seed: hashSeed('poc', lastMove.round, lastMove.surfaceId),
   }
 }

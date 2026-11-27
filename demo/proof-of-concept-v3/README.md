@@ -15,14 +15,17 @@ flow and the copy, not their look. Each player stands in a **hall** (Hall A, Hal
 | --- | --- | --- |
 | 1 | Waiting for the other person (the other hall is empty) | same |
 | 2 | "Hall B has joined!" + how a round works (5 s) | same |
-| 3 | "It's your turn to choose materials": choose **3**, numbered, "Send to Hall B" | "It's your turn to design": the house, waiting for materials |
-| 4 | "Your materials are on their way" | "Materials have arrived": pick one of the three and a part, "Apply my selection" |
-| 5 | "This is what Hall B changed with your materials": the room (6 s), "Next up: your turn to design" | "It's your turn to choose materials" (changing interfaces) |
+| 3 | "It's your turn to choose a material": pick one (by category), "Send to Hall B" | "It's your turn to design": the house, waiting for a material |
+| 4 | "Your material is on its way" | "A material has arrived": pick a part, "Apply my selection" |
+| 5 | "This is what Hall B changed with your material": the room (6 s, you can look around), "Next up: your turn to design" | "It's your turn to choose a material" (changing interfaces) |
 | 6 | the roles have swapped: the design panel appears on the house they're already looking at | the picker |
 
 Steps 5 and 6 are local timing (`src/ui/useInterlude.js`, `Interlude.jsx`): the game has already
-moved on, so a quick other hall's materials are simply there when they end. `PICKS` in
-`src/state/game.js` is how many materials the giver sends (3).
+moved on, so a quick other hall's material is simply there when they end.
+
+`PICKS` in `src/state/game.js` is how many materials the giver sends: **1** now. Set it to 3 for the
+wireframes' "choose three, the other hall uses one of them": the picker then numbers your choices
+and the designer picks one of the three. All the copy follows `PICKS`.
 
 ### New in v3: particles screens
 
@@ -40,7 +43,7 @@ The particles answer every click, not just the moves (`src/particles/sides.js`):
 | What happens | Giver's side | Placer's side |
 | --- | --- | --- |
 | The giver clicks a material (not sent yet) | that material, no form yet | the last move |
-| The giver sends three | keeps the last one clicked | receives them: the first one |
+| The giver sends it (or them, with `PICKS` > 1) | keeps the last one clicked | receives it: the same field |
 | The placer picks one and a place (not applied yet) | the material | it takes that element's form |
 | The placer applies it | the move as placed | stays (it was already showing it) |
 
@@ -124,7 +127,7 @@ Press **P** in a window to pretend someone is standing there (for testing withou
 There is no switch: the computer comes and goes on its own (`src/state/GameState.jsx`).
 
 - **Nobody in the other hall** for 6 s while you're here: "The computer has joined!" and it plays
-  the other hall (chooses three materials, or uses one of yours), after a second or two per move.
+  the other hall (chooses materials, or uses one of yours), after a second or two per move.
 - **The other hall walks away mid-game**: "Hall B left · The computer takes over", straight away,
   no waiting screen.
 - **Someone steps up in the other hall**: their screen said "Jump in! Hall A is playing alone";
@@ -139,11 +142,19 @@ There is no switch: the computer comes and goes on its own (`src/state/GameState
   the other window sends it the current state. Same on a reconnect.
 - `src/App.jsx`: picks the screen per turn: giver → `GiveScreen`, placer → the room + `PlacePanel`.
   The room stays mounted (paused, hidden) while giving, so swapping roles doesn't rebuild it.
-- `src/ui/GiveScreen.jsx`: the giver's full-screen picker (three materials), then "on their way".
-- `src/ui/PlacePanel.jsx`: the placer's panel: the three materials they got, one to use and where.
+- `src/ui/GiveScreen.jsx`: the giver's full-screen picker (category tabs, `PICKS` materials), then
+  "on its way".
+- `src/ui/PlacePanel.jsx`: the placer's panel: the material they got (with `PICKS` > 1: which one to
+  use) and where.
 - `src/ui/Interlude.jsx` + `useInterlude.js`: between turns, the reveal and "your turn to …".
 - `src/ui/Notices.jsx`: "Materials have arrived", "Hall B left", "A real person joined".
 - `src/ui/PlayerBits.jsx`: header, footer and "last turn", on both screens.
+- `src/data/`: the material catalogue as rows, one JSON file per category (columns in
+  `src/data/README.md`, ready to move to a database like Supabase). `src/config/categories.js`
+  holds the categories, `src/config/materials.js` turns rows into materials, and
+  `src/textures/families.js` draws them: one painter per family (planks, osb, terrazzo…),
+  coloured and set up per row. Particles show a stand-in from the material's category
+  (`particleMaterial` in `src/particles/adapters.js`).
 - `src/config/room.js`: the floor plan (rooms on wall centre lines, door openings). Every floor and
   wall face is generated from it. Every wall is two surfaces, one per side: between two rooms one per
   room, on an exterior wall one for the room (inside) and one for the façade (outside).
@@ -158,7 +169,7 @@ There is no switch: the computer comes and goes on its own (`src/state/GameState
 - `src/presence/presence.js`: decides whether the player is really standing at the screen (the pulse
   mechanism). Its result (`here`) goes along with every game message.
 - `src/ui/WaitingScreen.jsx`: the waiting / paused screen with the pulse, over the room.
-- `src/state/computer.js`: the computer's moves (three random materials that fit; one of the
+- `src/state/computer.js`: the computer's moves (`PICKS` random materials that fit; one of the
   materials it got, on a place where it fits and changes something).
 - `src/ui/PresenceTile.jsx`: a video-call style tile (top right) that shows the other player
   as an abstract, faceless figure, plus a small inset of yourself as they see you.

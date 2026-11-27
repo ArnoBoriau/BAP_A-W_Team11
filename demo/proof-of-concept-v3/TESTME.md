@@ -1,6 +1,6 @@
 # Test me
 
-One hall chooses three materials (full screen, no room), the other uses one of them in the room. Roles swap every turn.
+One hall chooses a material (full screen, no room), the other puts it in the room. Roles swap every turn.
 
 First time: `npm install`
 

@@ -1,106 +1,87 @@
-// Material catalogue. Pure data describing how a finish should look;
-// scene/useSurfaceMaterial.js turns an entry into a Three.js material.
+// Material catalogue: the rows from src/data/catalogue.js (one per material,
+// see src/data/README.md), turned into what the rest of the app uses.
+// scene/useSurfaceMaterial.js turns a material into a Three.js material,
+// textures/patterns.js draws its texture from its family.
 //
-// To add a finish: add an entry here (and a pattern in textures/patterns.js if it needs one).
-//
-//   category    one of config/categories.js (stone, wood, glass…)
-//   pattern     id of a procedural texture, or null for a flat finish
-//   tileSize    real-world size in metres that one texture repeat covers
-//   bump        relief strength derived from the pattern (grout, plank gaps, ...)
-//   physical    use MeshPhysicalMaterial (needed for transmission / clearcoat)
-//   appliesTo   which surface kinds may use this finish
-//   through     not a finish of one side but a fill for the whole wall (glass):
-//               placed on a wall side, it opens that span through both halves
-//               of the wall and fills it (see DEFAULT_GLAZING in room.js)
+// A material here:
+//   id, label             from the row (label = name)
+//   categories            every category it belongs to (some fit two: cork
+//                         is wood and a natural material)
+//   category              the first of those, its main one: it decides the
+//                         order under "All" and the particles' stand-in
+//   family, row           which painter draws it, and the row it draws from
+//   pattern               true when it has a drawn texture (glass doesn't)
+//   swatch                CSS background for materials without a texture
+//   tileSize              real-world size in metres that one texture repeat covers
+//   bump                  relief strength derived from the texture
+//   physical              use MeshPhysicalMaterial (transmission / clearcoat)
+//   props                 Three.js material settings (roughness, metalness…)
+//   appliesTo             which surface kinds may use this finish
+//   through               not a finish of one side but a fill for the whole wall
+//                         (glass): placed on a wall side, it opens that span
+//                         through both halves of the wall and fills it (see
+//                         DEFAULT_GLAZING in room.js)
 //
 // A surface nobody has filled in yet shows BLANK: an architectural line
 // drawing of the house in 3D (scene/blueprintMaterial.js). It isn't in MATERIALS, so
 // it can't be given or placed.
 
 import { CATEGORIES } from './categories'
+import { ROWS } from '../data/catalogue'
+import { familySwatch, hasPattern } from '../textures/patterns'
 
-export const MATERIALS = [
-  {
-    id: 'plaster',
-    category: 'stone',
-    label: 'White plaster',
-    appliesTo: ['wall', 'floor'],
-    pattern: 'plaster',
-    tileSize: 2,
-    bump: 0.6,
-    props: { color: '#ffffff', roughness: 0.95, metalness: 0 },
-  },
-  {
-    id: 'concrete',
-    category: 'concrete',
-    label: 'Concrete',
-    appliesTo: ['wall', 'floor'],
-    pattern: 'concrete',
-    tileSize: 1.2,
-    bump: 1.5,
-    props: { color: '#ffffff', roughness: 0.85, metalness: 0 },
-  },
-  {
-    id: 'oak',
-    category: 'wood',
-    label: 'Oak planks',
-    appliesTo: ['wall', 'floor'],
-    pattern: 'wood',
-    tileSize: 1.2,
-    bump: 1.2,
-    props: { color: '#ffffff', roughness: 0.6, metalness: 0 },
-  },
-  {
-    id: 'tiles',
-    category: 'ceramics',
-    label: 'Ceramic tiles',
-    appliesTo: ['wall', 'floor'],
-    pattern: 'tiles',
-    tileSize: 0.8,
-    bump: 1.5,
-    physical: true,
-    props: { color: '#ffffff', roughness: 0.35, clearcoat: 0.6, clearcoatRoughness: 0.2 },
-  },
-  {
-    id: 'terrazzo',
-    category: 'concrete',
-    label: 'Terrazzo',
-    appliesTo: ['wall', 'floor'],
-    pattern: 'terrazzo',
-    tileSize: 1,
-    bump: 0.3,
-    physical: true,
-    props: { color: '#ffffff', roughness: 0.4, clearcoat: 0.4, clearcoatRoughness: 0.3 },
-  },
-  {
-    id: 'glass',
-    category: 'glass',
-    label: 'Glass',
-    appliesTo: ['wall'],
-    through: true,
-    pattern: null,
-    physical: true,
-    castShadow: false,
-    swatch: 'linear-gradient(135deg, #e6f1f3 0%, #bcd5da 55%, #f4fafb 100%)',
+function fromRow(row) {
+  const params = row.params ?? {}
+  const transmission = params.transmission ?? 0
+  // The house stands in a dark room: a near-mirror metal reflects that
+  // darkness and turns black. Metals keep a little of their own colour, a
+  // slightly soft reflection and a stronger one of the room's light panels,
+  // so copper reads as copper from any angle. (The row keeps the true values.)
+  const metal = (row.metalness ?? 0) >= 0.5
+  const material = {
+    id: row.id,
+    label: row.name,
+    categories: row.categories,
+    category: row.categories[0],
+    family: row.family,
+    row: { ...row, params },
+    appliesTo: row.surfaces,
+    through: !!row.through,
+    tileSize: row.tile ?? 1,
+    bump: row.bump ?? 0,
+    physical: !!(row.clearcoat || transmission),
+    castShadow: !transmission,
     props: {
-      color: '#dbeef0',
-      roughness: 0.04,
-      metalness: 0,
-      transmission: 1,
-      thickness: 0.15,
-      ior: 1.5,
+      // a drawn texture carries the colour; without one, the row's colour is the colour
+      color: '#ffffff',
+      roughness: metal ? Math.max(row.roughness, 0.4) : (row.roughness ?? 0.6),
+      metalness: metal ? Math.min(row.metalness, 0.7) : (row.metalness ?? 0),
+      ...(metal ? { envMapIntensity: 0.55 } : {}),
+      ...(row.clearcoat ? { clearcoat: row.clearcoat, clearcoatRoughness: params.clearcoatRoughness ?? 0.25 } : {}),
+      ...(transmission ? { transmission, thickness: params.thickness ?? 0.15, ior: params.ior ?? 1.5 } : {}),
     },
-  },
-]
+  }
+  material.pattern = hasPattern(material)
+  if (!material.pattern) {
+    material.props.color = row.color
+    material.swatch = familySwatch(material)
+  }
+  return material
+}
+
+// In category order, so "All" in the picker reads category by category.
+const order = Object.fromEntries(CATEGORIES.map((c, i) => [c.id, i]))
+export const MATERIALS = ROWS.map(fromRow).sort((a, b) => order[a.category] - order[b.category])
 
 export const MATERIALS_BY_ID = Object.fromEntries(MATERIALS.map((m) => [m.id, m]))
 
-// Each category with its materials, in category order; categories without
-// materials (yet) are left out.
+// Every category with its materials, in category order. A material in two
+// categories is in both lists. Categories without materials (yet) are kept:
+// the picker shows them, empty.
 export const MATERIALS_BY_CATEGORY = CATEGORIES.map((category) => ({
   ...category,
-  materials: MATERIALS.filter((m) => m.category === category.id),
-})).filter((c) => c.materials.length > 0)
+  materials: MATERIALS.filter((m) => m.categories.includes(category.id)),
+}))
 
 export const BLANK = {
   id: 'blank',

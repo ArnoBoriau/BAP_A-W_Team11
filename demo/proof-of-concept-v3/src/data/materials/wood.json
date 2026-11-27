@@ -1,0 +1,743 @@
+[
+  {
+    "id": "oak",
+    "name": "Oak",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#b8946c",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 1
+    }
+  },
+  {
+    "id": "birch",
+    "name": "Birch",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#dcc39a",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 0.6
+    }
+  },
+  {
+    "id": "pine",
+    "name": "Pine",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d9b47a",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 1.2,
+      "knots": 0.8
+    }
+  },
+  {
+    "id": "walnut",
+    "name": "Walnut",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#6b4a33",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 1.1,
+      "streaks": 0.3
+    }
+  },
+  {
+    "id": "ash",
+    "name": "Ash",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d6c3a0",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 1.5
+    }
+  },
+  {
+    "id": "beech",
+    "name": "Beech",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d4a77c",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 0.6
+    }
+  },
+  {
+    "id": "maple",
+    "name": "Maple",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e3cfa9",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 0.4
+    }
+  },
+  {
+    "id": "cherry",
+    "name": "Cherry",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a8623e",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 0.8
+    }
+  },
+  {
+    "id": "teak",
+    "name": "Teak",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a27443",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 1,
+      "streaks": 0.2
+    }
+  },
+  {
+    "id": "mahogany",
+    "name": "Mahogany",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#7e3f28",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 0.9
+    }
+  },
+  {
+    "id": "cedar",
+    "name": "Cedar",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#b66f48",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 1.1,
+      "knots": 0.3,
+      "variance": 2
+    }
+  },
+  {
+    "id": "spruce",
+    "name": "Spruce",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e2c79b",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 0.9,
+      "knots": 0.5
+    }
+  },
+  {
+    "id": "douglas-fir",
+    "name": "Douglas fir",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c98f5a",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 1.4,
+      "knots": 0.3
+    }
+  },
+  {
+    "id": "larch",
+    "name": "Larch",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c78b57",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 1.3,
+      "knots": 0.6
+    }
+  },
+  {
+    "id": "iroko",
+    "name": "Iroko",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a5733e",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 0.9
+    }
+  },
+  {
+    "id": "ebony",
+    "name": "Ebony",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#2a211c",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 0.5,
+      "streaks": 0.6
+    }
+  },
+  {
+    "id": "poplar",
+    "name": "Poplar",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d6caa0",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 0.4
+    }
+  },
+  {
+    "id": "chestnut",
+    "name": "Chestnut",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#9c6a3f",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 1.2
+    }
+  },
+  {
+    "id": "elm",
+    "name": "Elm",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a77651",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 1.3
+    }
+  },
+  {
+    "id": "bamboo",
+    "name": "Bamboo",
+    "categories": [
+      "wood",
+      "natural"
+    ],
+    "family": "bamboo",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1,
+    "color": "#d6b47a",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {},
+    "particles": "cork"
+  },
+  {
+    "id": "cork",
+    "name": "Cork",
+    "categories": [
+      "wood",
+      "natural"
+    ],
+    "family": "cork",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.6,
+    "color": "#b98a5e",
+    "roughness": 0.9,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 2,
+    "params": {},
+    "particles": "cork"
+  },
+  {
+    "id": "balsa",
+    "name": "Balsa",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e6d6b5",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 0.3
+    }
+  },
+  {
+    "id": "rosewood",
+    "name": "Rosewood",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#5a2e22",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 0.8,
+      "streaks": 0.7
+    }
+  },
+  {
+    "id": "acacia",
+    "name": "Acacia",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#9a6a3c",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 1.2,
+      "variance": 3
+    }
+  },
+  {
+    "id": "eucalyptus",
+    "name": "Eucalyptus",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#b07a58",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 1
+    }
+  },
+  {
+    "id": "wenge",
+    "name": "Wenge",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#3d2b22",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 0.6,
+      "streaks": 1
+    }
+  },
+  {
+    "id": "meranti",
+    "name": "Meranti",
+    "categories": [
+      "wood"
+    ],
+    "family": "planks",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#9b5a3c",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "grain": 0.8
+    }
+  },
+  {
+    "id": "plywood",
+    "name": "Plywood",
+    "categories": [
+      "wood"
+    ],
+    "family": "sheet",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2.4,
+    "color": "#d8b98a",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "figure": 1
+    }
+  },
+  {
+    "id": "mdf",
+    "name": "MDF",
+    "categories": [
+      "wood"
+    ],
+    "family": "mdf",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2.4,
+    "color": "#b08f6a",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.4,
+    "params": {}
+  },
+  {
+    "id": "osb",
+    "name": "OSB",
+    "categories": [
+      "wood"
+    ],
+    "family": "osb",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2.4,
+    "color": "#c79a5e",
+    "roughness": 0.75,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.6,
+    "params": {}
+  },
+  {
+    "id": "particleboard",
+    "name": "Particleboard",
+    "categories": [
+      "wood"
+    ],
+    "family": "chipboard",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c8aa80",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.8,
+    "params": {}
+  },
+  {
+    "id": "veneer",
+    "name": "Veneer",
+    "categories": [
+      "wood"
+    ],
+    "family": "sheet",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2.4,
+    "color": "#c49a6c",
+    "roughness": 0.45,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "figure": 0.6
+    }
+  },
+  {
+    "id": "laminated-wood",
+    "name": "Laminated wood",
+    "categories": [
+      "wood"
+    ],
+    "family": "lamella",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#cfa778",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "lamellas": 8
+    }
+  },
+  {
+    "id": "clt",
+    "name": "Cross-laminated timber (CLT)",
+    "categories": [
+      "wood"
+    ],
+    "family": "lamella",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2.4,
+    "color": "#d9bb8c",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "lamellas": 6
+    }
+  },
+  {
+    "id": "glulam",
+    "name": "Glulam",
+    "categories": [
+      "wood"
+    ],
+    "family": "lamella",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d6b383",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "lamellas": 12
+    }
+  }
+]

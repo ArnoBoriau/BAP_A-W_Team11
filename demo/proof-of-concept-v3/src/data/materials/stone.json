@@ -1,0 +1,668 @@
+[
+  {
+    "id": "marble",
+    "name": "Marble",
+    "categories": [
+      "stone"
+    ],
+    "family": "veined",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e9e7e3",
+    "roughness": 0.25,
+    "metalness": 0,
+    "clearcoat": 0.3,
+    "bump": 0.2,
+    "params": {
+      "vein": "#8e9097",
+      "veins": 7,
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "granite",
+    "name": "Granite",
+    "categories": [
+      "stone"
+    ],
+    "family": "granular",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#8a8682",
+    "roughness": 0.35,
+    "metalness": 0,
+    "clearcoat": 0.2,
+    "bump": 0.3,
+    "params": {
+      "crystals": [
+        "#2b2a29",
+        "#d9d4cc",
+        "#b88f80",
+        "#6d6a66"
+      ],
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "limestone",
+    "name": "Limestone",
+    "categories": [
+      "stone",
+      "natural"
+    ],
+    "family": "sediment",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d9ccb3",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "layers": 0.3,
+      "fossils": 1,
+      "joints": [
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "id": "sandstone",
+    "name": "Sandstone",
+    "categories": [
+      "stone"
+    ],
+    "family": "sediment",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c9a77a",
+    "roughness": 0.9,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1,
+    "params": {
+      "layers": 2.2,
+      "joints": [
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "id": "slate",
+    "name": "Slate",
+    "categories": [
+      "stone"
+    ],
+    "family": "cleft",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#3d4246",
+    "roughness": 0.7,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.4,
+    "params": {
+      "joints": [
+        3,
+        4
+      ]
+    }
+  },
+  {
+    "id": "travertine",
+    "name": "Travertine",
+    "categories": [
+      "stone"
+    ],
+    "family": "sediment",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d8c3a2",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "layers": 0.8,
+      "pores": 1.2,
+      "elongated": true,
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "quartzite",
+    "name": "Quartzite",
+    "categories": [
+      "stone"
+    ],
+    "family": "veined",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d8d3cc",
+    "roughness": 0.3,
+    "metalness": 0,
+    "clearcoat": 0.2,
+    "bump": 0.3,
+    "params": {
+      "vein": "#a59b90",
+      "veins": 5,
+      "soft": true,
+      "sparkle": 0.6,
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "basalt",
+    "name": "Basalt",
+    "categories": [
+      "stone"
+    ],
+    "family": "granular",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#3a3a3a",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.5,
+    "params": {
+      "crystals": [
+        "#2a2a2a",
+        "#4a4a4a",
+        "#5a5a5a"
+      ],
+      "size": 0.6,
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "onyx",
+    "name": "Onyx",
+    "categories": [
+      "stone"
+    ],
+    "family": "veined",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e7c98f",
+    "roughness": 0.15,
+    "metalness": 0,
+    "clearcoat": 0.5,
+    "bump": 0.1,
+    "params": {
+      "vein": "#c48a4a",
+      "veins": 3,
+      "bands": true
+    }
+  },
+  {
+    "id": "porphyry",
+    "name": "Porphyry",
+    "categories": [
+      "stone"
+    ],
+    "family": "granular",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#6e3b3a",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "crystals": [
+        "#d8c7b8",
+        "#4b2626",
+        "#8e5550"
+      ],
+      "size": 1.3,
+      "density": 0.35,
+      "joints": [
+        3,
+        3
+      ]
+    }
+  },
+  {
+    "id": "gneiss",
+    "name": "Gneiss",
+    "categories": [
+      "stone"
+    ],
+    "family": "granular",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#8d8a86",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "crystals": [
+        "#2f2d2c",
+        "#e4ddd3",
+        "#b8a596"
+      ],
+      "bands": true,
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "soapstone",
+    "name": "Soapstone",
+    "categories": [
+      "stone"
+    ],
+    "family": "veined",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#5f6763",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.2,
+    "params": {
+      "vein": "#b8bfb9",
+      "veins": 4,
+      "soft": true,
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "schist",
+    "name": "Schist",
+    "categories": [
+      "stone"
+    ],
+    "family": "cleft",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#6d6b64",
+    "roughness": 0.65,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.4,
+    "params": {
+      "sparkle": 0.8,
+      "joints": [
+        3,
+        4
+      ]
+    }
+  },
+  {
+    "id": "bluestone",
+    "name": "Bluestone",
+    "categories": [
+      "stone"
+    ],
+    "family": "granular",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#5e6870",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.4,
+    "params": {
+      "crystals": [
+        "#4c555c",
+        "#727c84",
+        "#8a939a"
+      ],
+      "size": 0.5,
+      "fossils": 0.6,
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "flagstone",
+    "name": "Flagstone",
+    "categories": [
+      "stone"
+    ],
+    "family": "flagstone",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2,
+    "color": "#b19a7c",
+    "roughness": 0.85,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.6,
+    "params": {
+      "stones": 14
+    }
+  },
+  {
+    "id": "terrazzo",
+    "name": "Terrazzo",
+    "categories": [
+      "stone",
+      "concrete"
+    ],
+    "family": "terrazzo",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1,
+    "color": "#e9e3d9",
+    "roughness": 0.4,
+    "metalness": 0,
+    "clearcoat": 0.4,
+    "bump": 0.3,
+    "params": {}
+  },
+  {
+    "id": "pumice",
+    "name": "Pumice",
+    "categories": [
+      "stone",
+      "natural"
+    ],
+    "family": "sediment",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#cfccc4",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.8,
+    "params": {
+      "pores": 3
+    }
+  },
+  {
+    "id": "volcanic-stone",
+    "name": "Volcanic stone",
+    "categories": [
+      "stone",
+      "natural"
+    ],
+    "family": "sediment",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#4a4744",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.8,
+    "params": {
+      "pores": 2,
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "river-stone",
+    "name": "River stone",
+    "categories": [
+      "stone"
+    ],
+    "family": "pebbles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.8,
+    "color": "#8f8a82",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 2,
+    "params": {
+      "matrix": "#5c5852",
+      "count": 480,
+      "size": 1.15,
+      "tones": [
+        "#7d7870",
+        "#9a948a",
+        "#6a665f",
+        "#b3ab9f",
+        "#857a6c"
+      ]
+    }
+  },
+  {
+    "id": "flint",
+    "name": "Flint",
+    "categories": [
+      "stone"
+    ],
+    "family": "pebbles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1,
+    "color": "#3a393c",
+    "roughness": 0.4,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.8,
+    "params": {
+      "matrix": "#d8d0bf",
+      "tones": [
+        "#2b2b2e",
+        "#3c3a3c",
+        "#4b4a4d",
+        "#5a5658"
+      ],
+      "rim": "#d9d5cc",
+      "count": 520,
+      "size": 1
+    }
+  },
+  {
+    "id": "conglomerate",
+    "name": "Conglomerate",
+    "categories": [
+      "stone"
+    ],
+    "family": "pebbles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#b9a47f",
+    "roughness": 0.7,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1,
+    "params": {
+      "matrix": "#b9a47f",
+      "tones": [
+        "#8b8478",
+        "#c9c1b3",
+        "#6f6a63",
+        "#a8876a",
+        "#d9d1c4"
+      ],
+      "count": 160,
+      "size": 0.5
+    }
+  },
+  {
+    "id": "breccia",
+    "name": "Breccia",
+    "categories": [
+      "stone"
+    ],
+    "family": "flagstone",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d7c9b7",
+    "roughness": 0.3,
+    "metalness": 0,
+    "clearcoat": 0.3,
+    "bump": 0.3,
+    "params": {
+      "stones": 60,
+      "tones": [
+        "#8b3f36",
+        "#c9b49a",
+        "#5a4a44",
+        "#e8dccb",
+        "#a35a48",
+        "#d6c2a8"
+      ],
+      "joint": "#efe6d8",
+      "gap": 7,
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "tuff",
+    "name": "Tuff",
+    "categories": [
+      "stone"
+    ],
+    "family": "sediment",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c9a993",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "pores": 1.2,
+      "layers": 0.4,
+      "joints": [
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "id": "alabaster",
+    "name": "Alabaster",
+    "categories": [
+      "stone"
+    ],
+    "family": "veined",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#efe9df",
+    "roughness": 0.2,
+    "metalness": 0,
+    "clearcoat": 0.3,
+    "bump": 0.1,
+    "params": {
+      "vein": "#d9cbb6",
+      "veins": 4,
+      "soft": true
+    }
+  },
+  {
+    "id": "plaster",
+    "name": "White plaster",
+    "categories": [
+      "stone"
+    ],
+    "family": "plaster",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2,
+    "color": "#efebe5",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {}
+  }
+]

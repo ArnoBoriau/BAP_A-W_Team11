@@ -1,0 +1,21 @@
+[
+  {
+    "id": "tiles",
+    "name": "Ceramic tiles",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "tiles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.8,
+    "color": "#efece6",
+    "roughness": 0.35,
+    "metalness": 0,
+    "clearcoat": 0.6,
+    "bump": 1.5,
+    "params": {}
+  }
+]

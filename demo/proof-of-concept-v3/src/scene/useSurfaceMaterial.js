@@ -12,10 +12,10 @@ export function useSurfaceMaterial(definition, [width, height], overrides) {
   const material = useMemo(() => {
     if (definition.blank) return createBlueprintMaterial(overrides) // not filled in yet
     const MaterialClass = definition.physical ? THREE.MeshPhysicalMaterial : THREE.MeshStandardMaterial
-    const material = new MaterialClass({ ...definition.props, envMapIntensity: 0.9, ...overrides })
+    const material = new MaterialClass({ envMapIntensity: 0.9, ...definition.props, ...overrides })
 
     if (definition.pattern) {
-      const texture = getPatternTexture(definition.pattern).clone()
+      const texture = getPatternTexture(definition).clone()
       texture.repeat.set(width / definition.tileSize, height / definition.tileSize)
       texture.needsUpdate = true
       material.map = texture
