@@ -24,7 +24,7 @@ settings. Many materials share a family; their rows make them look different.
 | `metalness` | number 0…1 | 1 for bare metals. |
 | `clearcoat` | number 0…1 | A glossy layer on top (glaze, lacquer, polish). |
 | `bump` | number | Relief strength from the texture. 0 = flat. |
-| `params` | json | Family settings, e.g. planks: `grain`, `knots`, `streaks`, `variance`; lamella: `lamellas`; glass: `transmission`, `thickness`, `ior`. |
+| `params` | json | Any family: `rotate` (a quarter turn: stems standing up), `joints` ([columns, rows] of slabs), `sparkle`. Family settings, e.g. planks: `grain`, `knots`, `streaks`, `variance`; lamella: `lamellas`; glass: `transmission`, `thickness`, `ior`, `iridescence` (dichroic); glazing: `pattern` (`wired`, `fluted`, `hammered`, `rolled`, `channel`, `blocks`, `etched`, `fused`). |
 | `particles` | text, optional | Which particles material to show (`src/particles/data/materials.js`). Default: by main category. |
 
 ## Adding a material

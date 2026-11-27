@@ -87,10 +87,12 @@ export const FAMILIES = {
     },
   },
 
-  // Bamboo strips: narrow boards with the nodes as lighter bands.
+  // Bamboo strips: narrow boards with the nodes as lighter bands. Thin and
+  // many of them, the same painter draws reed and thatch. params: strips
+  // (per tile, 12 by default).
   bamboo: {
-    paint(ctx, rand, { color }) {
-      const n = 12
+    paint(ctx, rand, { color, params: p }) {
+      const n = p.strips ?? 12
       const h = SIZE / n
       const tones = tonesOf(color, 1.2)
       for (let i = 0; i < n; i++) {
@@ -332,25 +334,69 @@ export const FAMILIES = {
     },
   },
 
-  // Square glazed tiles with grout. params: tiles (per row), grout (colour).
+  // Square tiles with grout. params: tiles (per row), grout (colour), gap
+  // (joint width, px), variance (how much the tiles differ in tone: 4 for
+  // handmade zellige), glaze (0…1, the shine across each tile: 0 for
+  // unglazed), speckle (0…, specks in the clay: stoneware, terracotta).
   tiles: {
     paint(ctx, rand, { color, params: p }) {
       const n = p.tiles ?? 4
       const cell = SIZE / n
-      const gap = 4
+      const gap = p.gap ?? 4
+      const glaze = p.glaze ?? 1
       fill(ctx, p.grout ?? shade(color, -0.1))
       for (let i = 0; i < n; i++) {
         for (let j = 0; j < n; j++) {
           const x = i * cell + gap / 2
           const y = j * cell + gap / 2
           const s = cell - gap
-          ctx.fillStyle = shade(color, (rand() - 0.5) * 0.06)
+          ctx.fillStyle = shade(color, (rand() - 0.5) * 0.06 * (p.variance ?? 1))
           ctx.fillRect(x, y, s, s)
-          const g = ctx.createLinearGradient(x, y, x + s, y + s)
-          g.addColorStop(0, 'rgba(255,255,255,0.35)')
-          g.addColorStop(1, 'rgba(255,255,255,0)')
-          ctx.fillStyle = g
-          ctx.fillRect(x, y, s, s)
+          if (glaze > 0) {
+            const g = ctx.createLinearGradient(x, y, x + s, y + s)
+            g.addColorStop(0, `rgba(255,255,255,${0.35 * glaze})`)
+            g.addColorStop(1, 'rgba(255,255,255,0)')
+            ctx.fillStyle = g
+            ctx.fillRect(x, y, s, s)
+          }
+        }
+      }
+      if (p.speckle) speckle(ctx, rand, 9000 * p.speckle, 0.12)
+    },
+  },
+
+  // Bricks in running bond with mortar joints (brick, clinker, fire brick,
+  // clay blocks). params: courses (rows per tile), perCourse (bricks per row),
+  // mortar (colour), variance (tone difference between bricks).
+  brick: {
+    paint(ctx, rand, { color, params: p }) {
+      const courses = p.courses ?? 8
+      const per = p.perCourse ?? 4
+      const h = SIZE / courses
+      const w = SIZE / per
+      const joint = 5
+      fill(ctx, p.mortar ?? shade(color, 0.35))
+      speckle(ctx, rand, 4000, 0.1)
+      for (let r = 0; r < courses; r++) {
+        const offset = r % 2 ? w / 2 : 0
+        // one tone per brick; the brick cut by the tile edge (c = -1 and c = per - 1)
+        // is the same brick on both sides, so the texture repeats without a seam
+        const tones = Array.from({ length: per }, () => shade(color, (rand() - 0.5) * 0.12 * (p.variance ?? 1)))
+        for (let c = -1; c < per; c++) {
+          const x = c * w + offset + joint / 2
+          const y = r * h + joint / 2
+          const bw = w - joint
+          const bh = h - joint
+          const tone = tones[(c + per) % per]
+          ctx.fillStyle = tone
+          ctx.fillRect(x, y, bw, bh)
+          // a burnt edge and a few specks, so a brick isn't a flat block
+          ctx.fillStyle = rgba(shade(color, -0.35), 0.25)
+          ctx.fillRect(x, y + bh - 3, bw, 3)
+          for (let k = 0; k < 40; k++) {
+            ctx.fillStyle = rgba(shade(tone, rand() > 0.5 ? 0.25 : -0.3), 0.5)
+            ctx.fillRect(x + rand() * bw, y + rand() * bh, 1.5, 1.5)
+          }
         }
       }
     },
@@ -564,6 +610,99 @@ export const FAMILIES = {
     },
   },
 
+  // --- plastics and fabrics -------------------------------------------------
+
+  // A plastic sheet or panel: an even colour. params: finish ('smooth' by
+  // default, 'textured' for an orange-peel surface, 'speckled' for vinyl or
+  // rubber flooring, 'printed' for the layer lines of a 3D print), flecks
+  // (speckled: the fleck colours).
+  plastic: {
+    paint(ctx, rand, { color, params: p }) {
+      fill(ctx, color)
+      clouds(ctx, rand, color, 0.25)
+      if (p.finish === 'textured') {
+        for (let i = 0; i < 2600; i++) {
+          const rgb = rgbOf(shade(color, rand() > 0.5 ? 0.18 : -0.18)).join(',')
+          blotch(ctx, rand() * SIZE, rand() * SIZE, 2 + rand() * 4, rgb, 0.32)
+        }
+      } else if (p.finish === 'printed') {
+        // 3D-printed: fine layer lines, each one catching the light on top
+        for (let y = 0; y < SIZE; y += 4) {
+          ctx.fillStyle = rgba(shade(color, 0.3), 0.5); ctx.fillRect(0, y, SIZE, 1.2)
+          ctx.fillStyle = rgba(shade(color, -0.3), 0.35); ctx.fillRect(0, y + 2.6, SIZE, 1.2)
+        }
+      } else if (p.finish === 'speckled') {
+        const flecks = p.flecks ?? [shade(color, -0.3), shade(color, 0.3)]
+        for (let i = 0; i < 2400; i++) chip(ctx, rand, rand() * SIZE, rand() * SIZE, 1 + rand() * 3, pick(rand, flecks), { sides: 4, stretch: 1 + rand() })
+      } else {
+        speckle(ctx, rand, 3000, 0.03)
+      }
+    },
+  },
+
+  // Felt (pressed fibres: PET acoustic felt, wool felt): short curly fibres
+  // over a mottled base.
+  felt: {
+    paint(ctx, rand, { color }) {
+      fill(ctx, shade(color, -0.05))
+      clouds(ctx, rand, color, 1.2)
+      for (let i = 0; i < 9000; i++) {
+        const x = rand() * SIZE, y = rand() * SIZE, len = 8 + rand() * 18, a = rand() * Math.PI * 2, bend = (rand() - 0.5) * 10
+        ctx.strokeStyle = rgba(shade(color, rand() > 0.5 ? 0.4 : -0.4), 0.5)
+        ctx.lineWidth = 1.2
+        wrapped(x, y, len, (px, py) => {
+          ctx.beginPath()
+          ctx.moveTo(px, py)
+          ctx.quadraticCurveTo(px + Math.cos(a) * len / 2 - Math.sin(a) * bend, py + Math.sin(a) * len / 2 + Math.cos(a) * bend, px + Math.cos(a) * len, py + Math.sin(a) * len)
+          ctx.stroke()
+        })
+      }
+    },
+  },
+
+  // A woven fabric: threads over and under in a plain weave. params: threads
+  // (per tile, each way).
+  woven: {
+    paint(ctx, rand, { color, params: p }) {
+      const n = p.threads ?? 48
+      const c = SIZE / n
+      fill(ctx, shade(color, -0.35))
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n; j++) {
+          const x = i * c, y = j * c, across = (i + j) % 2 === 0
+          const g = across ? ctx.createLinearGradient(x, y, x, y + c) : ctx.createLinearGradient(x, y, x + c, y)
+          const tone = shade(color, (rand() - 0.5) * 0.12)
+          g.addColorStop(0, shade(tone, -0.25)); g.addColorStop(0.5, shade(tone, 0.15)); g.addColorStop(1, shade(tone, -0.25))
+          ctx.fillStyle = g
+          ctx.fillRect(x + 0.5, y + 0.5, c - 1, c - 1)
+        }
+      }
+    },
+  },
+
+  // Leather: a pebbled grain and a few soft creases.
+  leather: {
+    paint(ctx, rand, { color }) {
+      fill(ctx, color)
+      clouds(ctx, rand, color, 1)
+      for (let i = 0; i < 7000; i++) {
+        const rgb = rgbOf(shade(color, rand() > 0.5 ? 0.12 : -0.18)).join(',')
+        blotch(ctx, rand() * SIZE, rand() * SIZE, 2.5 + rand() * 4.5, rgb, 0.6)
+      }
+      for (let i = 0; i < 14; i++) {
+        ctx.strokeStyle = rgba(shade(color, -0.35), 0.25)
+        ctx.lineWidth = 1 + rand()
+        const x = rand() * SIZE, y = rand() * SIZE, len = 40 + rand() * 90, a = rand() * Math.PI
+        wrapped(x, y, len, (px, py) => {
+          ctx.beginPath()
+          ctx.moveTo(px, py)
+          ctx.quadraticCurveTo(px + Math.cos(a) * len / 2 + 12, py + Math.sin(a) * len / 2 - 8, px + Math.cos(a) * len, py + Math.sin(a) * len)
+          ctx.stroke()
+        })
+      }
+    },
+  },
+
   // --- metal ------------------------------------------------------------------
   //
   // A metal's look is mostly in its row: metalness, roughness and colour (the
@@ -642,8 +781,138 @@ export const FAMILIES = {
   // --- glass ------------------------------------------------------------------
 
   // No texture: the look is transmission, tint and roughness (see config/materials.js).
+  // A rough (frosted, milky) pane gets a flatter, whiter swatch.
   glass: {
-    swatch: ({ color }) => `linear-gradient(135deg, ${shade(color, 0.4)} 0%, ${shade(color, -0.12)} 55%, ${shade(color, 0.6)} 100%)`,
+    swatch: ({ color, roughness, params }) =>
+      params?.iridescence
+        ? `linear-gradient(135deg, #cfe3ff 0%, #f2c9f0 30%, #c9f2e4 55%, #f6e6b8 80%, #cfd8f0 100%)` // dichroic: the colours it shifts through
+        : roughness > 0.3
+        ? `linear-gradient(135deg, ${shade(color, 0.25)} 0%, ${shade(color, 0.05)} 60%, ${shade(color, 0.35)} 100%)`
+        : `linear-gradient(135deg, ${shade(color, 0.4)} 0%, ${shade(color, -0.12)} 55%, ${shade(color, 0.6)} 100%)`,
+  },
+
+  // A pane with a pattern in it. The texture tints the light through the pane,
+  // so it stays near the glass's own light colour; the pattern is drawn in
+  // slightly lighter and darker tones. params: pattern ('wired', 'fluted',
+  // 'hammered', 'rolled', 'channel', 'multiwall', 'blocks', 'etched', 'fused'), strength
+  // (how strong, 1 by default), colors (fused: the coloured pieces).
+  glazing: {
+    paint(ctx, rand, { color, params: p }) {
+      const k = p.strength ?? 1
+      const g0 = ctx.createLinearGradient(0, 0, SIZE, SIZE)
+      g0.addColorStop(0, shade(color, 0.3)); g0.addColorStop(0.5, color); g0.addColorStop(1, shade(color, 0.2))
+      ctx.fillStyle = g0
+      ctx.fillRect(0, 0, SIZE, SIZE)
+      const dark = (a) => rgba(shade(color, -0.45), a * k)
+      const light = (a) => rgba('#ffffff', a * k)
+      switch (p.pattern) {
+        case 'wired': {
+          // a square mesh of thin steel wire in the pane
+          ctx.strokeStyle = dark(0.75)
+          ctx.lineWidth = 1.4
+          for (let i = 0; i < SIZE; i += 32) {
+            ctx.beginPath(); ctx.moveTo(i + 0.5, 0); ctx.lineTo(i + 0.5, SIZE); ctx.stroke()
+            ctx.beginPath(); ctx.moveTo(0, i + 0.5); ctx.lineTo(SIZE, i + 0.5); ctx.stroke()
+          }
+          break
+        }
+        case 'fluted': {
+          // vertical reeds: each one lit on one side, shaded on the other
+          const w = 16
+          for (let x = 0; x < SIZE; x += w) {
+            const g = ctx.createLinearGradient(x, 0, x + w, 0)
+            g.addColorStop(0, light(0.5)); g.addColorStop(0.45, light(0)); g.addColorStop(1, dark(0.35))
+            ctx.fillStyle = g; ctx.fillRect(x, 0, w, SIZE)
+          }
+          break
+        }
+        case 'multiwall': {
+          // multiwall sheet: narrow cells side by side, a thin wall between each
+          for (let x = 0; x < SIZE; x += 24) {
+            const g = ctx.createLinearGradient(x, 0, x + 24, 0)
+            g.addColorStop(0, light(0.35)); g.addColorStop(0.5, light(0.05)); g.addColorStop(1, light(0.25))
+            ctx.fillStyle = g; ctx.fillRect(x, 0, 24, SIZE)
+            ctx.fillStyle = dark(0.35); ctx.fillRect(x, 0, 1.5, SIZE)
+          }
+          break
+        }
+        case 'channel': {
+          // U-profile channels standing side by side: wide, with a seam and lit flanges
+          const w = 64
+          for (let x = 0; x < SIZE; x += w) {
+            const g = ctx.createLinearGradient(x, 0, x + w, 0)
+            g.addColorStop(0, dark(0.4)); g.addColorStop(0.12, light(0.45)); g.addColorStop(0.5, light(0.1)); g.addColorStop(0.88, light(0.3)); g.addColorStop(1, dark(0.45))
+            ctx.fillStyle = g; ctx.fillRect(x, 0, w, SIZE)
+            ctx.fillStyle = dark(0.6); ctx.fillRect(x, 0, 2, SIZE)
+          }
+          break
+        }
+        case 'blocks': {
+          // glass blocks: square units, a bevelled rim, a soft lens in the middle, mortar between
+          const n = 4, c = SIZE / n
+          for (let i = 0; i < n; i++) {
+            for (let j = 0; j < n; j++) {
+              const x = i * c, y = j * c
+              const g = ctx.createRadialGradient(x + c / 2, y + c / 2, 4, x + c / 2, y + c / 2, c * 0.7)
+              g.addColorStop(0, light(0.5)); g.addColorStop(0.6, light(0.05)); g.addColorStop(1, dark(0.35))
+              ctx.fillStyle = g; ctx.fillRect(x, y, c, c)
+              ctx.strokeStyle = light(0.5); ctx.lineWidth = 2; ctx.strokeRect(x + 8, y + 8, c - 16, c - 16)
+            }
+          }
+          ctx.fillStyle = rgba('#d8d4cc', 0.95)
+          for (let i = 0; i <= n; i++) { ctx.fillRect(i * c - 4, 0, 8, SIZE); ctx.fillRect(0, i * c - 4, SIZE, 8) }
+          break
+        }
+        case 'hammered': {
+          // a hammered or cast surface: dimples that catch the light
+          for (let i = 0; i < 1400; i++) {
+            const x = rand() * SIZE, y = rand() * SIZE, r = 5 + rand() * 9
+            wrapped(x, y, r, (px, py) => {
+              const g = ctx.createRadialGradient(px - r * 0.3, py - r * 0.3, 0, px, py, r)
+              g.addColorStop(0, light(0.35)); g.addColorStop(0.7, light(0)); g.addColorStop(1, dark(0.18))
+              ctx.fillStyle = g; circle(ctx, px, py, r)
+            })
+          }
+          break
+        }
+        case 'rolled': {
+          // rolled glass: soft horizontal ripples
+          for (let i = 0; i < 40; i++) {
+            const y0 = rand() * SIZE, a = 2 + rand() * 5, f = 1 + Math.floor(rand() * 3), ph = rand() * 6.28
+            ctx.strokeStyle = rand() > 0.5 ? light(0.4) : dark(0.18)
+            ctx.lineWidth = 1 + rand() * 3
+            for (const dy of [-SIZE, 0, SIZE]) {
+              ctx.beginPath()
+              for (let x = 0; x <= SIZE; x += 8) {
+                const y = y0 + dy + Math.sin((x / SIZE) * Math.PI * 2 * f + ph) * a
+                x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
+              }
+              ctx.stroke()
+            }
+          }
+          break
+        }
+        case 'etched': {
+          // etched: a frosted pane with clear bands left in it
+          ctx.fillStyle = light(0.45)
+          ctx.fillRect(0, 0, SIZE, SIZE)
+          ctx.fillStyle = rgba(color, 0.9)
+          for (const [y, h] of [[60, 18], [96, 6], [300, 30], [350, 6], [452, 12]]) ctx.fillRect(0, y, SIZE, h)
+          speckle(ctx, rand, 6000, 0.05)
+          break
+        }
+        case 'fused': {
+          // fused: coloured glass pieces melted into the pane
+          const colors = p.colors ?? [shade(color, -0.4)]
+          for (let i = 0; i < 26; i++) {
+            const rgb = rgbOf(pick(rand, colors)).join(',')
+            blotch(ctx, rand() * SIZE, rand() * SIZE, 30 + rand() * 70, rgb, 0.55)
+          }
+          for (let i = 0; i < 120; i++) chip(ctx, rand, rand() * SIZE, rand() * SIZE, 4 + rand() * 10, rgba(pick(rand, colors), 0.7), { sides: 5 })
+          break
+        }
+      }
+    },
   },
 }
 

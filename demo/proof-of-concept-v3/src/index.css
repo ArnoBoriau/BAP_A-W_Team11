@@ -1093,6 +1093,7 @@ kbd {
 }
 
 .gift__label {
+  overflow-wrap: anywhere; /* "POLYTETRAFLUOROETHYLENE" doesn't fit a card in one word */
   font-family: var(--font-display);
   font-size: 0.875rem;
   font-weight: 600;

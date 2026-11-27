@@ -1,7 +1,7 @@
 [
   {
     "id": "glass",
-    "name": "Glass",
+    "name": "Float glass",
     "categories": [
       "glass"
     ],
@@ -19,6 +19,609 @@
     "params": {
       "transmission": 1,
       "thickness": 0.15,
+      "ior": 1.5
+    }
+  },
+  {
+    "id": "tempered-glass",
+    "name": "Tempered glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#d8ecef",
+    "roughness": 0.05,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 1,
+      "thickness": 0.12,
+      "ior": 1.5
+    }
+  },
+  {
+    "id": "laminated-glass",
+    "name": "Laminated glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#cfe6e2",
+    "roughness": 0.05,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.95,
+      "thickness": 0.2,
+      "ior": 1.5
+    }
+  },
+  {
+    "id": "frosted-glass",
+    "name": "Frosted glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#eef3f4",
+    "roughness": 0.55,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.9,
+      "thickness": 0.15,
+      "ior": 1.5
+    }
+  },
+  {
+    "id": "tinted-glass",
+    "name": "Tinted glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#8fa2a6",
+    "roughness": 0.05,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.85,
+      "thickness": 0.15,
+      "ior": 1.5
+    }
+  },
+  {
+    "id": "textured-glass",
+    "name": "Textured glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glazing",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#e3eef0",
+    "roughness": 0.2,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "transmission": 0.9,
+      "thickness": 0.15,
+      "ior": 1.5,
+      "pattern": "hammered"
+    }
+  },
+  {
+    "id": "patterned-glass",
+    "name": "Patterned glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glazing",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 0.6,
+    "color": "#e6f0f1",
+    "roughness": 0.15,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "transmission": 0.9,
+      "thickness": 0.15,
+      "ior": 1.5,
+      "pattern": "fluted"
+    }
+  },
+  {
+    "id": "wired-glass",
+    "name": "Wired glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glazing",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 0.6,
+    "color": "#dfeaec",
+    "roughness": 0.06,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 1,
+      "thickness": 0.15,
+      "ior": 1.5,
+      "pattern": "wired"
+    }
+  },
+  {
+    "id": "mirrored-glass",
+    "name": "Mirrored glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "metal",
+    "surfaces": [
+      "wall"
+    ],
+    "tile": 1.2,
+    "color": "#d9dee2",
+    "roughness": 0.03,
+    "metalness": 1,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "clouds": 0.2
+    }
+  },
+  {
+    "id": "low-e-glass",
+    "name": "Low-E glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#cfe5dc",
+    "roughness": 0.05,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.95,
+      "thickness": 0.15,
+      "ior": 1.5
+    }
+  },
+  {
+    "id": "reflective-glass",
+    "name": "Reflective glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#6f8796",
+    "roughness": 0.08,
+    "metalness": 0.45,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.45,
+      "thickness": 0.15,
+      "ior": 1.5
+    }
+  },
+  {
+    "id": "insulated-glass",
+    "name": "Insulated glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#d3e9ec",
+    "roughness": 0.05,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.92,
+      "thickness": 0.3,
+      "ior": 1.5
+    }
+  },
+  {
+    "id": "borosilicate-glass",
+    "name": "Borosilicate glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#e8f4f5",
+    "roughness": 0.03,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 1,
+      "thickness": 0.15,
+      "ior": 1.5
+    }
+  },
+  {
+    "id": "smart-glass",
+    "name": "Smart glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#e4ecf2",
+    "roughness": 0.45,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.7,
+      "thickness": 0.15,
+      "ior": 1.5
+    }
+  },
+  {
+    "id": "coloured-glass",
+    "name": "Coloured glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#3f8f8a",
+    "roughness": 0.05,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.8,
+      "thickness": 0.15,
+      "ior": 1.5
+    }
+  },
+  {
+    "id": "etched-glass",
+    "name": "Etched glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glazing",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 0.8,
+    "color": "#eef3f4",
+    "roughness": 0.35,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.85,
+      "thickness": 0.15,
+      "ior": 1.5,
+      "pattern": "etched"
+    }
+  },
+  {
+    "id": "channel-glass",
+    "name": "Channel glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glazing",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1.5,
+    "color": "#dce9ea",
+    "roughness": 0.35,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.4,
+    "params": {
+      "transmission": 0.85,
+      "thickness": 0.15,
+      "ior": 1.5,
+      "pattern": "channel"
+    }
+  },
+  {
+    "id": "glass-blocks",
+    "name": "Glass blocks",
+    "categories": [
+      "glass"
+    ],
+    "family": "glazing",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 0.8,
+    "color": "#dfeef0",
+    "roughness": 0.2,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "transmission": 0.85,
+      "thickness": 0.15,
+      "ior": 1.5,
+      "pattern": "blocks"
+    }
+  },
+  {
+    "id": "cast-glass",
+    "name": "Cast glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glazing",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#cfe3e0",
+    "roughness": 0.3,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.5,
+    "params": {
+      "transmission": 0.8,
+      "thickness": 0.3,
+      "ior": 1.5,
+      "pattern": "hammered",
+      "strength": 1.6
+    }
+  },
+  {
+    "id": "rolled-glass",
+    "name": "Rolled glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glazing",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#e2eef0",
+    "roughness": 0.2,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "transmission": 0.9,
+      "thickness": 0.15,
+      "ior": 1.5,
+      "pattern": "rolled"
+    }
+  },
+  {
+    "id": "fused-glass",
+    "name": "Fused glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glazing",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#e9e4dc",
+    "roughness": 0.2,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.75,
+      "thickness": 0.15,
+      "ior": 1.5,
+      "pattern": "fused",
+      "colors": [
+        "#2f7f9a",
+        "#c9763a",
+        "#6c9a4a",
+        "#b84a5a",
+        "#e0c25a"
+      ]
+    }
+  },
+  {
+    "id": "recycled-glass",
+    "name": "Recycled glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "terrazzo",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e8e6e1",
+    "roughness": 0.25,
+    "metalness": 0,
+    "clearcoat": 0.5,
+    "bump": 0.3,
+    "params": {
+      "chips": [
+        "#3f7f5a",
+        "#6b4a2a",
+        "#4a7fa0",
+        "#cfe3df",
+        "#2e5a3c",
+        "#a9c9c0"
+      ],
+      "count": 1100,
+      "size": 12,
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "foam-glass",
+    "name": "Foam glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "sediment",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#2f3236",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.6,
+    "params": {
+      "pores": 3.5,
+      "joints": [
+        2,
+        3
+      ]
+    }
+  },
+  {
+    "id": "opal-glass",
+    "name": "Opal glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#f2f1ec",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.55,
+      "thickness": 0.15,
+      "ior": 1.5
+    }
+  },
+  {
+    "id": "dichroic-glass",
+    "name": "Dichroic glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#cfd8f0",
+    "roughness": 0.05,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.9,
+      "thickness": 0.15,
+      "ior": 1.5,
+      "iridescence": 1
+    }
+  },
+  {
+    "id": "bullet-resistant-glass",
+    "name": "Bullet-resistant glass",
+    "categories": [
+      "glass"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "through": true,
+    "tile": 1,
+    "color": "#c9e2dc",
+    "roughness": 0.05,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.85,
+      "thickness": 0.4,
       "ior": 1.5
     }
   }

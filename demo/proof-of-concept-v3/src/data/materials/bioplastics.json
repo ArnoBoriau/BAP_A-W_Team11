@@ -1,0 +1,406 @@
+[
+  {
+    "id": "pla",
+    "name": "PLA (polylactic acid)",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.8,
+    "color": "#e9e2d0",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.8,
+    "params": {
+      "finish": "printed"
+    }
+  },
+  {
+    "id": "pha",
+    "name": "PHA (polyhydroxyalkanoates)",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d8c9a7",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.5,
+    "params": {
+      "finish": "textured",
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "phb",
+    "name": "PHB (polyhydroxybutyrate)",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#efe6cf",
+    "roughness": 0.4,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.1,
+    "params": {
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "pbs",
+    "name": "PBS (polybutylene succinate)",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#cdbf9d",
+    "roughness": 0.55,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.4,
+    "params": {
+      "finish": "speckled",
+      "flecks": [
+        "#9c8a64",
+        "#e8dfc8",
+        "#7a6a4c"
+      ]
+    }
+  },
+  {
+    "id": "bio-pe",
+    "name": "Bio-based polyethylene (Bio-PE)",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e3ead8",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.2,
+    "params": {
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "bio-pet",
+    "name": "Bio-based PET (Bio-PET)",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "felt",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#5f7a6a",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "bio-pp",
+    "name": "Bio-based polypropylene (Bio-PP)",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c9cbb8",
+    "roughness": 0.55,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "finish": "textured",
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "starch-based-plastics",
+    "name": "Starch-based plastics",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "tile": 1,
+    "color": "#efe9d6",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.55,
+      "thickness": 0.1,
+      "ior": 1.47
+    },
+    "through": true
+  },
+  {
+    "id": "cellulose-acetate",
+    "name": "Cellulose acetate",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "glazing",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c98b4a",
+    "roughness": 0.15,
+    "metalness": 0,
+    "clearcoat": 0.6,
+    "bump": 0.1,
+    "params": {
+      "pattern": "fused",
+      "colors": [
+        "#5a3218",
+        "#3a1f0f",
+        "#8a5426",
+        "#2a160b"
+      ]
+    }
+  },
+  {
+    "id": "tps",
+    "name": "Thermoplastic starch (TPS)",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e6dcc0",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.4,
+    "params": {
+      "finish": "speckled",
+      "flecks": [
+        "#f6f0e0",
+        "#cdbf9a",
+        "#d9ccac"
+      ]
+    }
+  },
+  {
+    "id": "pef",
+    "name": "PEF (polyethylene furanoate)",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "tile": 1,
+    "color": "#e8eedb",
+    "roughness": 0.05,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.9,
+      "thickness": 0.1,
+      "ior": 1.47
+    },
+    "through": true
+  },
+  {
+    "id": "mycelium-bioplastics",
+    "name": "Mycelium-based bioplastics",
+    "categories": [
+      "bioplastics",
+      "natural"
+    ],
+    "family": "chipboard",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e4d9c0",
+    "roughness": 0.9,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {}
+  },
+  {
+    "id": "algae-bioplastics",
+    "name": "Algae-based bioplastics",
+    "categories": [
+      "bioplastics",
+      "natural"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#3f5a3a",
+    "roughness": 0.45,
+    "metalness": 0,
+    "clearcoat": 0.2,
+    "bump": 0.4,
+    "params": {
+      "finish": "speckled",
+      "flecks": [
+        "#2c4229",
+        "#6f8f4f",
+        "#a5b87a",
+        "#1f2e1c"
+      ]
+    }
+  },
+  {
+    "id": "chitosan-bioplastics",
+    "name": "Chitosan-based bioplastics",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "tile": 1,
+    "color": "#e9d9a8",
+    "roughness": 0.3,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.6,
+      "thickness": 0.1,
+      "ior": 1.47
+    },
+    "through": true
+  },
+  {
+    "id": "protein-bioplastics",
+    "name": "Protein-based bioplastics",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e8dcc2",
+    "roughness": 0.65,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "finish": "textured"
+    }
+  },
+  {
+    "id": "lignin-bioplastics",
+    "name": "Lignin-based bioplastics",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "sheet",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.6,
+    "color": "#6a4a32",
+    "roughness": 0.45,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "figure": 0.4
+    }
+  },
+  {
+    "id": "casein-plastics",
+    "name": "Casein-based plastics",
+    "categories": [
+      "bioplastics"
+    ],
+    "family": "veined",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#efe5cf",
+    "roughness": 0.2,
+    "metalness": 0,
+    "clearcoat": 0.6,
+    "bump": 0.1,
+    "params": {
+      "vein": "#c9b48a",
+      "veins": 4,
+      "soft": true
+    }
+  }
+]

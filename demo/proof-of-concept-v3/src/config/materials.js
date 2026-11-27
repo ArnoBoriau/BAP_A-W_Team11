@@ -49,7 +49,7 @@ function fromRow(row) {
     through: !!row.through,
     tileSize: row.tile ?? 1,
     bump: row.bump ?? 0,
-    physical: !!(row.clearcoat || transmission),
+    physical: !!(row.clearcoat || transmission || params.iridescence),
     castShadow: !transmission,
     props: {
       // a drawn texture carries the colour; without one, the row's colour is the colour
@@ -59,6 +59,8 @@ function fromRow(row) {
       ...(metal ? { envMapIntensity: 0.55 } : {}),
       ...(row.clearcoat ? { clearcoat: row.clearcoat, clearcoatRoughness: params.clearcoatRoughness ?? 0.25 } : {}),
       ...(transmission ? { transmission, thickness: params.thickness ?? 0.15, ior: params.ior ?? 1.5 } : {}),
+      // dichroic glass: a colour that shifts with the angle you look at it from
+      ...(params.iridescence ? { iridescence: params.iridescence, iridescenceIOR: 1.3, iridescenceThicknessRange: [200, 800] } : {}),
     },
   }
   material.pattern = hasPattern(material)

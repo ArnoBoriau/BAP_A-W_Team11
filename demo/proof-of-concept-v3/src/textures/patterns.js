@@ -21,7 +21,18 @@ export function getPatternCanvas(material) {
     canvas.width = canvas.height = SIZE
     const ctx = canvas.getContext('2d')
     const rand = seededRandom(hash(material.id))
-    FAMILIES[material.family].paint(ctx, rand, material.row)
+    if (material.row.params.rotate) {
+      // a quarter turn, for any family: stems standing up (reed, thatch), bark's fissures
+      const flat = document.createElement('canvas')
+      flat.width = flat.height = SIZE
+      FAMILIES[material.family].paint(flat.getContext('2d'), rand, material.row)
+      ctx.translate(SIZE / 2, SIZE / 2)
+      ctx.rotate(Math.PI / 2)
+      ctx.drawImage(flat, -SIZE / 2, -SIZE / 2)
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+    } else {
+      FAMILIES[material.family].paint(ctx, rand, material.row)
+    }
     finish(ctx, rand, material.row) // sparkle, slab joints: any family
     canvasCache.set(material.id, canvas)
   }

@@ -1,0 +1,608 @@
+[
+  {
+    "id": "rattan",
+    "name": "Rattan",
+    "categories": [
+      "natural"
+    ],
+    "family": "woven",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.5,
+    "color": "#c9a46b",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1,
+    "params": {
+      "threads": 28
+    },
+    "particles": "textile"
+  },
+  {
+    "id": "reed",
+    "name": "Reed",
+    "categories": [
+      "natural"
+    ],
+    "family": "bamboo",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.8,
+    "color": "#c9b27c",
+    "roughness": 0.75,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "strips": 36,
+      "rotate": true
+    }
+  },
+  {
+    "id": "straw",
+    "name": "Straw",
+    "categories": [
+      "natural"
+    ],
+    "family": "chipboard",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d6b464",
+    "roughness": 0.9,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.4,
+    "params": {}
+  },
+  {
+    "id": "hemp",
+    "name": "Hemp",
+    "categories": [
+      "natural"
+    ],
+    "family": "felt",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#bfae86",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {},
+    "particles": "textile"
+  },
+  {
+    "id": "flax",
+    "name": "Flax",
+    "categories": [
+      "natural"
+    ],
+    "family": "felt",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d9cba5",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {},
+    "particles": "textile"
+  },
+  {
+    "id": "jute",
+    "name": "Jute",
+    "categories": [
+      "natural"
+    ],
+    "family": "woven",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.4,
+    "color": "#b08f5e",
+    "roughness": 0.9,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "threads": 24
+    },
+    "particles": "textile"
+  },
+  {
+    "id": "sisal",
+    "name": "Sisal",
+    "categories": [
+      "natural"
+    ],
+    "family": "woven",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.4,
+    "color": "#d6c08e",
+    "roughness": 0.9,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1,
+    "params": {
+      "threads": 32
+    },
+    "particles": "textile"
+  },
+  {
+    "id": "seagrass",
+    "name": "Seagrass",
+    "categories": [
+      "natural"
+    ],
+    "family": "woven",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.5,
+    "color": "#9d9a6a",
+    "roughness": 0.85,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "threads": 20
+    },
+    "particles": "textile"
+  },
+  {
+    "id": "thatch",
+    "name": "Thatch",
+    "categories": [
+      "natural"
+    ],
+    "family": "bamboo",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.8,
+    "color": "#a88c55",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.6,
+    "params": {
+      "strips": 70,
+      "rotate": true
+    }
+  },
+  {
+    "id": "rammed-earth",
+    "name": "Rammed earth",
+    "categories": [
+      "natural"
+    ],
+    "family": "sediment",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2,
+    "color": "#b98a5f",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "layers": 7
+    },
+    "particles": "brick"
+  },
+  {
+    "id": "adobe",
+    "name": "Adobe",
+    "categories": [
+      "natural"
+    ],
+    "family": "brick",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.6,
+    "color": "#c69a6a",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.4,
+    "params": {
+      "courses": 6,
+      "perCourse": 2,
+      "mortar": "#b38a5e",
+      "variance": 1.5
+    },
+    "particles": "brick"
+  },
+  {
+    "id": "natural-clay",
+    "name": "Natural clay",
+    "categories": [
+      "natural"
+    ],
+    "family": "plaster",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2,
+    "color": "#c9a27c",
+    "roughness": 0.9,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.8,
+    "params": {},
+    "particles": "brick"
+  },
+  {
+    "id": "moss",
+    "name": "Moss",
+    "categories": [
+      "natural"
+    ],
+    "family": "cork",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.6,
+    "color": "#5a7a30",
+    "roughness": 1,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 2,
+    "params": {}
+  },
+  {
+    "id": "coconut-fibre",
+    "name": "Coconut fibre",
+    "categories": [
+      "natural"
+    ],
+    "family": "felt",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#8a5a32",
+    "roughness": 1,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.6,
+    "params": {},
+    "particles": "textile"
+  },
+  {
+    "id": "wool",
+    "name": "Wool",
+    "categories": [
+      "natural"
+    ],
+    "family": "felt",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e9e4d8",
+    "roughness": 1,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1,
+    "params": {},
+    "particles": "textile"
+  },
+  {
+    "id": "silk",
+    "name": "Silk",
+    "categories": [
+      "natural"
+    ],
+    "family": "woven",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.4,
+    "color": "#e8dcc8",
+    "roughness": 0.3,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "threads": 96
+    },
+    "particles": "textile"
+  },
+  {
+    "id": "cotton",
+    "name": "Cotton",
+    "categories": [
+      "natural"
+    ],
+    "family": "woven",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.4,
+    "color": "#efebe3",
+    "roughness": 0.85,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.5,
+    "params": {
+      "threads": 64
+    },
+    "particles": "textile"
+  },
+  {
+    "id": "linen",
+    "name": "Linen",
+    "categories": [
+      "natural"
+    ],
+    "family": "woven",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.4,
+    "color": "#d8cfbd",
+    "roughness": 0.85,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "threads": 72
+    },
+    "particles": "textile"
+  },
+  {
+    "id": "leather",
+    "name": "Leather",
+    "categories": [
+      "natural"
+    ],
+    "family": "leather",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.8,
+    "color": "#7a4a2e",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0.2,
+    "bump": 0.8,
+    "params": {}
+  },
+  {
+    "id": "suede",
+    "name": "Suede",
+    "categories": [
+      "natural"
+    ],
+    "family": "plaster",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1,
+    "color": "#a07a56",
+    "roughness": 1,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.4,
+    "params": {}
+  },
+  {
+    "id": "shell",
+    "name": "Shell",
+    "categories": [
+      "natural"
+    ],
+    "family": "tiles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.6,
+    "color": "#e9e2d8",
+    "roughness": 0.2,
+    "metalness": 0,
+    "clearcoat": 0.6,
+    "bump": 0.8,
+    "params": {
+      "tiles": 12,
+      "gap": 3,
+      "variance": 3,
+      "glaze": 0.6,
+      "grout": "#d9d2c6",
+      "iridescence": 0.8
+    }
+  },
+  {
+    "id": "natural-rubber",
+    "name": "Natural rubber",
+    "categories": [
+      "natural"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#8a6a42",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.8,
+    "params": {
+      "finish": "textured"
+    }
+  },
+  {
+    "id": "seaweed",
+    "name": "Seaweed",
+    "categories": [
+      "natural"
+    ],
+    "family": "felt",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#4a4a30",
+    "roughness": 1,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.6,
+    "params": {},
+    "particles": "textile"
+  },
+  {
+    "id": "natural-fibres",
+    "name": "Natural fibres",
+    "categories": [
+      "natural"
+    ],
+    "family": "felt",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#cbbd9a",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {},
+    "particles": "textile"
+  },
+  {
+    "id": "bark",
+    "name": "Bark",
+    "categories": [
+      "natural"
+    ],
+    "family": "cleft",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#5a4434",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 2,
+    "params": {
+      "rotate": true
+    }
+  },
+  {
+    "id": "peat",
+    "name": "Peat",
+    "categories": [
+      "natural"
+    ],
+    "family": "chipboard",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#4a3324",
+    "roughness": 1,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.4,
+    "params": {}
+  },
+  {
+    "id": "sand",
+    "name": "Sand",
+    "categories": [
+      "natural"
+    ],
+    "family": "granular",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d8c39a",
+    "roughness": 1,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.8,
+    "params": {
+      "crystals": [
+        "#b89a64",
+        "#ecdcb6",
+        "#a2875a",
+        "#f4ead0",
+        "#c9ad78"
+      ],
+      "size": 0.75
+    }
+  },
+  {
+    "id": "gravel",
+    "name": "Gravel",
+    "categories": [
+      "natural"
+    ],
+    "family": "pebbles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.6,
+    "color": "#9a958c",
+    "roughness": 0.9,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 2,
+    "params": {
+      "matrix": "#5f5b55",
+      "tones": [
+        "#a7a29a",
+        "#8d8880",
+        "#c4beb3",
+        "#77726b",
+        "#b5a890"
+      ],
+      "count": 1400,
+      "size": 0.5
+    }
+  }
+]

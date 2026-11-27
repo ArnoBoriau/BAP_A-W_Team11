@@ -1,5 +1,142 @@
 [
   {
+    "id": "porcelain",
+    "name": "Porcelain",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "tiles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e8e5df",
+    "roughness": 0.3,
+    "metalness": 0,
+    "clearcoat": 0.3,
+    "bump": 0.6,
+    "params": {
+      "tiles": 2,
+      "variance": 0.4,
+      "glaze": 0.5
+    }
+  },
+  {
+    "id": "terracotta",
+    "name": "Terracotta",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "tiles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#b5603a",
+    "roughness": 0.85,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "tiles": 4,
+      "variance": 2,
+      "glaze": 0,
+      "speckle": 1
+    }
+  },
+  {
+    "id": "earthenware",
+    "name": "Earthenware",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "tiles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a9714a",
+    "roughness": 0.55,
+    "metalness": 0,
+    "clearcoat": 0.2,
+    "bump": 1,
+    "params": {
+      "tiles": 4,
+      "variance": 1.5,
+      "glaze": 0.4
+    }
+  },
+  {
+    "id": "stoneware",
+    "name": "Stoneware",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "tiles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#8a857c",
+    "roughness": 0.7,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1,
+    "params": {
+      "tiles": 3,
+      "variance": 1,
+      "glaze": 0.1,
+      "speckle": 2
+    }
+  },
+  {
+    "id": "faience",
+    "name": "Faience",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "motif",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.8,
+    "color": "#ece6d6",
+    "roughness": 0.25,
+    "metalness": 0,
+    "clearcoat": 0.5,
+    "bump": 0.6,
+    "params": {
+      "colors": [
+        "#2d4f8a",
+        "#6f93c9"
+      ]
+    }
+  },
+  {
+    "id": "vitreous-china",
+    "name": "Vitreous china",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "plaster",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#f7f6f2",
+    "roughness": 0.15,
+    "metalness": 0,
+    "clearcoat": 0.8,
+    "bump": 0.1,
+    "params": {}
+  },
+  {
     "id": "tiles",
     "name": "Ceramic tiles",
     "categories": [
@@ -17,5 +154,445 @@
     "clearcoat": 0.6,
     "bump": 1.5,
     "params": {}
+  },
+  {
+    "id": "glazed-ceramics",
+    "name": "Glazed ceramics",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "tiles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1,
+    "color": "#3f6f7a",
+    "roughness": 0.2,
+    "metalness": 0,
+    "clearcoat": 0.6,
+    "bump": 1,
+    "params": {
+      "tiles": 5,
+      "variance": 1.5,
+      "glaze": 0.8
+    }
+  },
+  {
+    "id": "unglazed-ceramics",
+    "name": "Unglazed ceramics",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "tiles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a88f78",
+    "roughness": 0.85,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "tiles": 4,
+      "variance": 1,
+      "glaze": 0,
+      "speckle": 1
+    }
+  },
+  {
+    "id": "technical-ceramics",
+    "name": "Technical ceramics",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "plaster",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#ece9e2",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.2,
+    "params": {
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "refractory-ceramics",
+    "name": "Refractory ceramics",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "brick",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d6c19a",
+    "roughness": 0.9,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.4,
+    "params": {
+      "mortar": "#ece5d4",
+      "variance": 1.2
+    },
+    "particles": "brick"
+  },
+  {
+    "id": "mosaic-ceramics",
+    "name": "Mosaic ceramics",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "tiles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.6,
+    "color": "#5b8fa6",
+    "roughness": 0.25,
+    "metalness": 0,
+    "clearcoat": 0.5,
+    "bump": 0.8,
+    "params": {
+      "tiles": 16,
+      "gap": 3,
+      "variance": 3,
+      "glaze": 0.5,
+      "grout": "#e6e2da"
+    }
+  },
+  {
+    "id": "structural-ceramics",
+    "name": "Structural ceramics",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "brick",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.6,
+    "color": "#b8714a",
+    "roughness": 0.85,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.6,
+    "params": {
+      "courses": 6,
+      "perCourse": 2,
+      "mortar": "#c9c2b4"
+    },
+    "particles": "brick"
+  },
+  {
+    "id": "sintered-ceramics",
+    "name": "Sintered ceramics",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "veined",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#dcd8d0",
+    "roughness": 0.25,
+    "metalness": 0,
+    "clearcoat": 0.3,
+    "bump": 0.2,
+    "params": {
+      "vein": "#9a958c",
+      "veins": 4,
+      "soft": true,
+      "joints": [
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "id": "handmade-ceramics",
+    "name": "Handmade ceramics",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "tiles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.8,
+    "color": "#2f6b5a",
+    "roughness": 0.15,
+    "metalness": 0,
+    "clearcoat": 0.7,
+    "bump": 1,
+    "params": {
+      "tiles": 6,
+      "variance": 4,
+      "glaze": 1,
+      "grout": "#d8d2c4"
+    }
+  },
+  {
+    "id": "brick",
+    "name": "Brick",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "brick",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#a5533a",
+    "roughness": 0.85,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.6,
+    "params": {
+      "mortar": "#bdb6a8",
+      "variance": 1.5
+    },
+    "particles": "brick"
+  },
+  {
+    "id": "clinker",
+    "name": "Clinker",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "brick",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#5a3a2e",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.4,
+    "params": {
+      "mortar": "#8d877d",
+      "variance": 2.5
+    },
+    "particles": "brick"
+  },
+  {
+    "id": "ceramic-stoneware",
+    "name": "Ceramic stoneware",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "granular",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#8f8b84",
+    "roughness": 0.45,
+    "metalness": 0,
+    "clearcoat": 0.2,
+    "bump": 0.4,
+    "params": {
+      "crystals": [
+        "#7a766f",
+        "#a6a29a",
+        "#5f5c56"
+      ],
+      "size": 0.6,
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "cotto",
+    "name": "Cotto",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "tiles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c4734a",
+    "roughness": 0.8,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "tiles": 5,
+      "variance": 2.5,
+      "glaze": 0,
+      "speckle": 1.5
+    }
+  },
+  {
+    "id": "enamel",
+    "name": "Enamel",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "plaster",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c8432f",
+    "roughness": 0.1,
+    "metalness": 0,
+    "clearcoat": 0.8,
+    "bump": 0.1,
+    "params": {
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "ceramic-foam",
+    "name": "Ceramic foam",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "sediment",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e2dccf",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.8,
+    "params": {
+      "pores": 4
+    }
+  },
+  {
+    "id": "cordierite",
+    "name": "Cordierite",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "sediment",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d9cdb4",
+    "roughness": 0.9,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.8,
+    "params": {
+      "pores": 1,
+      "fossils": 0.4,
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "silicon-carbide",
+    "name": "Silicon carbide",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "granular",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#3b3d40",
+    "roughness": 0.5,
+    "metalness": 0.3,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "crystals": [
+        "#2a2c2f",
+        "#55585c",
+        "#6c6f73"
+      ],
+      "size": 0.7,
+      "sparkle": 0.6
+    }
+  },
+  {
+    "id": "zirconia",
+    "name": "Zirconia",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "plaster",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#f3f2ee",
+    "roughness": 0.12,
+    "metalness": 0,
+    "clearcoat": 0.7,
+    "bump": 0.1,
+    "params": {
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "alumina",
+    "name": "Alumina",
+    "categories": [
+      "ceramics"
+    ],
+    "family": "plaster",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#efe8d8",
+    "roughness": 0.4,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.2,
+    "params": {
+      "joints": [
+        3,
+        3
+      ]
+    }
   }
 ]

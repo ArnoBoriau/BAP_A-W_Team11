@@ -76,6 +76,18 @@ export const MATERIALS = [
     ],
   },
   {
+    // v3: the stand-in for every plastic in the game (see adapters.js)
+    id: 'plastic',
+    category: 'plastics',
+    label: 'Plastic',
+    versions: [
+      v('sheet', 'Sheet', 'dense', 'monolithic', ['geometric'], 'still', 'opaque'),
+      v('foam', 'Foam', 'porous', 'fragmented', ['soft'], 'expanding', 'opaque'),
+      v('translucent', 'Translucent', 'open', 'monolithic', ['soft'], 'flowing', 'translucent'),
+      v('felt', 'Felt', 'dense', 'woven', ['soft', 'organic'], 'still', 'opaque'),
+    ],
+  },
+  {
     id: 'brick',
     category: 'ceramics',
     label: 'Brick',

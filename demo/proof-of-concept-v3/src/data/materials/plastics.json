@@ -1,0 +1,536 @@
+[
+  {
+    "id": "acrylic",
+    "name": "Acrylic (PMMA)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "tile": 1,
+    "color": "#e3f0f4",
+    "roughness": 0.05,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.92,
+      "thickness": 0.1,
+      "ior": 1.49
+    },
+    "through": true
+  },
+  {
+    "id": "polycarbonate",
+    "name": "Polycarbonate (PC)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "glazing",
+    "surfaces": [
+      "wall"
+    ],
+    "tile": 1.2,
+    "color": "#e9eef0",
+    "roughness": 0.3,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.3,
+    "params": {
+      "transmission": 0.75,
+      "thickness": 0.1,
+      "ior": 1.49,
+      "pattern": "multiwall"
+    },
+    "through": true
+  },
+  {
+    "id": "pvc",
+    "name": "Polyvinyl chloride (PVC)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#b9bcc0",
+    "roughness": 0.45,
+    "metalness": 0,
+    "clearcoat": 0.2,
+    "bump": 0.3,
+    "params": {
+      "finish": "speckled",
+      "flecks": [
+        "#8e9196",
+        "#d7d9dc",
+        "#6f7276"
+      ]
+    }
+  },
+  {
+    "id": "pe",
+    "name": "Polyethylene (PE)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#ecebe6",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.2,
+    "params": {
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "pp",
+    "name": "Polypropylene (PP)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#d9dbe0",
+    "roughness": 0.55,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "finish": "textured",
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "ps",
+    "name": "Polystyrene (PS)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#f1f1ee",
+    "roughness": 0.25,
+    "metalness": 0,
+    "clearcoat": 0.3,
+    "bump": 0.1,
+    "params": {
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "eps",
+    "name": "Expanded polystyrene (EPS)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "pebbles",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#f2f0ea",
+    "roughness": 0.9,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "matrix": "#e4e1d9",
+      "tones": [
+        "#f6f4ef",
+        "#ecebe5",
+        "#fbfaf6",
+        "#e8e5de"
+      ],
+      "count": 1600,
+      "size": 0.32,
+      "joints": [
+        2,
+        4
+      ]
+    }
+  },
+  {
+    "id": "xps",
+    "name": "Extruded polystyrene (XPS)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#8fb4d6",
+    "roughness": 0.7,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.5,
+    "params": {
+      "finish": "textured",
+      "joints": [
+        2,
+        4
+      ]
+    }
+  },
+  {
+    "id": "pu",
+    "name": "Polyurethane (PU)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "sediment",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e2c36a",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.6,
+    "params": {
+      "pores": 2.5
+    }
+  },
+  {
+    "id": "pet",
+    "name": "Polyethylene terephthalate (PET)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "felt",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#6d7378",
+    "roughness": 0.95,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 1.2,
+    "params": {
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "hdpe",
+    "name": "High-density polyethylene (HDPE)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "terrazzo",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#2f3a44",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.4,
+    "params": {
+      "chips": [
+        "#d9d4c7",
+        "#c0563c",
+        "#4f8fbf",
+        "#e3c04a",
+        "#5b9a5f",
+        "#1d242b"
+      ],
+      "count": 700,
+      "size": 16,
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "ldpe",
+    "name": "Low-density polyethylene (LDPE)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "tile": 1,
+    "color": "#eef0ee",
+    "roughness": 0.6,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.6,
+      "thickness": 0.1,
+      "ior": 1.49
+    },
+    "through": true
+  },
+  {
+    "id": "abs",
+    "name": "ABS plastic",
+    "categories": [
+      "plastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#2b2b2d",
+    "roughness": 0.55,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.6,
+    "params": {
+      "finish": "textured",
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "nylon",
+    "name": "Nylon (PA)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "woven",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 0.6,
+    "color": "#3d4f63",
+    "roughness": 0.75,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.8,
+    "params": {}
+  },
+  {
+    "id": "pom",
+    "name": "Polyoxymethylene (POM)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#1f1f21",
+    "roughness": 0.25,
+    "metalness": 0,
+    "clearcoat": 0.4,
+    "bump": 0.1,
+    "params": {
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "petg",
+    "name": "Polyethylene terephthalate glycol (PETG)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "tile": 1,
+    "color": "#dfeef0",
+    "roughness": 0.08,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.88,
+      "thickness": 0.1,
+      "ior": 1.49
+    },
+    "through": true
+  },
+  {
+    "id": "ptfe",
+    "name": "Polytetrafluoroethylene (PTFE)",
+    "categories": [
+      "plastics"
+    ],
+    "family": "glass",
+    "surfaces": [
+      "wall"
+    ],
+    "tile": 1,
+    "color": "#f1efe8",
+    "roughness": 0.5,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0,
+    "params": {
+      "transmission": 0.45,
+      "thickness": 0.1,
+      "ior": 1.49
+    },
+    "through": true
+  },
+  {
+    "id": "silicone",
+    "name": "Silicone",
+    "categories": [
+      "plastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#9fc3b8",
+    "roughness": 0.7,
+    "metalness": 0,
+    "clearcoat": 0,
+    "bump": 0.2,
+    "params": {}
+  },
+  {
+    "id": "epoxy-resin",
+    "name": "Epoxy resin",
+    "categories": [
+      "plastics"
+    ],
+    "family": "terrazzo",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#7d8287",
+    "roughness": 0.1,
+    "metalness": 0,
+    "clearcoat": 0.8,
+    "bump": 0.1,
+    "params": {
+      "chips": [
+        "#5d6166",
+        "#a2a6aa",
+        "#c9ccce",
+        "#3f4246"
+      ],
+      "count": 2600,
+      "size": 5
+    }
+  },
+  {
+    "id": "phenolic-resin",
+    "name": "Phenolic resin",
+    "categories": [
+      "plastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 2.4,
+    "color": "#5a6b4f",
+    "roughness": 0.35,
+    "metalness": 0,
+    "clearcoat": 0.2,
+    "bump": 0.1,
+    "params": {
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "melamine-resin",
+    "name": "Melamine resin",
+    "categories": [
+      "plastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#e7e3da",
+    "roughness": 0.3,
+    "metalness": 0,
+    "clearcoat": 0.2,
+    "bump": 0.1,
+    "params": {
+      "joints": [
+        2,
+        2
+      ]
+    }
+  },
+  {
+    "id": "polyester-resin",
+    "name": "Polyester resin",
+    "categories": [
+      "plastics"
+    ],
+    "family": "plastic",
+    "surfaces": [
+      "wall",
+      "floor"
+    ],
+    "tile": 1.2,
+    "color": "#c76b2f",
+    "roughness": 0.15,
+    "metalness": 0,
+    "clearcoat": 0.7,
+    "bump": 0.1,
+    "params": {}
+  }
+]

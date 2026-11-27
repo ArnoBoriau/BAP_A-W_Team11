@@ -13,5 +13,8 @@ import concrete from './materials/concrete.json'
 import glass from './materials/glass.json'
 import ceramics from './materials/ceramics.json'
 import metals from './materials/metals.json'
+import plastics from './materials/plastics.json'
+import bioplastics from './materials/bioplastics.json'
+import natural from './materials/natural.json'
 
-export const ROWS = [...stone, ...wood, ...concrete, ...glass, ...ceramics, ...metals]
+export const ROWS = [...stone, ...wood, ...concrete, ...glass, ...ceramics, ...metals, ...plastics, ...bioplastics, ...natural]

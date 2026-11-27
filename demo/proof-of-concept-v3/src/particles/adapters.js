@@ -21,7 +21,7 @@ import { MATERIALS_BY_ID } from '../config/materials'
 // The game has far more materials than the particles have characteristics
 // for. A material the particles don't know shows a stand-in from its
 // category (a row can name its own with `particles`, see src/data/README.md).
-const STAND_IN = { wood: 'oak', natural: 'cork', stone: 'terrazzo', concrete: 'concrete', glass: 'glass', ceramics: 'tiles', metals: 'steel' }
+const STAND_IN = { wood: 'oak', natural: 'cork', stone: 'terrazzo', concrete: 'concrete', glass: 'glass', ceramics: 'tiles', metals: 'steel', plastics: 'plastic', bioplastics: 'plastic' }
 
 export function particleMaterial(materialId) {
   if (PARTICLE_MATERIALS[materialId]) return materialId
