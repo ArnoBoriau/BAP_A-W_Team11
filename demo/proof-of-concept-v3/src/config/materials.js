@@ -3,6 +3,7 @@
 //
 // To add a finish: add an entry here (and a pattern in textures/patterns.js if it needs one).
 //
+//   category    one of config/categories.js (stone, wood, glass…)
 //   pattern     id of a procedural texture, or null for a flat finish
 //   tileSize    real-world size in metres that one texture repeat covers
 //   bump        relief strength derived from the pattern (grout, plank gaps, ...)
@@ -16,9 +17,12 @@
 // drawing of the house in 3D (scene/blueprintMaterial.js). It isn't in MATERIALS, so
 // it can't be given or placed.
 
+import { CATEGORIES } from './categories'
+
 export const MATERIALS = [
   {
     id: 'plaster',
+    category: 'stone',
     label: 'White plaster',
     appliesTo: ['wall', 'floor'],
     pattern: 'plaster',
@@ -28,6 +32,7 @@ export const MATERIALS = [
   },
   {
     id: 'concrete',
+    category: 'concrete',
     label: 'Concrete',
     appliesTo: ['wall', 'floor'],
     pattern: 'concrete',
@@ -37,6 +42,7 @@ export const MATERIALS = [
   },
   {
     id: 'oak',
+    category: 'wood',
     label: 'Oak planks',
     appliesTo: ['wall', 'floor'],
     pattern: 'wood',
@@ -46,6 +52,7 @@ export const MATERIALS = [
   },
   {
     id: 'tiles',
+    category: 'ceramics',
     label: 'Ceramic tiles',
     appliesTo: ['wall', 'floor'],
     pattern: 'tiles',
@@ -56,6 +63,7 @@ export const MATERIALS = [
   },
   {
     id: 'terrazzo',
+    category: 'concrete',
     label: 'Terrazzo',
     appliesTo: ['wall', 'floor'],
     pattern: 'terrazzo',
@@ -66,6 +74,7 @@ export const MATERIALS = [
   },
   {
     id: 'glass',
+    category: 'glass',
     label: 'Glass',
     appliesTo: ['wall'],
     through: true,
@@ -85,6 +94,13 @@ export const MATERIALS = [
 ]
 
 export const MATERIALS_BY_ID = Object.fromEntries(MATERIALS.map((m) => [m.id, m]))
+
+// Each category with its materials, in category order; categories without
+// materials (yet) are left out.
+export const MATERIALS_BY_CATEGORY = CATEGORIES.map((category) => ({
+  ...category,
+  materials: MATERIALS.filter((m) => m.category === category.id),
+})).filter((c) => c.materials.length > 0)
 
 export const BLANK = {
   id: 'blank',

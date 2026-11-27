@@ -973,8 +973,43 @@ kbd {
   line-height: 1.5;
 }
 
-.gifts {
+/* Category filter: quiet text tabs, the chosen one underlined. A way to
+   browse, not the thing to look at. */
+.categories {
   margin-top: 1.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  max-width: 47.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.categories button {
+  margin-bottom: -1px;
+  padding: 0.5rem 0;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.categories button:hover {
+  color: var(--text);
+}
+
+.categories button[aria-selected='true'] {
+  color: var(--text);
+  border-bottom-color: var(--text);
+}
+
+.gifts {
+  margin-top: 1.25rem;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(9.375rem, 1fr));
   gap: 1rem;

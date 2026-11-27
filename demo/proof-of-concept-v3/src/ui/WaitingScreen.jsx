@@ -14,14 +14,20 @@
 // The pulse (from tests/pulse-presence) breathes in the other hall's colour:
 // an invitation to come closer, because someone is waiting on the other side.
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useGame } from '../state/GameState'
 import { COLORS, HOW_IT_WORKS, hallName } from '../state/game'
 
 const HOW = HOW_IT_WORKS
 
 export function WaitingScreen() {
-  const { player, opponent, link, here, otherHere, faked, computer, replaced, together, brief, meter } = useGame()
+  const { player, opponent, link, here, otherHere, faked, computer, replaced, together, meter } = useGame()
+  // The brief that was on last: it stays while the screen fades out, so the
+  // text doesn't jump to "Waiting…" on the way out.
+  const live = useGame().brief
+  const [last, setLast] = useState(live)
+  if (live && live !== last) setLast(live)
+  const brief = live ?? (together ? last : null)
   const ring = useRef(null)
 
   // The "we see you, hold still" ring fills with the dwell timer. Straight
@@ -37,7 +43,7 @@ export function WaitingScreen() {
   }, [meter])
 
   const them = hallName(opponent)
-  const open = !together || !!brief
+  const open = !together || !!live
   let eyebrow = them
   let title, text
   let showRing = false

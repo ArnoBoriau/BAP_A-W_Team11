@@ -7,7 +7,8 @@
 //   place phase    → "Your materials are on their way", while they design
 
 import { useEffect, useState } from 'react'
-import { MATERIALS, MATERIALS_BY_ID } from '../config/materials'
+import { MATERIALS, MATERIALS_BY_CATEGORY, MATERIALS_BY_ID } from '../config/materials'
+import { CATEGORIES_BY_ID } from '../config/categories'
 import { useGame } from '../state/GameState'
 import { fitsRoom, hallName, materialsWord, picksFor, turnRoom } from '../state/game'
 import { LastMove, PlayerFoot, PlayerHead } from './PlayerBits'
@@ -37,6 +38,11 @@ function Picker() {
   const chosen = current.ids
   const full = chosen.length >= needed
   const single = needed === 1
+
+  // Which category the grid shows ('all' or a category id). What's chosen
+  // stays chosen when you switch.
+  const [filter, setFilter] = useState('all')
+  const shown = filter === 'all' ? MATERIALS : MATERIALS.filter((m) => m.category === filter)
 
   // One to send: a click picks it (another click picks another, nothing to
   // undo). Several: a click adds it, or takes it off again.
@@ -68,8 +74,22 @@ function Picker() {
           : `Choose ${needed} materials they can use there; they dress the house with one of them.`}
       </p>
 
+      <div className="categories" role="tablist" aria-label="Categories">
+        {[{ id: 'all', label: 'All' }, ...MATERIALS_BY_CATEGORY].map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            role="tab"
+            aria-selected={filter === c.id}
+            onClick={() => setFilter(c.id)}
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
+
       <div className="gifts" role={single ? 'radiogroup' : 'group'} aria-label={`Materials, choose ${materialsWord(needed)}`}>
-        {MATERIALS.map((material) => {
+        {shown.map((material) => {
           const order = chosen.indexOf(material.id) + 1
           const usable = fitsRoom(game, material)
           return (
@@ -88,7 +108,9 @@ function Picker() {
                 {!single && order > 0 && <span className="gift__order">{order}</span>}
               </span>
               <span className="gift__label">{material.label}</span>
-              {fitsLabel(material) && <span className="gift__note">{fitsLabel(material)}</span>}
+              <span className="gift__note">
+                {[CATEGORIES_BY_ID[material.category].label, fitsLabel(material)].filter(Boolean).join(' · ')}
+              </span>
             </button>
           )
         })}

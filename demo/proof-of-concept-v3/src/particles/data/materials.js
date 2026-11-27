@@ -8,6 +8,8 @@
 // and terrazzo match demo/proof-of-concept-v2, so a PoC move can be shown as is
 // (see adapters.js).
 //
+// Each material has a category from config/categories.js (the same as in the game).
+//
 // Tags: density · structure · character (one or more) · movement · transparency
 
 const v = (id, label, density, structure, character, movement, transparency) => ({
@@ -19,6 +21,7 @@ const v = (id, label, density, structure, character, movement, transparency) => 
 export const MATERIALS = [
   {
     id: 'cork',
+    category: 'natural',
     label: 'Cork',
     versions: [
       v('natural', 'Natural', 'porous', 'fragmented', ['organic', 'soft'], 'still', 'opaque'),
@@ -29,6 +32,7 @@ export const MATERIALS = [
   },
   {
     id: 'oak',
+    category: 'wood',
     label: 'Oak',
     versions: [
       v('natural', 'Natural', 'dense', 'linear', ['organic'], 'flowing', 'opaque'),
@@ -39,6 +43,7 @@ export const MATERIALS = [
   },
   {
     id: 'concrete',
+    category: 'concrete',
     label: 'Concrete',
     versions: [
       v('raw', 'Raw', 'solid', 'monolithic', ['rigid'], 'still', 'opaque'),
@@ -49,6 +54,7 @@ export const MATERIALS = [
   },
   {
     id: 'glass',
+    category: 'glass',
     label: 'Glass',
     versions: [
       v('clear', 'Clear', 'open', 'monolithic', ['geometric'], 'flowing', 'transparent'),
@@ -59,6 +65,7 @@ export const MATERIALS = [
   },
   {
     id: 'brick',
+    category: 'ceramics',
     label: 'Brick',
     versions: [
       v('stretcher', 'Stretcher bond', 'dense', 'modular', ['rigid'], 'still', 'opaque'),
@@ -69,6 +76,7 @@ export const MATERIALS = [
   },
   {
     id: 'textile',
+    category: 'natural',
     label: 'Textile',
     versions: [
       v('linen', 'Linen', 'open', 'woven', ['soft', 'organic'], 'flowing', 'translucent'),
@@ -79,16 +87,19 @@ export const MATERIALS = [
   },
   {
     id: 'plaster',
+    category: 'stone',
     label: 'Plaster',
     versions: [v('lime', 'Lime', 'solid', 'monolithic', ['soft'], 'still', 'opaque')],
   },
   {
     id: 'tiles',
+    category: 'ceramics',
     label: 'Ceramic tiles',
     versions: [v('glazed', 'Glazed', 'dense', 'modular', ['geometric'], 'rhythmic', 'opaque')],
   },
   {
     id: 'terrazzo',
+    category: 'concrete',
     label: 'Terrazzo',
     versions: [v('classic', 'Classic', 'dense', 'fragmented', ['geometric', 'organic'], 'still', 'opaque')],
   },
