@@ -6,6 +6,10 @@ without its test page. `ui/ParticlesScreen.jsx` shows it full screen at
 
 What's new here, not in the test (yet):
 
+- `catalogue.js`: every material in the game gets its own reading (the five characteristics),
+  read from how it looks: its texture family gives a base, the row's settings shift it (pores,
+  joints, transparency, gloss, grain, how dark it is). The hand-tuned materials in
+  `data/materials.js` keep theirs; a row can borrow one or set its tags (`particles`).
 - `sides.js`: what each hall's screen shows as the turn goes (a picked material, a sent one, a
   place being tried, the placed move).
 - A move without an element: a material that has no place yet. Its behaviour is `material`

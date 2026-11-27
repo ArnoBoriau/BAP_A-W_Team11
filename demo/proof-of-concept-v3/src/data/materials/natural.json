@@ -18,8 +18,7 @@
     "bump": 1,
     "params": {
       "threads": 28
-    },
-    "particles": "textile"
+    }
   },
   {
     "id": "reed",
@@ -79,8 +78,7 @@
     "metalness": 0,
     "clearcoat": 0,
     "bump": 1.2,
-    "params": {},
-    "particles": "textile"
+    "params": {}
   },
   {
     "id": "flax",
@@ -99,8 +97,7 @@
     "metalness": 0,
     "clearcoat": 0,
     "bump": 1.2,
-    "params": {},
-    "particles": "textile"
+    "params": {}
   },
   {
     "id": "jute",
@@ -121,8 +118,7 @@
     "bump": 1.2,
     "params": {
       "threads": 24
-    },
-    "particles": "textile"
+    }
   },
   {
     "id": "sisal",
@@ -143,8 +139,7 @@
     "bump": 1,
     "params": {
       "threads": 32
-    },
-    "particles": "textile"
+    }
   },
   {
     "id": "seagrass",
@@ -165,8 +160,7 @@
     "bump": 1.2,
     "params": {
       "threads": 20
-    },
-    "particles": "textile"
+    }
   },
   {
     "id": "thatch",
@@ -209,8 +203,7 @@
     "bump": 1.2,
     "params": {
       "layers": 7
-    },
-    "particles": "brick"
+    }
   },
   {
     "id": "adobe",
@@ -234,8 +227,7 @@
       "perCourse": 2,
       "mortar": "#b38a5e",
       "variance": 1.5
-    },
-    "particles": "brick"
+    }
   },
   {
     "id": "natural-clay",
@@ -254,8 +246,7 @@
     "metalness": 0,
     "clearcoat": 0,
     "bump": 0.8,
-    "params": {},
-    "particles": "brick"
+    "params": {}
   },
   {
     "id": "moss",
@@ -293,8 +284,7 @@
     "metalness": 0,
     "clearcoat": 0,
     "bump": 1.6,
-    "params": {},
-    "particles": "textile"
+    "params": {}
   },
   {
     "id": "wool",
@@ -313,8 +303,7 @@
     "metalness": 0,
     "clearcoat": 0,
     "bump": 1,
-    "params": {},
-    "particles": "textile"
+    "params": {}
   },
   {
     "id": "silk",
@@ -335,8 +324,7 @@
     "bump": 0.3,
     "params": {
       "threads": 96
-    },
-    "particles": "textile"
+    }
   },
   {
     "id": "cotton",
@@ -357,8 +345,7 @@
     "bump": 0.5,
     "params": {
       "threads": 64
-    },
-    "particles": "textile"
+    }
   },
   {
     "id": "linen",
@@ -379,8 +366,7 @@
     "bump": 0.6,
     "params": {
       "threads": 72
-    },
-    "particles": "textile"
+    }
   },
   {
     "id": "leather",
@@ -484,8 +470,7 @@
     "metalness": 0,
     "clearcoat": 0,
     "bump": 1.6,
-    "params": {},
-    "particles": "textile"
+    "params": {}
   },
   {
     "id": "natural-fibres",
@@ -504,8 +489,7 @@
     "metalness": 0,
     "clearcoat": 0,
     "bump": 1.2,
-    "params": {},
-    "particles": "textile"
+    "params": {}
   },
   {
     "id": "bark",

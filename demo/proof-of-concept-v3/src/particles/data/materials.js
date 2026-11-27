@@ -64,30 +64,6 @@ export const MATERIALS = [
     ],
   },
   {
-    // v3: the stand-in for every metal in the game (see adapters.js)
-    id: 'steel',
-    category: 'metals',
-    label: 'Steel',
-    versions: [
-      v('sheet', 'Sheet', 'solid', 'monolithic', ['rigid', 'geometric'], 'still', 'opaque'),
-      v('brushed', 'Brushed', 'solid', 'linear', ['geometric'], 'flowing', 'opaque'),
-      v('perforated', 'Perforated', 'porous', 'modular', ['geometric'], 'rhythmic', 'opaque'),
-      v('mesh', 'Mesh', 'open', 'woven', ['rigid'], 'still', 'translucent'),
-    ],
-  },
-  {
-    // v3: the stand-in for every plastic in the game (see adapters.js)
-    id: 'plastic',
-    category: 'plastics',
-    label: 'Plastic',
-    versions: [
-      v('sheet', 'Sheet', 'dense', 'monolithic', ['geometric'], 'still', 'opaque'),
-      v('foam', 'Foam', 'porous', 'fragmented', ['soft'], 'expanding', 'opaque'),
-      v('translucent', 'Translucent', 'open', 'monolithic', ['soft'], 'flowing', 'translucent'),
-      v('felt', 'Felt', 'dense', 'woven', ['soft', 'organic'], 'still', 'opaque'),
-    ],
-  },
-  {
     id: 'brick',
     category: 'ceramics',
     label: 'Brick',
@@ -130,6 +106,16 @@ export const MATERIALS = [
 ]
 
 export const MATERIALS_BY_ID = Object.fromEntries(MATERIALS.map((m) => [m.id, m]))
+
+// v3: the game's other materials, each with its own reading of how it looks
+// (particles/catalogue.js). Added once, when that module loads.
+export function addMaterials(list) {
+  for (const m of list) {
+    if (MATERIALS_BY_ID[m.id]) continue
+    MATERIALS.push(m)
+    MATERIALS_BY_ID[m.id] = m
+  }
+}
 
 export function findVersion(materialId, versionId) {
   const material = MATERIALS_BY_ID[materialId]

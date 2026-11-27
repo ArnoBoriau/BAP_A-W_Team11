@@ -246,8 +246,7 @@
     "params": {
       "mortar": "#ece5d4",
       "variance": 1.2
-    },
-    "particles": "brick"
+    }
   },
   {
     "id": "mosaic-ceramics",
@@ -295,8 +294,7 @@
       "courses": 6,
       "perCourse": 2,
       "mortar": "#c9c2b4"
-    },
-    "particles": "brick"
+    }
   },
   {
     "id": "sintered-ceramics",
@@ -369,8 +367,7 @@
     "params": {
       "mortar": "#bdb6a8",
       "variance": 1.5
-    },
-    "particles": "brick"
+    }
   },
   {
     "id": "clinker",
@@ -392,8 +389,7 @@
     "params": {
       "mortar": "#8d877d",
       "variance": 2.5
-    },
-    "particles": "brick"
+    }
   },
   {
     "id": "ceramic-stoneware",

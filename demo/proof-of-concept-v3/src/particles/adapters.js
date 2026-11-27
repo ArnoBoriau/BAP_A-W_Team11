@@ -8,27 +8,18 @@
 //   PoC room   living, bathroom, bedroom, kitchen, hallway, outside
 //   surface    floor → floor · wall → wall · façade → outside_wall
 //              glass on a wall → the room's window (or opening): it filters
-//   material   the PoC id, first version (the ids are the same in data/materials.js)
+//   material   the PoC id: its own reading (catalogue.js), or the hand-tuned one with the same id
 //
 // Used by ui/ParticlesScreen.jsx on every new placement. The seed comes from
 // the move itself, so every particles screen shows exactly the same thing.
 
 import { ROOMS_BY_ID } from './data/rooms.js'
-import { MATERIALS_BY_ID as PARTICLE_MATERIALS } from './data/materials.js'
+import { particleMaterial } from './catalogue.js'
 import { hashSeed } from './engine/random.js'
+export { particleMaterial }
 import { MATERIALS_BY_ID } from '../config/materials'
 
-// The game has far more materials than the particles have characteristics
-// for. A material the particles don't know shows a stand-in from its
-// category (a row can name its own with `particles`, see src/data/README.md).
-const STAND_IN = { wood: 'oak', natural: 'cork', stone: 'terrazzo', concrete: 'concrete', glass: 'glass', ceramics: 'tiles', metals: 'steel', plastics: 'plastic', bioplastics: 'plastic' }
-
-export function particleMaterial(materialId) {
-  if (PARTICLE_MATERIALS[materialId]) return materialId
-  const material = MATERIALS_BY_ID[materialId]
-  return material?.row.particles ?? STAND_IN[material?.category] ?? materialId
-}
-
+// Every game material has its own particle reading (particles/catalogue.js).
 const ROOM = { living: 'living', bathroom: 'bathroom', bedroom: 'master', kitchen: 'kitchen', hallway: 'hallway', outside: 'exterior' }
 
 // v3: a material that has no place yet (picked, sent or received), for the

@@ -425,8 +425,7 @@
     "metalness": 0,
     "clearcoat": 0,
     "bump": 1.2,
-    "params": {},
-    "particles": "cork"
+    "params": {}
   },
   {
     "id": "cork",
@@ -446,8 +445,7 @@
     "metalness": 0,
     "clearcoat": 0,
     "bump": 2,
-    "params": {},
-    "particles": "cork"
+    "params": {}
   },
   {
     "id": "balsa",

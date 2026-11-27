@@ -25,7 +25,7 @@ settings. Many materials share a family; their rows make them look different.
 | `clearcoat` | number 0…1 | A glossy layer on top (glaze, lacquer, polish). |
 | `bump` | number | Relief strength from the texture. 0 = flat. |
 | `params` | json | Any family: `rotate` (a quarter turn: stems standing up), `joints` ([columns, rows] of slabs), `sparkle`. Family settings, e.g. planks: `grain`, `knots`, `streaks`, `variance`; lamella: `lamellas`; glass: `transmission`, `thickness`, `ior`, `iridescence` (dichroic); glazing: `pattern` (`wired`, `fluted`, `hammered`, `rolled`, `channel`, `blocks`, `etched`, `fused`). |
-| `particles` | text, optional | Which particles material to show (`src/particles/data/materials.js`). Default: by main category. |
+| `particles` | text or json, optional | The particle wall's reading. Default: read from the row (`src/particles/catalogue.js`: family and settings). Text: borrow a hand-tuned one (`oak`, `brick`…, `src/particles/data/materials.js`). Json: the tags outright, `{ density, structure, character: [], movement, transparency }`. |
 
 ## Adding a material
 
