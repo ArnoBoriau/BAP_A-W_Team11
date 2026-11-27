@@ -203,7 +203,8 @@
     "clearcoat": 0,
     "bump": 0,
     "params": {
-      "clouds": 0.2
+      "clouds": 0.2,
+      "mirror": true
     }
   },
   {

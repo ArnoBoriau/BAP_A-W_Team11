@@ -337,7 +337,9 @@
     "metalness": 1,
     "clearcoat": 0,
     "bump": 0,
-    "params": {}
+    "params": {
+      "mirror": true
+    }
   },
   {
     "id": "tin",
@@ -395,11 +397,13 @@
     ],
     "tile": 1.2,
     "color": "#d8d8d6",
-    "roughness": 0.15,
+    "roughness": 0.05,
     "metalness": 1,
     "clearcoat": 0,
     "bump": 0.3,
-    "params": {}
+    "params": {
+      "mirror": true
+    }
   },
   {
     "id": "gold",

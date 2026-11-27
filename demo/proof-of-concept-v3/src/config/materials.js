@@ -37,7 +37,10 @@ function fromRow(row) {
   // darkness and turns black. Metals keep a little of their own colour, a
   // slightly soft reflection and a stronger one of the room's light panels,
   // so copper reads as copper from any angle. (The row keeps the true values.)
-  const metal = (row.metalness ?? 0) >= 0.5
+  // A mirror (chrome, silver, mirrored glass) is the exception: it stays a
+  // mirror and reflects the house itself (scene/MirrorProbe.jsx), not the room.
+  const mirror = !!params.mirror
+  const metal = (row.metalness ?? 0) >= 0.5 && !mirror
   const material = {
     id: row.id,
     label: row.name,

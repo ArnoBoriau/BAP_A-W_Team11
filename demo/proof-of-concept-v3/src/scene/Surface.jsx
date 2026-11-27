@@ -17,6 +17,7 @@ import { useFrame } from '@react-three/fiber'
 import { Edges, Line } from '@react-three/drei'
 import * as THREE from 'three'
 import { useSurfaceMaterial } from './useSurfaceMaterial'
+import { MirrorProbe } from './MirrorProbe'
 import { LINE_COLOR, LINE_WIDTH, blueprintEdges } from './blueprintMaterial'
 import { OUTSIDE_ID, solidPieces } from '../config/room'
 
@@ -82,6 +83,17 @@ export function Surface({ surface, definition, glazed = false, openings = [], se
 
   const scaleRef = useRef()
   const capRef = useRef()
+  const floorRef = useRef()
+  // A mirror reflects the house around it (MirrorProbe), captured just in
+  // front of its visible face: local +z for a wall, up for a floor.
+  const mirror = !!definition.row?.params?.mirror
+  const probe =
+    mirror &&
+    (isWall ? (
+      <MirrorProbe material={material} hide={scaleRef} position={[surface.length / 2, surface.height / 2, shape.offset + shape.depth / 2 + 0.05]} />
+    ) : (
+      <MirrorProbe material={material} hide={floorRef} position={[0, surface.size[1] / 2 + 0.05, 0]} />
+    ))
   const [hovered, setHovered] = useState(false)
 
   useFrame(({ camera }, delta) => {
@@ -159,9 +171,12 @@ export function Surface({ surface, definition, glazed = false, openings = [], se
   if (!isWall) {
     return (
       <group position={surface.position}>
-        {meshes}
-        {lines}
-        {fade}
+        <group ref={floorRef}>
+          {meshes}
+          {lines}
+          {fade}
+        </group>
+        {probe}
       </group>
     )
   }
@@ -173,6 +188,7 @@ export function Surface({ surface, definition, glazed = false, openings = [], se
         {lines}
         {fade}
       </group>
+      {probe}
       {/* Light top cap: reads like the poché of a section cut, inverted for the black box. */}
       <group ref={capRef} position-y={surface.height}>
         {shape.pieces.map(([from, to], i) => (
