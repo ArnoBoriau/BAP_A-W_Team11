@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { MATS, INV, ROOMS, BRIEFS, swatch, swatchCanvas, getRoom, getHouseView, scoreRoom, houseVerdict } from './materials.js';
+import { MATERIALS, MAT, PARTS, PART, CATEGORIES, CATEGORY, fits, textureCanvas } from './catalogue.js';
+import { HouseView } from './house3d.js';
 import { screens, updateScreens } from './anim.js';
 import { particleWall, particleChoice, drawParticles } from './particles.js';
 
@@ -24,17 +25,20 @@ function wrapText(g, text, x, y, maxW, lh) {
   if (line) { g.fillText(line, x, y); y += lh; }
   return y;
 }
-if (document.fonts && document.fonts.load) { document.fonts.load(`60px ${SERIF}`); document.fonts.load(`italic 60px ${SERIF}`); document.fonts.load('500 20px Inter'); document.fonts.load('600 20px Inter'); }
+// the screens use the real PoC's type: Poppins for titles and labels, Manrope for text
+const DISPLAY = 'Poppins, "Helvetica Neue", Arial, sans-serif', TEXT = 'Manrope, "Helvetica Neue", Arial, sans-serif';
+if (document.fonts && document.fonts.load) ['700 20px Poppins', '600 20px Poppins', '400 20px Manrope', '600 20px Manrope'].forEach((f) => document.fonts.load(f));
 
-/* ================= app state ================= */
-const emptyAssign = (b) => Object.fromEntries(ROOMS[b].slots.map(([k]) => [k, null]));
-const slotsOf = (me) => ROOMS[me.brief].slots;
-const mkSide = (inv) => ({ inv: [...inv], brief: BRIEFS[0], assign: emptyAssign(BRIEFS[0]), openSlot: ROOMS[BRIEFS[0]].slots[0][0], scored: null, newIds: [], incoming: null, pending: false, mode: 'build', wanting: [], waveUntil: 0, house: {}, finale: false });
-const roomsDone = (me) => BRIEFS.filter((b) => me.house[b]).length;
-const houseTotals = (me) => BRIEFS.reduce((a, b) => (me.house[b] ? { total: a.total + me.house[b].scored.total, max: a.max + me.house[b].scored.max } : { total: a.total, max: a.max + 30 }), { total: 0, max: 0 });
-const mkDesk = () => ({ lib: [...INV.A], selected: [], incoming: null, waveUntil: 0 });
-let SIDE = { A: mkDesk(), B: mkSide(INV.B) };
+/* ================= app state: a scripted story, not a game ================= */
+// The screens show what the real PoC (demo/proof-of-concept-v3) looks like, played by itself:
+// one hall picks a material and sends it, the other puts it on the house, the roles swap. Four
+// parts make a house; a finished house moves to the kiosks in the corridor. No rules, just a loop.
 const other = (h) => (h === 'A' ? 'B' : 'A');
+const gameView = new HouseView({ width: 1060, height: 756, spin: 40, distance: 22 });   // the house on the game screens
+const finished = [   // the houses on the kiosks, newest first
+  { no: 12, assign: { facade: 'larch', roof: 'zinc', terrace: 'oak', door: 'walnut' } },
+  { no: 11, assign: { facade: 'concrete', roof: 'slate', terrace: 'travertine', door: 'corten-steel' } },
+];
 let counter = 2114;
 
 /* ================= renderer, scene ================= */
@@ -53,7 +57,6 @@ scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 const blackWall = new THREE.MeshStandardMaterial({ color: 0x151515, roughness: 0.9 });
 const blackCeil = new THREE.MeshStandardMaterial({ color: 0x080808, roughness: 1 });
 const blackFloor = new THREE.MeshStandardMaterial({ color: 0x0b0b0b, roughness: 0.65, metalness: 0.15 });
-const whiteWall = new THREE.MeshStandardMaterial({ color: 0xf4f2ee, roughness: 0.95 });
 const steel = new THREE.MeshStandardMaterial({ color: 0x1b1b1b, metalness: 0.5, roughness: 0.5 });
 const glassMat = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.2, roughness: 0.05, metalness: 0.2, depthWrite: false });
 
@@ -114,21 +117,19 @@ wall(EX, EX + 0.3, -0.95, 0.95, COR_H - 2.3, blackWall, 2.3);
 
 const ICE = '#9ec5ff';
 
-/* ---------- two kiosk totems in the corridor (like self-order kiosks): a 2 m column with a 65" landscape screen, a little out from the wall (left towards Hall A, right towards Hall B). Each shows a house ---------- */
+/* ---------- two kiosk totems in the corridor (like self-order kiosks): a 2 m column with a 65" landscape screen, a little out from the wall (left towards Hall A, right towards Hall B).
+   Each shows a finished house, turning slowly (as in the hallway wireframe: "Your turn to build"); a newly finished house comes in on the first one ---------- */
+const kiosks = [];
 {
-  const houses = [
-    { facade: 'concrete', roof: 'tile', door: 'oak', terrace: 'teak' },
-    { facade: 'terrazzo', roof: 'steel', door: 'teak', terrace: 'cork' },
-  ];
   const MW = 1.439, MH = 0.809, MY = 1.4;                  // 65" 16:9 panel in landscape, centre at 1.4 m
   const KW = 1.57, KH = 2.0, KD = 0.14;                    // kiosk housing
   const OUT = 0.9;                                         // kiosk stands 0.9 m out from the wall
+  const KC = { w: 960, h: 540, house: { x: 430, y: 0, w: 530, h: 540 } };   // the canvas, and where the house shows through
   const housing = new THREE.MeshStandardMaterial({ color: 0x2a2a2c, roughness: 0.45, metalness: 0.3 });
   const glassBlack = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.15 });
   [-1, 1].forEach((side, i) => {
-    const c = mkCanvas(960, 540), g = c.getContext('2d');
-    g.fillStyle = '#e9eaec'; g.fillRect(0, 0, 960, 540);
-    g.drawImage(getRoom(houses[i], 'house'), 200, 20, 560, 480);
+    const c = mkCanvas(KC.w, KC.h), tex = canvasTex(c);
+    const view = new HouseView({ width: KC.house.w * 2, height: KC.house.h * 2, spin: 30, distance: 27 });
     const z = side * 12, x = side * (HX - OUT);             // side -1: left wall, side +1: right wall
     // local +z faces the middle of the corridor
     const G = new THREE.Group(); G.position.set(x, 0, z); G.rotation.y = -side * Math.PI / 2; scene.add(G);
@@ -136,9 +137,13 @@ const ICE = '#9ec5ff';
     add(KW + 0.08, 0.04, 0.5, 0, 0.02, -0.04, steel);       // floor plinth
     add(KW, KH - 0.04, KD, 0, 0.04 + (KH - 0.04) / 2, 0);   // column
     add(MW + 0.06, MH + 0.06, 0.01, 0, MY, KD / 2 + 0.005, glassBlack); // black glass around the screen
-    const scr = new THREE.Mesh(new THREE.PlaneGeometry(MW, MH), new THREE.MeshBasicMaterial({ map: canvasTex(c) }));
-    scr.position.set(0, MY, KD / 2 + 0.011); G.add(scr);
+    // the house behind, the text canvas in front (transparent where the house shows)
+    const r = KC.house, hp = new THREE.Mesh(new THREE.PlaneGeometry((r.w / KC.w) * MW, (r.h / KC.h) * MH), new THREE.MeshBasicMaterial({ map: view.rt.texture }));
+    hp.position.set(((r.x + r.w / 2) / KC.w - 0.5) * MW, MY + (0.5 - (r.y + r.h / 2) / KC.h) * MH, KD / 2 + 0.012); G.add(hp);   // in front of the black glass (+0.01)
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(MW, MH), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
+    scr.position.set(0, MY, KD / 2 + 0.014); G.add(scr);
     blocks.push({ x0: x - 0.35, x1: x + 0.35, z0: z - KW / 2 - 0.1, z1: z + KW / 2 + 0.1 }); // visitor walks around the kiosk
+    kiosks.push({ canvas: c, tex, view, index: i, KC, shown: null });
   });
 }
 
@@ -189,7 +194,10 @@ const SCREEN_KINDS = Object.keys(screens);
 
 /* ---------- canvases for the big screens and the counter above them ---------- */
 // 3:2 like the screen; the 1280 × 640 app sits in the middle
-function mkBig() { const c = mkCanvas(1280, 854); return { canvas: c, ctx: c.getContext('2d'), tex: canvasTex(c) }; }
+const BIG = { w: 1280, h: 854 };
+const HOUSE = { x: 372, y: 206, w: 884, h: 630 };   // where the house shows on the game screen (canvas px)
+const housePlanes = {};
+function mkBig() { const c = mkCanvas(BIG.w, BIG.h); return { canvas: c, ctx: c.getContext('2d'), tex: canvasTex(c) }; }
 const big = { A: mkBig(), B: mkBig() };
 function mkHeader() { const c = mkCanvas(2048, 165); return { canvas: c, ctx: c.getContext('2d'), tex: canvasTex(c) }; }
 const header = { A: mkHeader(), B: mkHeader() };
@@ -223,14 +231,10 @@ function floorLamp() {
   const l = new THREE.PointLight(0xffe9c8, 14, 8, 2); l.position.y = 1.6; g.add(l); return g;
 }
 function sideTable() { const g = new THREE.Group(); cyl(g, 0.34, 0.34, 0.04, 0, 0.5, 0, woodMat, 24); cyl(g, 0.03, 0.03, 0.5, 0, 0.25, 0, colMat('#1a1a1a', 0.4)); cyl(g, 0.18, 0.18, 0.02, 0, 0.01, 0, colMat('#1a1a1a', 0.4), 20); return g; }
-function pendant(G, x, y, z, r = 0.26) {
-  const cab = new THREE.Mesh(new THREE.CylinderGeometry(0.006, 0.006, ROOM_H - y, 6), colMat('#222222')); cab.position.set(x, y + (ROOM_H - y) / 2, z); G.add(cab);
-  const gl = new THREE.Mesh(new THREE.SphereGeometry(r, 20, 14), new THREE.MeshBasicMaterial({ color: 0xfff3dc })); gl.position.set(x, y, z); G.add(gl);
-}
 
-/* ---------- the installation: two walls, mirrored on the axis of the hall, facing each other. Game on one, particles on the other ---------- */
+/* ---------- the installation: two walls, mirrored on the axis of the hall, facing each other, under one flat roof. Game on one, particles on the other ---------- */
 const particleTex = canvasTex(particleWall.canvas);
-const IW = { x: 3.5, z0: 8.5, z1: 12.5, h: 3.2, t: 0.3 };    // wall centre line at x = ±3.5, 4 m long, 3.2 m high
+const IW = { x: 3.15, z0: 8.5, z1: 12.5, h: 3.2, t: 0.3 };   // wall centre line at x = ±3.15: the screens 6 m apart, 6.6 m outside to outside (max 7 m); 4 m long, 3.2 m high
 const SCR = { w: 3, h: 2, y: 1.6 };                         // the 3 × 2 m LED screen on the inner face of each wall
 const stripTex = (() => {
   const c = mkCanvas(2048, 165), g = c.getContext('2d');
@@ -239,8 +243,11 @@ const stripTex = (() => {
   g.fillStyle = '#9ec5ff'; g.fillRect(1930, 50, 60, 60);
   return canvasTex(c);
 })();
+// Only the platform (the island) is white. The walls and roof are black, but a
+// charcoal a step lighter than the hall (#151515), so the installation still
+// stands out from the room around it.
 function buildInstallation(hall, G) {
-  const PY = 0.06, zc = (IW.z0 + IW.z1) / 2, blackMat = colMat('#121213', 0.85), inner = IW.x - IW.t / 2;
+  const PY = 0.06, zc = (IW.z0 + IW.z1) / 2, blackMat = colMat('#2a2a2e', 0.85), inner = IW.x - IW.t / 2;
   // a thin platform under the whole installation, with a light edge
   const pw = 2 * IW.x + 1.6, pd = IW.z1 - IW.z0 + 1.6;
   box(G, pw, PY, pd, 0, PY / 2, zc, colMat('#efefed', 0.8));
@@ -250,10 +257,16 @@ function buildInstallation(hall, G) {
   const fr = new THREE.MeshBasicMaterial({ color: 0xeaf1ff });
   // side -1: the game wall, side +1: the particle wall. Same wall, mirrored.
   [-1, 1].forEach((side) => {
-    box(G, IW.t, IW.h, IW.z1 - IW.z0, side * IW.x, PY + IW.h / 2, zc, whiteWall);
+    box(G, IW.t, IW.h, IW.z1 - IW.z0, side * IW.x, PY + IW.h / 2, zc, blackMat);
     blockLocal(hall, side * IW.x - IW.t / 2 - 0.05, side * IW.x + IW.t / 2 + 0.05, IW.z0 - 0.05, IW.z1 + 0.05);
     const sg = new THREE.Group(); sg.position.set(side * (inner - 0.01), PY + SCR.y, zc); sg.rotation.y = -side * Math.PI / 2; G.add(sg);
-    sg.add(new THREE.Mesh(new THREE.PlaneGeometry(SCR.w, SCR.h), new THREE.MeshBasicMaterial({ map: side < 0 ? big[hall].tex : particleTex })));
+    sg.add(new THREE.Mesh(new THREE.PlaneGeometry(SCR.w, SCR.h), new THREE.MeshBasicMaterial({ map: side < 0 ? big[hall].tex : particleTex, transparent: side < 0 })));
+    if (side < 0) {
+      // the house, just behind the game canvas: it shows through where the canvas is left clear (HOUSE)
+      const hp = new THREE.Mesh(new THREE.PlaneGeometry((HOUSE.w / BIG.w) * SCR.w, (HOUSE.h / BIG.h) * SCR.h), new THREE.MeshBasicMaterial({ map: gameView.rt.texture }));
+      hp.position.set(((HOUSE.x + HOUSE.w / 2) / BIG.w - 0.5) * SCR.w, (0.5 - (HOUSE.y + HOUSE.h / 2) / BIG.h) * SCR.h, -0.004); sg.add(hp);
+      housePlanes[hall] = hp;
+    }
     box(sg, SCR.w + 0.08, 0.03, 0.02, 0, SCR.h / 2 + 0.015, 0, fr); box(sg, SCR.w + 0.08, 0.03, 0.02, 0, -SCR.h / 2 - 0.015, 0, fr);
     box(sg, 0.03, SCR.h, 0.02, SCR.w / 2 + 0.015, 0, 0, fr); box(sg, 0.03, SCR.h, 0.02, -SCR.w / 2 - 0.015, 0, 0, fr);
     // the strip above each screen: the counter on the game side, a quiet label on the particle side
@@ -262,217 +275,269 @@ function buildInstallation(hall, G) {
     // plants at the outer ends of each wall
     [IW.z0 - 0.7, IW.z1 + 0.7].forEach((z) => { const pt = plant(1.2); pt.position.set(side * IW.x, PY, z); G.add(pt); blockLocal(hall, side * IW.x - 0.45, side * IW.x + 0.45, z - 0.45, z + 0.45); });
   });
-  [[-1.5, 3.6, zc - 2.6], [1.5, 3.6, zc + 2.6]].forEach(([x, y, z]) => pendant(G, x, y, z, 0.3));
+  // the roof: one flat slab on top of both walls, outer face to outer face, so the two screens read as one installation
+  const RT = 0.2, rw = 2 * IW.x + IW.t;
+  box(G, rw, RT, IW.z1 - IW.z0, 0, PY + IW.h + RT / 2, zc, blackMat);
   [[0, 3, zc - 2.5, 16, 0xfff6ec], [0, 3, zc + 2.5, 16, 0xfff6ec]].forEach(([x, y, z, i, col]) => { const l = new THREE.PointLight(col, i, 18, 2); l.position.set(x, y, z); G.add(l); });
 }
 
 buildHall('A');
 buildHall('B');
 
-/* ================= a message between the halls: no tube any more, it just takes a few seconds (the tracker on the screen shows where it is) ================= */
-const TOTAL = 6;   // seconds from one hall to the other
-const pulses = [];
-function spawnPulse({ dir, onArrive }) { pulses.push({ dir, t0: performance.now(), onArrive, arrived: false }); counter++; }
-function updatePulses(now) {
-  for (let i = pulses.length - 1; i >= 0; i--) {
-    const p = pulses[i], el = (now - p.t0) / 1000;
-    if (!p.arrived && el >= TOTAL) { p.arrived = true; if (p.onArrive) p.onArrive(); }
-    if (el > TOTAL + 1) pulses.splice(i, 1);
+/* ================= the game screens, drawn like the real PoC (demo/proof-of-concept-v3): dark, Poppins caps, agora. blue ================= */
+const UI = {
+  bg: '#0e1111', panel: '#141413', s2: '#1d1d1b', s3: '#2a2a27', text: '#edeae4', soft: '#c9c6bf', muted: '#8f8c86',
+  line: 'rgba(237,234,228,0.12)', lineStrong: 'rgba(237,234,228,0.26)', accent: '#0072b6', accentText: '#9ec5ff',
+};
+function type(g, weight, px, family = TEXT, spacing = 0) { g.font = `${weight} ${px}px ${family}`; g.letterSpacing = `${spacing}px`; }
+function say(g, str, x, y, color, align = 'left') { g.fillStyle = color; g.textAlign = align; g.fillText(str, x, y); g.textAlign = 'left'; }
+function caps(g, str, x, y, px, color, { weight = 600, spacing = 1.2, align = 'left' } = {}) { type(g, weight, px, DISPLAY, spacing); say(g, str.toUpperCase(), x, y, color, align); g.letterSpacing = '0px'; }
+function wrapCaps(g, str, x, y, maxW, px, lh, color) { type(g, 700, px, DISPLAY, 0); g.fillStyle = color; return wrapText(g, str.toUpperCase(), x, y, maxW, lh); }
+function swatchAt(g, id, x, y, s) { g.drawImage(textureCanvas(id), x, y, s, s); g.strokeStyle = UI.line; g.lineWidth = 1; g.strokeRect(x + 0.5, y + 0.5, s - 1, s - 1); }
+function blankAt(g, x, y, s) { g.fillStyle = '#141413'; g.fillRect(x, y, s, s); g.strokeStyle = UI.lineStrong; g.strokeRect(x + 0.5, y + 0.5, s - 1, s - 1); }
+function button(g, label, x, y, w, h, on) {
+  g.fillStyle = on ? UI.accent : UI.s3; g.fillRect(x, y, w, h);
+  caps(g, label, x + w / 2, y + h / 2 + 5, 13, on ? '#ffffff' : UI.muted, { weight: 700, spacing: 1.3, align: 'center' });
+}
+// the role badge with slanted ends, like A@W's country label
+function badge(g, label, x, y) {
+  type(g, 700, 11, DISPLAY, 1.2); const w = g.measureText(label.toUpperCase()).width + 24;
+  g.fillStyle = UI.accent; g.beginPath(); g.moveTo(x + 5, y); g.lineTo(x + w, y); g.lineTo(x + w - 5, y + 20); g.lineTo(x, y + 20); g.closePath(); g.fill();
+  say(g, label.toUpperCase(), x + 12, y + 14, '#ffffff'); g.letterSpacing = '0px';
+}
+const toFill = () => PARTS.filter((p) => !story.house.assign[p.id]).length;
+const progress = () => (toFill() ? `The house · ${toFill()} to fill in` : 'Finished');
+
+// the presence tile (top right): the other hall, an abstract figure, never video
+function tile(g, h, t) {
+  const x = 1028, y = 18, w = 234, sh = 160, o = other(h);
+  g.fillStyle = UI.panel; g.fillRect(x - 6, y - 6, w + 12, sh + 36); g.strokeStyle = UI.line; g.strokeRect(x - 6.5, y - 6.5, w + 13, sh + 37);
+  g.fillStyle = UI.s2; g.fillRect(x, y, w, sh);
+  const cx = x + w / 2 + Math.sin(t * 0.7) * 6, cy = y + 70, glow = g.createRadialGradient(cx, cy, 2, cx, cy, 46);
+  glow.addColorStop(0, 'rgba(237,234,228,0.55)'); glow.addColorStop(1, 'rgba(237,234,228,0)');
+  g.fillStyle = glow; g.fillRect(x, y, w, sh);
+  g.fillStyle = 'rgba(237,234,228,0.35)'; g.beginPath(); g.arc(cx, cy - 18, 13, 0, 6.2832); g.fill();
+  g.beginPath(); g.ellipse(cx, cy + 40, 34, 26, 0, Math.PI, 0); g.fill();
+  g.fillStyle = UI.bg; g.fillRect(x + w - 62, y + sh - 74, 56, 68); g.strokeStyle = UI.lineStrong; g.strokeRect(x + w - 61.5, y + sh - 73.5, 55, 67);
+  caps(g, `Hall ${o}`, x + 10, y + sh - 12, 10, UI.text, { weight: 700 });
+  type(g, 400, 10, TEXT); say(g, 'Only body points are shared, never video.', x, y + sh + 20, UI.muted);
+}
+// the top line: which hall, where the house is at, the other hall
+function meta(g, h) {
+  caps(g, `Hall ${h}`, 36, 40, 15, UI.text, { weight: 700, spacing: 0.4 });
+  type(g, 400, 13, TEXT); say(g, progress(), 120, 40, UI.muted);
+  g.fillStyle = UI.accentText; g.fillRect(300, 31, 7, 7); say(g, `Hall ${other(h)} is connected`, 314, 40, UI.muted);
+}
+function clearHouse(g) { g.clearRect(HOUSE.x, HOUSE.y, HOUSE.w, HOUSE.h); }
+
+// giver: choose a material (tabs, grid, the bar with the pick and the send button)
+function drawPicker(g, h) {
+  meta(g, h);
+  caps(g, `Your turn · A material for Hall ${other(h)}`, 36, 98, 12, UI.accentText);
+  type(g, 700, 37, DISPLAY); say(g, 'IT’S YOUR TURN TO CHOOSE A MATERIAL', 36, 142, UI.text);
+  type(g, 400, 15, TEXT); say(g, `Hall ${other(h)} is designing the house right now. Choose a material they can use there.`, 36, 172, UI.soft);
+  // the category tabs
+  let tx = 36; const tabs = [{ id: 'all', label: 'All' }, ...CATEGORIES];
+  tabs.forEach((c) => {
+    type(g, 600, 11.5, DISPLAY, 1.1); const label = c.label.toUpperCase(), w = g.measureText(label).width, on = story.filter === c.id;
+    say(g, label, tx, 218, on ? UI.text : UI.muted);
+    if (on) { g.fillStyle = UI.text; g.fillRect(tx, 228, w, 2); }
+    tx += w + 22;
+  });
+  g.letterSpacing = '0px'; g.fillStyle = UI.line; g.fillRect(36, 230, BIG.w - 72, 1);
+  // the grid
+  const list = story.filter === 'all' ? MATERIALS : MATERIALS.filter((m) => m.categories.includes(story.filter));
+  const cols = 9, gap = 12, cw = (BIG.w - 72 - gap * (cols - 1)) / cols;
+  list.forEach((m, i) => {
+    const x = 36 + (i % cols) * (cw + gap), y = 248 + Math.floor(i / cols) * (cw + 46);
+    if (y > 700) return;
+    swatchAt(g, m.id, x, y, cw);
+    const on = story.chosen === m.id;
+    if (on) { g.strokeStyle = UI.accent; g.lineWidth = 3; g.strokeRect(x - 4, y - 4, cw + 8, cw + 8); g.lineWidth = 1; }
+    caps(g, m.name, x, y + cw + 18, 10.5, on ? UI.accentText : UI.text, { spacing: 0.7 });
+    type(g, 400, 10.5, TEXT); say(g, story.filter === 'all' ? CATEGORY[m.categories[0]].label : '', x, y + cw + 33, UI.muted);
+  });
+  // the bar at the bottom
+  g.fillStyle = UI.panel; g.fillRect(0, 770, BIG.w, 84); g.fillStyle = UI.lineStrong; g.fillRect(0, 770, BIG.w, 1);
+  if (story.chosen) {
+    const m = MAT[story.chosen]; swatchAt(g, m.id, 36, 786, 52);
+    caps(g, m.name, 104, 808, 14, UI.text, { weight: 700, spacing: 0.6 });
+    type(g, 400, 12, TEXT); say(g, CATEGORY[m.categories[0]].label, 104, 828, UI.muted);
+  } else { type(g, 400, 15, TEXT); say(g, 'Pick a material for the house. Tap a card to choose.', 36, 818, UI.muted); }
+  button(g, story.chosen ? `Send to Hall ${other(h)}` : 'Choose a material to send', BIG.w - 36 - 270, 789, 270, 48, !!story.chosen);
+}
+// giver: sent, waiting while the other hall designs
+function drawSent(g, h, t) {
+  meta(g, h);
+  swatchAt(g, story.plan.mat, BIG.w / 2 - 90, 220, 180);
+  caps(g, `Sent to Hall ${other(h)}`, BIG.w / 2, 448, 12, UI.accentText, { align: 'center' });
+  type(g, 700, 40, DISPLAY); say(g, 'YOUR MATERIAL IS ON ITS WAY', BIG.w / 2, 496, UI.text, 'center');
+  type(g, 400, 16, TEXT); say(g, `Waiting for Hall ${other(h)} to design.`, BIG.w / 2, 530, UI.soft, 'center');
+  for (let i = 0; i < 3; i++) { g.globalAlpha = 0.3 + 0.7 * Math.max(0, Math.sin(t * 4 - i * 0.7)); g.fillStyle = UI.muted; g.fillRect(BIG.w / 2 - 22 + i * 16, 562, 9, 9); }
+  g.globalAlpha = 1;
+}
+// placer: the house, and the panel with the material and the parts
+function drawDesigner(g, h, t) {
+  clearHouse(g);
+  const x = 22, y = 22, w = 326, placing = story.step === 'place', mat = placing ? MAT[story.plan.mat] : null;
+  g.fillStyle = UI.panel; g.fillRect(x, y, w, 520); g.strokeStyle = UI.line; g.strokeRect(x + 0.5, y + 0.5, w - 1, 519);
+  caps(g, `Hall ${h}`, x + 18, y + 32, 15, UI.text, { weight: 700, spacing: 0.4 });
+  type(g, 400, 11.5, TEXT); say(g, progress(), x + w - 18, y + 32, UI.muted, 'right');
+  g.fillStyle = UI.accentText; g.fillRect(x + 18, y + 47, 6, 6); say(g, `Hall ${other(h)} is connected`, x + 30, y + 54, UI.muted);
+  // the status box
+  g.fillStyle = UI.s2; g.fillRect(x + 18, y + 74, w - 36, 108); g.fillStyle = placing ? UI.accent : UI.lineStrong; g.fillRect(x + 18, y + 74, 2, 108);
+  if (placing) { badge(g, 'It’s your turn to design', x + 32, y + 88); swatchAt(g, mat.id, x + 32, y + 120, 44); type(g, 400, 13.5, TEXT); g.fillStyle = UI.text; wrapText(g, `Hall ${other(h)} sent you ${mat.name.toLowerCase()} for the house. Where does it go?`, x + 88, y + 134, w - 124, 18); }
+  else { caps(g, 'It’s your turn to design', x + 32, y + 102, 11, UI.muted); type(g, 400, 13.5, TEXT); g.fillStyle = UI.text; wrapText(g, `Waiting for a material from Hall ${other(h)}… Look around the house meanwhile.`, x + 32, y + 128, w - 64, 19); }
+  // the parts
+  caps(g, 'Parts · The house', x + 18, y + 212, 10.5, UI.muted);
+  PARTS.forEach((p, i) => {
+    const ry = y + 226 + i * 44, cur = story.house.assign[p.id], sel = placing && story.part === p.id, ok = !placing || (!cur && fits(story.plan.mat, p.id));
+    if (sel) { g.strokeStyle = UI.accent; g.lineWidth = 1.5; g.strokeRect(x + 18, ry, w - 36, 38); g.lineWidth = 1; }
+    g.globalAlpha = ok ? 1 : 0.4;
+    if (cur) swatchAt(g, cur, x + 28, ry + 9, 20); else blankAt(g, x + 28, ry + 9, 20);
+    type(g, 500, 14, TEXT); say(g, p.label, x + 60, ry + 24, UI.text);
+    type(g, 400, 12, TEXT); say(g, cur ? MAT[cur].name : 'Not filled in', x + w - 28, ry + 24, UI.muted, 'right');
+    g.globalAlpha = 1;
+  });
+  button(g, 'Apply my selection', x + 18, y + 412, w - 36, 44, placing && !!story.part);
+  if (story.last) {
+    caps(g, 'Last turn', x + 18, y + 484, 10.5, UI.muted);
+    type(g, 400, 12, TEXT); g.fillStyle = UI.muted;
+    const l = story.last; wrapText(g, l.by === h ? `You used Hall ${other(h)}’s ${MAT[l.mat].name.toLowerCase()} on the ${PART[l.part].label.toLowerCase()}.` : `Hall ${l.by} used your ${MAT[l.mat].name.toLowerCase()} on the ${PART[l.part].label.toLowerCase()}.`, x + 18, y + 504, w - 36, 16);
   }
+  // the notice when the material arrives
+  if (placing && t - story.t0 / 1000 < 2.4) {
+    const nx = HOUSE.x + HOUSE.w / 2, ny = HOUSE.y + HOUSE.h / 2;
+    g.fillStyle = 'rgba(20,20,19,0.94)'; g.fillRect(nx - 190, ny - 46, 380, 92); g.fillStyle = UI.accent; g.fillRect(nx - 190, ny - 46, 380, 3);
+    type(g, 700, 22, DISPLAY); say(g, 'A MATERIAL HAS ARRIVED', nx, ny + 2, UI.text, 'center');
+    type(g, 400, 14, TEXT); say(g, `From Hall ${other(h)}`, nx, ny + 26, UI.soft, 'center');
+  }
+  type(g, 400, 12, TEXT); say(g, 'Drag to rotate · Scroll or pinch to zoom · Click to select a part', HOUSE.x + HOUSE.w / 2, BIG.h - 14, UI.muted, 'center');
+}
+// giver, after the other hall placed it: what they did with your material
+function drawReveal(g, h, t) {
+  clearHouse(g); const l = story.last, el = t - story.t0 / 1000;
+  caps(g, `Hall ${other(h)}`, 36, 60, 12, UI.accentText);
+  const y = wrapCaps(g, `This is what Hall ${other(h)} changed with your material`, 36, 104, 310, 30, 34, UI.text);
+  type(g, 400, 15, TEXT); g.fillStyle = UI.soft; wrapText(g, `They used your ${MAT[l.mat].name.toLowerCase()} on the ${PART[l.part].label.toLowerCase()}.`, 36, y + 10, 310, 21);
+  g.fillStyle = UI.panel; g.fillRect(36, 730, 310, 82); g.strokeStyle = UI.line; g.strokeRect(36.5, 730.5, 309, 81);
+  caps(g, 'Next up: your turn to design', 191, 764, 13, UI.text, { weight: 600, spacing: 0.8, align: 'center' });
+  g.fillStyle = UI.lineStrong; g.fillRect(66, 786, 250, 4); g.fillStyle = UI.accentText; g.fillRect(66, 786, 250 * Math.min(1, el / STEP.reveal), 4);
+}
+// placer, after applying: the screen changes to the picker
+function drawSwitch(g, h) {
+  caps(g, `Hall ${other(h)}`, BIG.w / 2, 360, 12, UI.accentText, { align: 'center' });
+  type(g, 700, 44, DISPLAY); say(g, 'IT’S YOUR TURN TO CHOOSE A MATERIAL', BIG.w / 2, 416, UI.text, 'center');
+  type(g, 400, 17, TEXT); say(g, `Your material is on the house. Now choose a material for Hall ${other(h)}.`, BIG.w / 2, 456, UI.soft, 'center');
+  type(g, 400, 14, TEXT); say(g, 'Changing interfaces…', BIG.w / 2, 500, UI.muted, 'center');
+}
+// both, when the fourth part is on: the finished house, before it moves to the corridor
+function drawFinished(g) {
+  clearHouse(g); const a = story.house.assign;
+  caps(g, `House ${story.house.no} · finished`, 36, 60, 12, UI.accentText);
+  wrapCaps(g, 'The house is finished', 36, 104, 310, 34, 38, UI.text);
+  PARTS.forEach((p, i) => {
+    const y = 200 + i * 58; swatchAt(g, a[p.id], 36, y, 44);
+    caps(g, p.label, 94, y + 18, 10.5, UI.muted); type(g, 500, 15, TEXT); say(g, MAT[a[p.id]].name, 94, y + 38, UI.text);
+  });
+  type(g, 400, 15, TEXT); g.fillStyle = UI.soft; wrapText(g, 'Built by Hall A and Hall B together. It moves to the screens in the corridor.', 36, 470, 300, 21);
 }
 
-/* ================= drawing the big screens (a design app, light like the references) and the counter ================= */
-const APPBG = '#e9eaec';
-function rr(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.lineTo(x + w - r, y); g.arc(x + w - r, y + r, r, -Math.PI / 2, 0); g.lineTo(x + w, y + h - r); g.arc(x + w - r, y + h - r, r, 0, Math.PI / 2); g.lineTo(x + r, y + h); g.arc(x + r, y + h - r, r, Math.PI / 2, Math.PI); g.lineTo(x, y + r); g.arc(x + r, y + r, r, Math.PI, Math.PI * 1.5); g.closePath(); }
-function chipC(g, id, cx, cy, r, sel) {
-  g.save(); g.beginPath(); g.arc(cx, cy, r, 0, 6.2832); g.clip(); g.drawImage(swatchCanvas(id), cx - r, cy - r, r * 2, r * 2); g.restore();
-  g.lineWidth = 1.5; g.strokeStyle = 'rgba(0,0,0,.2)'; g.beginPath(); g.arc(cx, cy, r, 0, 6.2832); g.stroke();
-  if (sel) { g.lineWidth = 3; g.strokeStyle = '#111'; g.beginPath(); g.arc(cx, cy, r + 6, 0, 6.2832); g.stroke(); }
-}
-function pill(g, x, y, w, h, label, kind) {
-  rr(g, x, y, w, h, h / 2);
-  if (kind === 'orange') { g.fillStyle = '#ffffff'; g.fill(); } else { g.strokeStyle = 'rgba(255,255,255,.7)'; g.lineWidth = 1.5; g.stroke(); }
-  g.fillStyle = kind === 'orange' ? '#111' : '#fff'; g.font = `600 17px ${SANS}`; g.textAlign = 'center'; g.fillText(label, x + w / 2, y + h / 2 + 6); g.textAlign = 'left';
-}
-function drawPresence(g, x, y, w, h, who, t, waving) {
-  const sc = h / 150;
-  g.save(); rr(g, x, y, w, h, 14 * sc); g.clip();
-  g.fillStyle = '#0a0b0d'; g.fillRect(x, y, w, h);
-  g.strokeStyle = 'rgba(255,255,255,.06)'; g.lineWidth = 1;
-  for (let gx = x; gx < x + w; gx += h / 9) { g.beginPath(); g.moveTo(gx, y); g.lineTo(gx, y + h); g.stroke(); }
-  for (let gy = y; gy < y + h; gy += h / 9) { g.beginPath(); g.moveTo(x, gy); g.lineTo(x + w, gy); g.stroke(); }
-  const cx = x + w / 2, sway = Math.sin(t * 1.3) * 2 * sc, hy = y + h * 0.4, sy = hy + 30 * sc;
-  g.lineCap = 'round'; g.lineJoin = 'round'; g.strokeStyle = 'rgba(255,255,255,.92)'; g.lineWidth = 2.6 * sc;
-  g.beginPath(); g.arc(cx + sway * 0.6, hy, 15 * sc, 0, 6.2832); g.stroke();   // head: an empty circle, no face
-  g.beginPath(); g.moveTo(cx - 34 * sc + sway, sy + 4 * sc); g.quadraticCurveTo(cx - 32 * sc + sway, sy - 4 * sc, cx - 18 * sc + sway, sy - 4 * sc); g.lineTo(cx + 18 * sc + sway, sy - 4 * sc); g.quadraticCurveTo(cx + 32 * sc + sway, sy - 4 * sc, cx + 34 * sc + sway, sy + 4 * sc); g.stroke();
-  g.beginPath(); g.moveTo(cx - 30 * sc + sway, sy + 6 * sc); g.lineTo(cx - 26 * sc, y + h + 6); g.moveTo(cx + 30 * sc + sway, sy + 6 * sc); g.lineTo(cx + 26 * sc, y + h + 6); g.stroke();
-  g.beginPath(); g.moveTo(cx - 34 * sc + sway, sy + 4 * sc); g.lineTo(cx - 42 * sc + sway, sy + 40 * sc); g.stroke();
-  const sx = cx + 34 * sc + sway, s0 = sy + 4 * sc; g.strokeStyle = waving ? ICE : 'rgba(255,255,255,.92)'; g.beginPath(); g.moveTo(sx, s0);
-  if (waving) { const ex = sx + 12 * sc, ey = s0 - 22 * sc, hx = ex + Math.sin(t * 9) * 14 * sc, hy2 = ey - 26 * sc; g.lineTo(ex, ey); g.lineTo(hx, hy2); g.stroke(); g.fillStyle = ICE; g.beginPath(); g.arc(hx, hy2, 4 * sc, 0, 6.2832); g.fill(); }
-  else { g.lineTo(sx + 8 * sc, s0 + 36 * sc); g.stroke(); }
-  // who is on the camera
-  g.fillStyle = 'rgba(0,0,0,.7)'; rr(g, x + 8 * sc, y + 8 * sc, 92 * sc, 24 * sc, 12 * sc); g.fill();
-  g.fillStyle = (Math.floor(t * 1.2) % 2) ? ICE : 'rgba(158,197,255,.35)'; g.beginPath(); g.arc(x + 21 * sc, y + 20 * sc, 3.5 * sc, 0, 6.2832); g.fill();
-  g.fillStyle = '#fff'; g.font = `600 ${12 * sc}px ${SANS}`; g.textAlign = 'left'; g.textBaseline = 'alphabetic'; g.fillText('HALL ' + who, x + 30 * sc, y + 24.5 * sc);
-  g.restore();
-}
-function drawBuilder(h) {
-  const g = big[h].ctx, me = SIDE[h], o = other(h), now = performance.now(), room = ROOMS[me.brief], slots = room.slots;
-  g.textBaseline = 'alphabetic'; g.textAlign = 'left';
-  g.fillStyle = APPBG; g.fillRect(0, 0, 1280, 640);
-  rr(g, 12, 8, 1256, 56, 28); g.fillStyle = '#111'; g.fill();
-  g.fillStyle = '#fff'; g.font = `600 21px ${SANS}`; g.fillText('‹   Room designer', 40, 43);
-  g.fillStyle = 'rgba(255,255,255,.5)'; g.font = `500 14px ${SANS}`; g.fillText('HALL ' + h, 262, 42);
-  pill(g, 866, 18, 230, 36, 'Request materials', 'orange'); pill(g, 1112, 18, 130, 36, 'Score', 'ghost');
-  drawTracker(g, 470, 820, 36, h, now, true, 1);
-  // the brief
-  g.fillStyle = '#111'; g.font = `600 13px ${SANS}`; g.fillText(`THE BRIEF  ·  ROOM ${BRIEFS.indexOf(me.brief) + 1} OF ${BRIEFS.length}`, 44, 106);
-  g.font = `600 25px ${SANS}`; g.fillText(`Design a ${room.name}.`, 44, 138);
-  g.fillStyle = '#4a4b50'; g.font = `400 16px ${SANS}`; wrapText(g, 'You only have a few materials. Missing something? Request it from Hall A: they decide what to send you. Every finished room becomes part of one house.', 44, 164, 540, 22);
-  g.drawImage(getRoom(me.assign, me.brief), 60, 222, 410, 351);
-  // the camera in the top right corner: the person on the other side, as an abstract figure
-  drawPresence(g, 1010, 78, 230, 140, o, now / 1000, SIDE[o].waveUntil > now);
-  g.fillStyle = '#111'; g.font = `600 13px ${SANS}`; g.fillText('MATERIALS', 640, 106);
-  g.fillStyle = '#6f7076'; g.font = `400 15px ${SANS}`; wrapText(g, `${me.inv.length} available. Need more? Request them from Hall A.`, 640, 130, 340, 20);
-  let y = 226;
-  for (const [k, name] of slots) {
-    const open = me.openSlot === k, cur = me.assign[k], rows = Math.ceil(me.inv.length / 8), ch = 56 + (open ? 14 + rows * 62 : 0);
-    rr(g, 640, y, 600, ch, 16); g.fillStyle = '#fff'; g.fill();
-    g.fillStyle = '#111'; g.font = `600 19px ${SANS}`; g.textAlign = 'left'; g.fillText(name, 664, y + 34);
-    g.fillStyle = '#6f7076'; g.font = `400 16px ${SANS}`; g.textAlign = 'right'; g.fillText((cur ? MATS[cur].name : 'Not chosen') + (open ? '   –' : '   +'), 1216, y + 34); g.textAlign = 'left';
-    if (open) me.inv.forEach((id, i) => chipC(g, id, 664 + 26 + (i % 8) * 68, y + 56 + 14 + 24 + Math.floor(i / 8) * 62 - 10, 24, cur === id));
-    y += ch + 10;
-  }
-  if (me.scored) {
-    g.fillStyle = '#111'; g.font = `400 54px ${SERIF}`; g.fillText(`${me.scored.total}`, 504, 480);
-    g.font = `400 22px ${SERIF}`; g.fillStyle = '#6f7076'; g.fillText(`/ ${me.scored.max}`, 504, 510);
-    g.font = `500 15px ${SANS}`; g.fillStyle = '#333'; wrapText(g, me.scored.verdict, 504, 540, 100, 18);
-  }
-  if (me.incoming) {
-    g.fillStyle = '#ffffff'; g.fillRect(0, 584, 1280, 56); g.fillStyle = '#111'; g.font = `600 20px ${SANS}`;
-    g.fillText(`Hall ${o} is asking for ${me.incoming.ids.map((id) => MATS[id].name).join(', ')}`, 32, 619);
-  } else if (me.pending) {
-    g.fillStyle = '#111'; g.fillRect(0, 584, 1280, 56); g.fillStyle = '#fff'; g.font = `500 19px ${SANS}`;
-    g.fillText(`Request sent to Hall ${o}. Waiting for their materials…`, 32, 619);
-  } else if (me.scored && roomsDone(me) === BRIEFS.length) {
-    g.fillStyle = '#111'; g.fillRect(0, 584, 1280, 56); g.fillStyle = '#fff'; g.font = `600 19px ${SANS}`;
-    g.fillText('All four rooms are done. Press E to see the finished house.', 32, 619);
-  }
-  big[h].tex.needsUpdate = true;
-}
-// a small map of the two halls: where is the message now?
-function drawTracker(g, x0, x1, y, hall, now, dark, sc) {
-  const fg = dark ? '#ffffff' : '#111111', ice = dark ? '#9ec5ff' : '#2f5fc4';
-  g.save(); g.lineCap = 'round'; g.textBaseline = 'middle';
-  g.strokeStyle = dark ? 'rgba(255,255,255,.35)' : 'rgba(0,0,0,.22)'; g.lineWidth = 6 * sc; g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke();
-  ['A', 'B'].forEach((k, i) => {
-    const cx = i ? x1 : x0; g.beginPath(); g.arc(cx, y, 13 * sc, 0, 6.2832); g.fillStyle = hall === k ? fg : (dark ? '#111' : '#f4f2ee'); g.fill(); g.strokeStyle = fg; g.lineWidth = 2 * sc; g.stroke();
-    g.fillStyle = hall === k ? (dark ? '#111' : '#fff') : fg; g.font = `600 ${13 * sc}px ${SANS}`; g.textAlign = 'center'; g.fillText(k, cx, y + 1);
-  });
-  pulses.forEach((p) => {
-    const f = Math.min(1, (now - p.t0) / 1000 / TOTAL), pos = p.dir > 0 ? f : 1 - f;
-    for (let j = 0; j < 3; j++) { const pp = Math.min(1, Math.max(0, pos - p.dir * j * 0.035)); g.globalAlpha = 1 - j * 0.3; g.fillStyle = j ? fg : ice; g.beginPath(); g.arc(x0 + (x1 - x0) * (0.07 + 0.86 * pp), y, (7 - j * 1.5) * sc, 0, 6.2832); g.fill(); }
-  });
-  g.restore();
-}
-function drawDesk() {
-  const g = big.A.ctx, me = SIDE.A, now = performance.now(), B = SIDE.B, room = ROOMS[B.brief];
-  g.textBaseline = 'alphabetic'; g.textAlign = 'left';
-  g.fillStyle = APPBG; g.fillRect(0, 0, 1280, 640);
-  rr(g, 12, 8, 1256, 56, 28); g.fillStyle = '#111'; g.fill();
-  g.fillStyle = '#fff'; g.font = `600 21px ${SANS}`; g.fillText('‹   Material desk', 40, 43);
-  g.fillStyle = 'rgba(255,255,255,.5)'; g.font = `500 14px ${SANS}`; g.fillText('HALL A', 262, 42);
-  drawTracker(g, 470, 820, 36, 'A', now, true, 1);
-  pill(g, 866, 18, 230, 36, 'Send materials', me.selected.length ? 'orange' : 'ghost'); 
-  // the brief
-  g.fillStyle = '#111'; g.font = `600 13px ${SANS}`; g.fillText(`THE BRIEF  ·  ROOM ${BRIEFS.indexOf(B.brief) + 1} OF ${BRIEFS.length}`, 44, 106);
-  g.font = `600 25px ${SANS}`; g.fillText(`Hall B is designing a ${room.name}.`, 44, 138);
-  g.fillStyle = '#4a4b50'; g.font = `400 16px ${SANS}`; wrapText(g, `They only have a few materials and need yours. Choose up to 3 that suit the ${room.slots.map((s) => s[1].toLowerCase()).join(', ')} and send them to Hall B.`, 44, 164, 540, 22);
-  g.fillStyle = '#6f7076'; g.font = `600 13px ${SANS}`; g.fillText('YOUR LIBRARY', 44, 226);
-  me.lib.forEach((id, i) => {
-    const col = i % 4, row = Math.floor(i / 4), cx = 115 + col * 140, cy = 280 + row * 104;
-    chipC(g, id, cx, cy, 33, me.selected.includes(id));
-    g.fillStyle = '#111'; g.font = `500 15px ${SANS}`; g.textAlign = 'center'; g.fillText(MATS[id].name, cx, cy + 56); g.textAlign = 'left';
-  });
-  drawPresence(g, 1010, 78, 230, 140, 'B', now / 1000, SIDE.B.waveUntil > now);
-  g.fillStyle = '#111'; g.font = `600 13px ${SANS}`; g.fillText('SELECTED', 640, 106);
-  g.fillStyle = '#6f7076'; g.font = `400 15px ${SANS}`; g.fillText(`${me.selected.length} of 3`, 640, 130);
-  rr(g, 640, 236, 600, 190, 16); g.fillStyle = '#fff'; g.fill();
-  if (!me.selected.length) { g.fillStyle = '#6f7076'; g.font = `400 17px ${SANS}`; g.fillText('Nothing selected yet.', 672, 336); }
-  me.selected.forEach((id, i) => { const cx = 640 + 100 + i * 190, cy = 308; chipC(g, id, cx, cy, 38, false); g.fillStyle = '#111'; g.font = `500 16px ${SANS}`; g.textAlign = 'center'; g.fillText(MATS[id].name, cx, cy + 64); g.textAlign = 'left'; });
-  g.fillStyle = '#4a4b50'; g.font = `400 16px ${SANS}`; wrapText(g, 'Hall B can also request materials from you. Their requests appear at the bottom of this screen.', 640, 466, 590, 22);
-  if (me.incoming) {
-    g.fillStyle = '#ffffff'; g.fillRect(0, 584, 1280, 56); g.fillStyle = '#111'; g.font = `600 20px ${SANS}`;
-    g.fillText(`Hall B is asking for ${me.incoming.ids.map((id) => MATS[id].name).join(', ')}`, 32, 619);
-    g.textAlign = 'right'; g.font = `500 17px ${SANS}`; g.fillText('Press E to answer', 1248, 619); g.textAlign = 'left';
-  }
-  big.A.tex.needsUpdate = true;
-}
-function drawFinale(h) {
-  const g = big[h].ctx, B = SIDE.B, o = other(h), now = performance.now(), t = houseTotals(B);
-  g.textBaseline = 'alphabetic'; g.textAlign = 'left';
-  g.fillStyle = APPBG; g.fillRect(0, 0, 1280, 640);
-  rr(g, 12, 8, 1256, 56, 28); g.fillStyle = '#111'; g.fill();
-  g.fillStyle = '#fff'; g.font = `600 21px ${SANS}`; g.fillText('‹   The finished house', 40, 43);
-  g.fillStyle = 'rgba(255,255,255,.5)'; g.font = `500 14px ${SANS}`; g.fillText('HALL ' + h, 292, 42);
-  drawTracker(g, 520, 840, 36, h, now, true, 1);
-  g.drawImage(getHouseView(B.house), 40, 90, 580, 497);
-  drawPresence(g, 1010, 78, 230, 140, o, now / 1000, false);
-  g.fillStyle = '#111'; g.font = `600 13px ${SANS}`; g.fillText('THE FINISHED HOUSE', 660, 106);
-  g.fillStyle = '#6f7076'; g.font = `400 15px ${SANS}`; g.fillText('Four rooms, one house', 660, 130);
-  g.fillStyle = '#111'; g.font = `400 80px ${SERIF}`; g.fillText(`${t.total}`, 660, 220);
-  g.font = `400 28px ${SERIF}`; g.fillStyle = '#6f7076'; g.fillText(`/ ${t.max}`, 660 + g.measureText(`${t.total}`).width * 2.9 + 10, 220);
-  g.font = `500 17px ${SANS}`; g.fillStyle = '#333'; wrapText(g, houseVerdict(t.total, t.max), 660, 252, 340, 24);
-  BRIEFS.forEach((b, i) => {
-    const r = B.house[b], y = 300 + i * 64;
-    rr(g, 660, y, 580, 52, 14); g.fillStyle = '#fff'; g.fill();
-    g.fillStyle = '#111'; g.font = `600 18px ${SANS}`; g.fillText(ROOMS[b].name.charAt(0).toUpperCase() + ROOMS[b].name.slice(1), 684, y + 32);
-    g.fillStyle = '#6f7076'; g.font = `400 16px ${SANS}`; g.textAlign = 'right'; g.fillText(r ? `${r.scored.total} / ${r.scored.max}` : 'not done', 1216, y + 32); g.textAlign = 'left';
-  });
-  big[h].tex.needsUpdate = true;
-}
 function drawApp(h) {
-  const g = big[h].ctx; g.fillStyle = APPBG; g.fillRect(0, 0, 1280, 854); g.save(); g.translate(0, 107);
-  if (SIDE.B.finale) drawFinale(h); else if (h === 'A') drawDesk(); else drawBuilder(h);
-  g.restore();
+  const g = big[h].ctx, t = performance.now() / 1000, giver = story.giver === h, st = story.step;
+  g.textBaseline = 'alphabetic'; g.fillStyle = UI.bg; g.fillRect(0, 0, BIG.w, BIG.h);
+  let house = false;
+  if (st === 'finished') { drawFinished(g); house = true; }
+  else if (giver) {
+    if (st === 'pick' || st === 'chosen') drawPicker(g, h);
+    else if (st === 'sent' || st === 'place') drawSent(g, h, t);
+    else { drawReveal(g, h, t); house = true; }
+  } else if (st === 'reveal') drawSwitch(g, h);
+  else { drawDesigner(g, h, t); house = true; }
+  housePlanes[h].visible = house;
+  tile(g, h, t);
+  big[h].tex.needsUpdate = true;
 }
 
 function drawHeader(h) {
   const g = header[h].ctx;
-  g.fillStyle = '#111'; g.fillRect(0, 0, 2048, 165); g.textBaseline = 'middle'; g.textAlign = 'left';
-  g.fillStyle = '#fff'; g.font = `600 84px ${SANS}`; const n = counter.toLocaleString('en-US'); g.fillText(n, 60, 86);
-  g.fillStyle = 'rgba(255,255,255,.6)'; g.font = `400 62px ${SANS}`; g.fillText('messages sent today', 60 + g.measureText(n).width * 1.12 + 40, 90);
-  g.fillStyle = '#9ec5ff'; g.fillRect(1930, 50, 60, 60);
+  g.fillStyle = UI.bg; g.fillRect(0, 0, 2048, 165); g.textBaseline = 'middle'; g.textAlign = 'left';
+  type(g, 700, 84, DISPLAY); const n = counter.toLocaleString('en-US'); say(g, n, 60, 90, UI.text);
+  const nw = g.measureText(n).width; type(g, 400, 58, TEXT); say(g, 'messages sent today', 60 + nw + 36, 92, UI.muted);
+  g.fillStyle = UI.accentText; g.fillRect(1930, 55, 56, 56);
   g.textBaseline = 'alphabetic'; header[h].tex.needsUpdate = true;
 }
 
-/* ================= the game plays itself: a scripted loop so both screens keep changing ================= */
-function sendMaterials() {
-  const A = SIDE.A, ids = [...A.selected]; if (!ids.length) return;
-  A.selected = []; A.incoming = null; particleChoice({ send: ids });
-  spawnPulse({ dir: 1, onArrive: () => { const b = SIDE.B; ids.forEach((id) => { if (!b.inv.includes(id)) b.inv.push(id); }); b.newIds = ids; b.pending = false; } });
+// the kiosks: the hallway wireframe's copy, and a finished house turning behind the clear part
+function drawKiosk(k) {
+  const g = k.canvas.getContext('2d'), { w, h, house: r } = k.KC, f = finished[k.index] ?? finished[0];
+  g.textBaseline = 'alphabetic'; g.fillStyle = UI.bg; g.fillRect(0, 0, w, h); g.clearRect(r.x, r.y, r.w, r.h);
+  type(g, 700, 30, DISPLAY); say(g, 'agora.', 44, 64, UI.text);
+  caps(g, `House ${f.no} · built by Hall A & Hall B`, 44, 196, 12, UI.accentText);
+  const y = wrapCaps(g, 'Your turn to build', 44, 246, 360, 50, 52, UI.text);
+  type(g, 400, 17, TEXT); g.fillStyle = UI.soft; wrapText(g, 'Visitors in two halls build each house together. Walk to either end and take part.', 44, y + 8, 340, 25);
+  PARTS.forEach((p, i) => { const x = 44 + i * 88; swatchAt(g, f.assign[p.id], x, 452, 34); type(g, 400, 11, TEXT); say(g, p.label, x, 504, UI.muted); });
+  k.tex.needsUpdate = true;
+  if (k.shown !== f) { k.view.set(f.assign); k.shown = f; }
 }
-function restart() { SIDE = { A: mkDesk(), B: mkSide(INV.B) }; autoN = 0; particleChoice(null); }
-const fit = (id, key) => MATS[id].s[key] || 0;
-let autoN = 0;
-function autoStep() {
-  const A = SIDE.A, B = SIDE.B, n = autoN++;
-  if (B.finale) return restart();
-  if (A.selected.length) return sendMaterials();                       // Hall A sends what it picked
-  if (B.pending) return;                                                // wait for the materials to arrive
-  if (B.scored) {                                                       // the room is done: next room, or the finished house
-    if (roomsDone(B) === BRIEFS.length) { B.finale = true; return; }
-    const nx = BRIEFS.find((r) => !B.house[r]); B.brief = nx; B.assign = emptyAssign(nx); B.scored = null; B.openSlot = ROOMS[nx].slots[0][0]; return;
+
+/* ================= the story: one hall picks and sends, the other places, the roles swap ================= */
+const STEP = { pick: 3.4, chosen: 1.6, sent: 3, place: 3.4, reveal: 4.5, finished: 6 };   // seconds per step
+let story;
+const shuffle = (list) => list.map((x) => [Math.random(), x]).sort((a, b) => a[0] - b[0]).map(([, x]) => x);
+function newHouse(no) { return { no, assign: { facade: null, roof: null, terrace: null, door: null }, order: shuffle(PARTS.map((p) => p.id)) }; }
+function nextTurn() {
+  const part = story.house.order.find((p) => !story.house.assign[p]);
+  const used = Object.values(story.house.assign);
+  const options = MATERIALS.filter((m) => fits(m.id, part) && !used.includes(m.id));
+  const mat = options[Math.floor(Math.random() * options.length)].id;
+  Object.assign(story, { plan: { part, mat, cat: MAT[mat].categories[0] }, step: 'pick', t0: performance.now(), filter: 'all', chosen: null, part: null });
+}
+function restart() { story = { giver: 'A', house: newHouse(finished[0].no + 1), last: null }; particleChoice(null); nextTurn(); }
+function go(step) { story.step = step; story.t0 = performance.now(); }
+function tickStory(now) {
+  const el = (now - story.t0) / 1000;
+  switch (story.step) {
+    case 'pick':
+      if (el > 1.2) story.filter = story.plan.cat;
+      if (el > 2.4) story.chosen = story.plan.mat;
+      if (el > STEP.pick) go('chosen');
+      break;
+    case 'chosen':
+      if (el > STEP.chosen) { go('sent'); counter++; particleChoice({ send: MAT[story.plan.mat] }); }
+      break;
+    case 'sent':
+      if (el > STEP.sent) go('place');
+      break;
+    case 'place':
+      if (el > 1.4) story.part = story.plan.part;
+      if (el > STEP.place) {
+        story.house.assign[story.plan.part] = story.plan.mat;
+        story.last = { by: other(story.giver), mat: story.plan.mat, part: story.plan.part };
+        particleChoice({ mat: MAT[story.plan.mat], part: PART[story.plan.part] });
+        go('reveal');
+      }
+      break;
+    case 'reveal':
+      if (el > STEP.reveal) {
+        story.giver = other(story.giver);
+        if (toFill()) nextTurn(); else go('finished');
+      }
+      break;
+    case 'finished':
+      if (el > STEP.finished) {
+        finished.unshift({ no: story.house.no, assign: { ...story.house.assign } }); finished.length = 2;
+        story.house = newHouse(story.house.no + 1); story.last = null; nextTurn();
+      }
+      break;
   }
-  const key = slotsOf(B).map((x) => x[0]).find((k) => !B.assign[k]);
-  if (!key) { const sc = scoreRoom(B.assign, B.brief); B.scored = sc; B.house[B.brief] = { assign: { ...B.assign }, scored: sc }; return; }
-  // now and then Hall B asks Hall A for something better for this part of the room
-  const missing = A.lib.filter((id) => !B.inv.includes(id)).sort((x, y) => fit(y, key) - fit(x, key));
-  if (n % 3 === 1 && missing.length) { A.selected = missing.slice(0, 2); B.pending = true; return; }
-  const best = [...B.inv].sort((x, y) => fit(y, key) - fit(x, key))[n % 4 === 0 ? 1 : 0] || B.inv[0];
-  B.assign[key] = best; B.openSlot = key; B.newIds = [];
-  particleChoice({ room: B.brief, slot: key, mat: best });
+  // the house on the game screens: what's placed, plus the part being tried
+  const a = { ...story.house.assign };
+  if (story.step === 'place' && story.part) a[story.part] = story.plan.mat;
+  const key = JSON.stringify(a);
+  if (key !== story.shownKey) { gameView.set(a); story.shownKey = key; }
 }
+restart();
 
 /* ================= movement & controls ================= */
 const pos = new THREE.Vector3(EX - 2.5, EYE, 0);
@@ -500,8 +565,7 @@ addEventListener('mousemove', (e) => {
 addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); });
 
 window.__view = (x, z, y, p = 0) => { pos.set(x, EYE, z); yaw = y; pitch = p; };
-window.__send = (dir = 1) => spawnPulse({ dir });
-window.__dbg = { renderer, scene, camera, pos, pulses, TOTAL, particleChoice };
+window.__dbg = { renderer, scene, camera, pos, particleChoice, story: () => story, gameView, kiosks };
 const PR = 0.35;
 function move(dt) {
   let f = 0, r = 0;
@@ -532,18 +596,19 @@ function lock() { try { const p = renderer.domElement.requestPointerLock(); if (
 $('#enterBtn').addEventListener('click', () => { $('#start').style.display = 'none'; $('#hud').hidden = false; started = true; lock(); });
 
 /* ================= main loop ================= */
-let last = performance.now(), tPart = performance.now(), tAnim = 0, tBig = 0, tAuto = performance.now();
+let last = performance.now(), tPart = performance.now(), tAnim = 0, tBig = 0;
 function frame(now) {
   requestAnimationFrame(frame);
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
   if (started) move(dt);
   camera.position.set(pos.x, EYE + Math.sin(bob) * 0.03, pos.z);
   camera.rotation.set(pitch, yaw, 0);
-  updatePulses(now);
+  tickStory(now);
   if (now - tAnim > 50) { tAnim = now; updateScreens(now / 1000); for (const k in screenTex) screenTex[k].needsUpdate = true; }
   if (now - tPart > 33) { drawParticles(now / 1000, Math.min(0.1, (now - tPart) / 1000)); tPart = now; particleTex.needsUpdate = true; }
-  if (now - tAuto > 5000) { tAuto = now; autoStep(); }
-  if (now - tBig > 80) { tBig = now; drawApp('A'); drawApp('B'); drawHeader('A'); drawHeader('B'); }
+  if (now - tBig > 80) { tBig = now; drawApp('A'); drawApp('B'); drawHeader('A'); drawHeader('B'); kiosks.forEach(drawKiosk); }
+  // the houses: on the game screens, and turning on the kiosks
+  gameView.render(renderer, dt); kiosks.forEach((k) => k.view.render(renderer, dt));
   renderer.render(scene, camera);
 }
 requestAnimationFrame(frame);
