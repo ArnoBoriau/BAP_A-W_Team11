@@ -295,6 +295,9 @@ function caps(g, str, x, y, px, color, { weight = 600, spacing = 1.2, align = 'l
 function wrapCaps(g, str, x, y, maxW, px, lh, color) { type(g, 700, px, DISPLAY, 0); g.fillStyle = color; return wrapText(g, str.toUpperCase(), x, y, maxW, lh); }
 function swatchAt(g, id, x, y, s) { g.drawImage(textureCanvas(id), x, y, s, s); g.strokeStyle = UI.line; g.lineWidth = 1; g.strokeRect(x + 0.5, y + 0.5, s - 1, s - 1); }
 function blankAt(g, x, y, s) { g.fillStyle = '#141413'; g.fillRect(x, y, s, s); g.strokeStyle = UI.lineStrong; g.strokeRect(x + 0.5, y + 0.5, s - 1, s - 1); }
+// Where things are on each hall's screen (canvas px), recorded while drawing, so the scripted
+// taps (below) land on the right spot.
+const spots = { A: {}, B: {} };
 function button(g, label, x, y, w, h, on) {
   g.fillStyle = on ? UI.accent : UI.s3; g.fillRect(x, y, w, h);
   caps(g, label, x + w / 2, y + h / 2 + 5, 13, on ? '#ffffff' : UI.muted, { weight: 700, spacing: 1.3, align: 'center' });
@@ -342,6 +345,7 @@ function drawPicker(g, h) {
     type(g, 600, 11.5, DISPLAY, 1.1); const label = c.label.toUpperCase(), w = g.measureText(label).width, on = story.filter === c.id;
     say(g, label, tx, 218, on ? UI.text : UI.muted);
     if (on) { g.fillStyle = UI.text; g.fillRect(tx, 228, w, 2); }
+    spots[h][`tab:${c.id}`] = [tx + w / 2, 214];
     tx += w + 22;
   });
   g.letterSpacing = '0px'; g.fillStyle = UI.line; g.fillRect(36, 230, BIG.w - 72, 1);
@@ -352,6 +356,7 @@ function drawPicker(g, h) {
     const x = 36 + (i % cols) * (cw + gap), y = 248 + Math.floor(i / cols) * (cw + 46);
     if (y > 700) return;
     swatchAt(g, m.id, x, y, cw);
+    spots[h][`card:${m.id}`] = [x + cw / 2, y + cw / 2];
     const on = story.chosen === m.id;
     if (on) { g.strokeStyle = UI.accent; g.lineWidth = 3; g.strokeRect(x - 4, y - 4, cw + 8, cw + 8); g.lineWidth = 1; }
     caps(g, m.name, x, y + cw + 18, 10.5, on ? UI.accentText : UI.text, { spacing: 0.7 });
@@ -365,6 +370,7 @@ function drawPicker(g, h) {
     type(g, 400, 12, TEXT); say(g, CATEGORY[m.categories[0]].label, 104, 828, UI.muted);
   } else { type(g, 400, 15, TEXT); say(g, 'Pick a material for the house. Tap a card to choose.', 36, 818, UI.muted); }
   button(g, story.chosen ? `Send to Hall ${other(h)}` : 'Choose a material to send', BIG.w - 36 - 270, 789, 270, 48, !!story.chosen);
+  spots[h].send = [BIG.w - 36 - 135, 813];
 }
 // giver: sent, waiting while the other hall designs
 function drawSent(g, h, t) {
@@ -392,6 +398,7 @@ function drawDesigner(g, h, t) {
   caps(g, 'Parts · The house', x + 18, y + 212, 10.5, UI.muted);
   PARTS.forEach((p, i) => {
     const ry = y + 226 + i * 44, cur = story.house.assign[p.id], sel = placing && story.part === p.id, ok = !placing || (!cur && fits(story.plan.mat, p.id));
+    spots[h][`part:${p.id}`] = [x + w / 2, ry + 19];
     if (sel) { g.strokeStyle = UI.accent; g.lineWidth = 1.5; g.strokeRect(x + 18, ry, w - 36, 38); g.lineWidth = 1; }
     g.globalAlpha = ok ? 1 : 0.4;
     if (cur) swatchAt(g, cur, x + 28, ry + 9, 20); else blankAt(g, x + 28, ry + 9, 20);
@@ -400,6 +407,7 @@ function drawDesigner(g, h, t) {
     g.globalAlpha = 1;
   });
   button(g, 'Apply my selection', x + 18, y + 412, w - 36, 44, placing && !!story.part);
+  spots[h].apply = [x + w / 2, y + 434];
   if (story.last) {
     caps(g, 'Last turn', x + 18, y + 484, 10.5, UI.muted);
     type(g, 400, 12, TEXT); g.fillStyle = UI.muted;
@@ -412,7 +420,6 @@ function drawDesigner(g, h, t) {
     type(g, 700, 22, DISPLAY); say(g, 'A MATERIAL HAS ARRIVED', nx, ny + 2, UI.text, 'center');
     type(g, 400, 14, TEXT); say(g, `From Hall ${other(h)}`, nx, ny + 26, UI.soft, 'center');
   }
-  type(g, 400, 12, TEXT); say(g, 'Drag to rotate · Scroll or pinch to zoom · Click to select a part', HOUSE.x + HOUSE.w / 2, BIG.h - 14, UI.muted, 'center');
 }
 // giver, after the other hall placed it: what they did with your material
 function drawReveal(g, h, t) {
@@ -443,6 +450,19 @@ function drawFinished(g) {
   type(g, 400, 15, TEXT); g.fillStyle = UI.soft; wrapText(g, 'Built by Hall A and Hall B together. It moves to the screens in the corridor.', 36, 470, 300, 21);
 }
 
+// A tap by the visitor in the story: a dot with a ring spreading out, like a screen recording that
+// shows touches. It makes clear the screen plays by itself (it isn't for clicking).
+function touchMark(g, h) {
+  const tp = story.touch, at = tp && tp.hall === h && spots[h][tp.key];
+  if (!at) return;
+  const age = (performance.now() - tp.t) / 1000;
+  if (age > 0.9) return;
+  const [x, y] = at, k = age / 0.9;
+  g.strokeStyle = `rgba(255,255,255,${0.75 * (1 - k)})`; g.lineWidth = 3;
+  g.beginPath(); g.arc(x, y, 12 + 30 * k, 0, 6.2832); g.stroke(); g.lineWidth = 1;
+  g.fillStyle = `rgba(255,255,255,${0.55 * (1 - k * 0.6)})`; g.beginPath(); g.arc(x, y, 13, 0, 6.2832); g.fill();
+}
+
 function drawApp(h) {
   const g = big[h].ctx, t = performance.now() / 1000, giver = story.giver === h, st = story.step;
   g.textBaseline = 'alphabetic'; g.fillStyle = UI.bg; g.fillRect(0, 0, BIG.w, BIG.h);
@@ -455,6 +475,7 @@ function drawApp(h) {
   } else if (st === 'reveal') drawSwitch(g, h);
   else { drawDesigner(g, h, t); house = true; }
   housePlanes[h].visible = house;
+  touchMark(g, h);
   tile(g, h, t);
   big[h].tex.needsUpdate = true;
 }
@@ -468,7 +489,8 @@ function drawHeader(h) {
   g.textBaseline = 'alphabetic'; header[h].tex.needsUpdate = true;
 }
 
-// the kiosks: the hallway wireframe's copy, and a finished house turning behind the clear part
+// the kiosks: the hallway wireframe's copy, and a finished house turning behind the clear part.
+// Nothing on them looks tappable: the text sends people to the halls, where the game is.
 function drawKiosk(k) {
   const g = k.canvas.getContext('2d'), { w, h, house: r } = k.KC, f = finished[k.index] ?? finished[0];
   g.textBaseline = 'alphabetic'; g.fillStyle = UI.bg; g.fillRect(0, 0, w, h); g.clearRect(r.x, r.y, r.w, r.h);
@@ -476,7 +498,6 @@ function drawKiosk(k) {
   caps(g, `House ${f.no} · built by Hall A & Hall B`, 44, 196, 12, UI.accentText);
   const y = wrapCaps(g, 'Your turn to build', 44, 246, 360, 50, 52, UI.text);
   type(g, 400, 17, TEXT); g.fillStyle = UI.soft; wrapText(g, 'Visitors in two halls build each house together. Walk to either end and take part.', 44, y + 8, 340, 25);
-  PARTS.forEach((p, i) => { const x = 44 + i * 88; swatchAt(g, f.assign[p.id], x, 452, 34); type(g, 400, 11, TEXT); say(g, p.label, x, 504, UI.muted); });
   k.tex.needsUpdate = true;
   if (k.shown !== f) { k.view.set(f.assign); k.shown = f; }
 }
@@ -495,22 +516,26 @@ function nextTurn() {
 }
 function restart() { story = { giver: 'A', house: newHouse(finished[0].no + 1), last: null }; particleChoice(null); nextTurn(); }
 function go(step) { story.step = step; story.t0 = performance.now(); }
+// the visitor in the story taps something (shown with touchMark), once per key
+function tap(hall, key) { if (story.touch?.key !== key || story.touch.hall !== hall) story.touch = { hall, key, t: performance.now() }; }
 function tickStory(now) {
-  const el = (now - story.t0) / 1000;
+  const el = (now - story.t0) / 1000, giver = story.giver, placer = other(giver);
   switch (story.step) {
     case 'pick':
-      if (el > 1.2) story.filter = story.plan.cat;
-      if (el > 2.4) story.chosen = story.plan.mat;
+      if (el > 1.2) { story.filter = story.plan.cat; tap(giver, `tab:${story.plan.cat}`); }
+      if (el > 2.4) { story.chosen = story.plan.mat; tap(giver, `card:${story.plan.mat}`); }
       if (el > STEP.pick) go('chosen');
       break;
     case 'chosen':
+      if (el > STEP.chosen - 0.6) tap(giver, 'send');   // a beat on the button before the screen changes
       if (el > STEP.chosen) { go('sent'); counter++; particleChoice({ send: MAT[story.plan.mat] }); }
       break;
     case 'sent':
       if (el > STEP.sent) go('place');
       break;
     case 'place':
-      if (el > 1.4) story.part = story.plan.part;
+      if (el > 1.4) { story.part = story.plan.part; tap(placer, `part:${story.plan.part}`); }
+      if (el > STEP.place - 0.6) tap(placer, 'apply');
       if (el > STEP.place) {
         story.house.assign[story.plan.part] = story.plan.mat;
         story.last = { by: other(story.giver), mat: story.plan.mat, part: story.plan.part };
